@@ -1,9 +1,57 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useConfig } from '../context/ConfigContext';
-import { ArrowRight, Star, ExternalLink, Play, Ship, MapPin, Calendar, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Star, ExternalLink, Play, Ship, MapPin, Calendar, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SafeMedia from '../components/SafeMedia';
+
+const ImageSlider = ({ images = [] }) => {
+  const [current, setCurrent] = useState(0);
+
+  if (images.length === 0) return null;
+  if (images.length === 1) {
+    return <SafeMedia src={images[0]} style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)' }} />;
+  }
+
+  const next = () => setCurrent((current + 1) % images.length);
+  const prev = () => setCurrent((current - 1 + images.length) % images.length);
+
+  return (
+    <div style={{ position: 'relative', width: '100%', aspectRatio: '16/10', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)' }}>
+      <AnimatePresence mode="wait">
+        <motion.div
+           key={current}
+           initial={{ opacity: 0, x: 20 }}
+           animate={{ opacity: 1, x: 0 }}
+           exit={{ opacity: 0, x: -20 }}
+           transition={{ duration: 0.5 }}
+           style={{ width: '100%', height: '100%' }}
+        >
+          <SafeMedia src={images[current]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </motion.div>
+      </AnimatePresence>
+      
+      <button 
+        onClick={prev} 
+        style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', padding: '12px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex' }}
+      >
+        <ChevronLeft size={20} />
+      </button>
+      <button 
+        onClick={next} 
+        style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', padding: '12px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex' }}
+      >
+        <ChevronRight size={20} />
+      </button>
+
+      <div style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '8px', zIndex: 10 }}>
+         {images.map((_, i) => (
+           <div key={i} style={{ width: current === i ? '24px' : '8px', height: '8px', borderRadius: '4px', background: current === i ? 'var(--primary)' : 'rgba(255,255,255,0.5)', transition: 'all 0.3s' }} onClick={() => setCurrent(i)}></div>
+         ))}
+      </div>
+    </div>
+  );
+};
 
 const Home = () => {
   const { config } = useConfig();
@@ -29,11 +77,11 @@ const Home = () => {
     };
   };
 
-  const ImageGallery = ({ images = [], singleImage, style = "grid" }) => {
+  const MediaGallery = ({ images = [], singleImage, style }) => {
     const allImages = (images && images.length > 0) ? images : (singleImage ? [singleImage] : []);
     if (allImages.length === 0) return null;
 
-    if (style === 'masonry') {
+    if (style === 'gallery') {
        return (
          <div style={{ columns: '2', columnGap: '20px' }}>
             {allImages.map((img, i) => (
@@ -45,23 +93,11 @@ const Home = () => {
        );
     }
 
-    return (
-      <div style={{ display: 'grid', gridTemplateColumns: allImages.length > 1 ? 'repeat(2, 1fr)' : '1fr', gap: '20px' }}>
-        {allImages.map((img, idx) => (
-          <div key={idx} style={{ 
-            gridColumn: idx === 0 && allImages.length === 3 ? 'span 2' : 'span 1',
-            borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-md)',
-            height: allImages.length > 1 ? '300px' : 'auto'
-          }}>
-            <SafeMedia src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </div>
-        ))}
-      </div>
-    );
+    return <ImageSlider images={allImages} />;
   };
 
   const renderSection = (section) => {
-    const { style, typography, items, layout, bgColor, bgType, bgUrl } = section;
+    const { style, typography, items, layout, bgColor, bgType, bgUrl, image, images } = section;
     const titleStyle = getTextStyle(typography, 'title');
     const contentStyle = getTextStyle(typography, 'content');
 
@@ -82,13 +118,12 @@ const Home = () => {
 
         <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 40px', position: 'relative', zIndex: 1 }}>
           
-          {/* Feature Cards Style (User Request: Image + Cards) */}
           {style === 'feature-cards' && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'flex-start' }}>
                <div>
                   <h2 style={titleStyle}>{section.title}</h2>
                   <p style={contentStyle}>{section.content}</p>
-                  {section.image && <SafeMedia src={section.image} style={{ width: '100%', borderRadius: '40px', boxShadow: 'var(--shadow-lg)' }} />}
+                  <MediaGallery images={images} singleImage={image} />
                </div>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                   {(items || []).map((item, i) => (
@@ -113,7 +148,6 @@ const Home = () => {
             </div>
           )}
 
-          {/* Process Style */}
           {style === 'process' && (
             <div style={{ textAlign: 'center' }}>
                <h2 style={{ ...titleStyle, textAlign: 'center' }}>{section.title}</h2>
@@ -135,16 +169,14 @@ const Home = () => {
             </div>
           )}
 
-          {/* Gallery Style */}
           {style === 'gallery' && (
             <div style={{ textAlign: 'center' }}>
                <h2 style={{ ...titleStyle, textAlign: 'center' }}>{section.title}</h2>
                <p style={{ ...contentStyle, textAlign: 'center', margin: '0 auto 60px', maxWidth: '800px' }}>{section.content}</p>
-               <ImageGallery images={section.images} singleImage={section.image} style="masonry" />
+               <MediaGallery images={images} singleImage={image} style="gallery" />
             </div>
           )}
 
-          {/* Classic Style Fallback */}
           {(style === 'classic' || !style || style === 'split-card' || style === 'minimal-centered') && (
             <div style={{ 
               display: (style === 'minimal-centered') ? 'block' : 'flex',
@@ -161,7 +193,7 @@ const Home = () => {
                  )}
               </div>
               <div style={{ flex: 1, marginTop: (style === 'minimal-centered') ? '60px' : '0' }}>
-                 <ImageGallery images={section.images} singleImage={section.image} />
+                 <MediaGallery images={images} singleImage={image} />
               </div>
             </div>
           )}

@@ -66,14 +66,17 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addSection = async (data) => {
-    const { title, content, image, images, layout, style, items, typography, showButton, buttonLink, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom } = data;
+    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom } = data;
     await addSectionMutation({ 
       title, content, image, images, layout, 
       style: style || "classic", 
       items: items || [],
       typography: typography || {},
       showButton: showButton ?? true, 
-      buttonLink, bgColor, 
+      buttonText: buttonText || "자세히 보기",
+      buttonLink, 
+      buttonStyles: buttonStyles || { size: "medium" },
+      bgColor, 
       bgType: bgType || "color", 
       bgUrl, 
       bgOpacity: bgOpacity ?? 1,
@@ -84,11 +87,12 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const updateSection = async (id, data) => {
-    const { title, content, image, images, layout, style, items, typography, showButton, buttonLink, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order } = data;
+    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order } = data;
     await updateSectionMutation({ 
       id, title, content, image, images, layout, style, items, typography,
       showButton: Boolean(showButton), 
-      buttonLink, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order 
+      buttonText, buttonLink, buttonStyles,
+      bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order 
     });
   };
 

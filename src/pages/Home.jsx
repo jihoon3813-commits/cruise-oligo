@@ -7,26 +7,17 @@ import SafeMedia from '../components/SafeMedia';
 
 const ImageSlider = ({ images = [] }) => {
   const [current, setCurrent] = useState(0);
-
-  if (images.length === 0) return null;
+  if (!images || images.length === 0) return null;
   if (images.length === 1) {
     return <SafeMedia src={images[0]} style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)' }} />;
   }
-
   const next = () => setCurrent((current + 1) % images.length);
   const prev = () => setCurrent((current - 1 + images.length) % images.length);
 
   return (
     <div style={{ position: 'relative', width: '100%', aspectRatio: '16/10', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)' }}>
       <AnimatePresence mode="wait">
-        <motion.div
-           key={current}
-           initial={{ opacity: 0, x: 20 }}
-           animate={{ opacity: 1, x: 0 }}
-           exit={{ opacity: 0, x: -20 }}
-           transition={{ duration: 0.5 }}
-           style={{ width: '100%', height: '100%' }}
-        >
+        <motion.div key={current} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.5 }} style={{ width: '100%', height: '100%' }}>
           <SafeMedia src={images[current]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </motion.div>
       </AnimatePresence>
@@ -60,10 +51,42 @@ const Home = () => {
     };
   };
 
+  const CustomButton = ({ section }) => {
+    if (!section.showButton) return null;
+    const styles = section.buttonStyles || {};
+    const sizeMap = {
+      small: { padding: '8px 20px', fontSize: '13px' },
+      medium: { padding: '12px 32px', fontSize: '15px' },
+      large: { padding: '16px 48px', fontSize: '18px' }
+    };
+    const currentSize = sizeMap[styles.size] || sizeMap.medium;
+
+    const btnStyle = {
+      ...currentSize,
+      backgroundColor: styles.bgColor || 'var(--primary)',
+      color: styles.textColor || '#ffffff',
+      border: `2px solid ${styles.borderColor || styles.bgColor || 'var(--primary)'}`,
+      borderRadius: '100px',
+      fontWeight: '700',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '8px',
+      textDecoration: 'none',
+      transition: 'var(--transition-smooth)',
+      cursor: 'pointer',
+      boxShadow: '0 4px 14px rgba(0,0,0,0.1)'
+    };
+
+    return (
+      <Link to={section.buttonLink || "/"} style={btnStyle} className="dynamic-button">
+        {section.buttonText || "자세히 보기"} <ArrowRight size={18} />
+      </Link>
+    );
+  };
+
   const MediaGallery = ({ images = [], singleImage, style }) => {
     const allImages = (images && images.length > 0) ? images : (singleImage ? [singleImage] : []);
     if (allImages.length === 0) return null;
-
     if (style === 'gallery') {
        return (
          <div style={{ columns: '2', columnGap: '20px' }}>
@@ -99,18 +122,16 @@ const Home = () => {
              <SafeMedia src={bgUrl} type={bgType} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
         )}
-        
-        {/* Overlay for background blending */}
         <div style={{ position: 'absolute', inset: 0, background: bgType === 'color' ? 'transparent' : `rgba(255,255,255,${1 - (bgOpacity ?? 1)})`, zIndex: 0 }}></div>
 
         <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 40px', position: 'relative', zIndex: 1 }}>
-          
           {style === 'feature-cards' && (
             <div style={{ display: 'grid', gridTemplateColumns: hasMedia ? '1fr 1fr' : '1fr', gap: '80px' }}>
                <div>
                   <h2 style={titleStyle}>{section.title}</h2>
                   <p style={contentStyle}>{section.content}</p>
-                  <MediaGallery images={images} singleImage={image} />
+                  <CustomButton section={section} />
+                  <div style={{ marginTop: '40px' }}><MediaGallery images={images} singleImage={image} /></div>
                </div>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                   {(items || []).map((item, i) => (
@@ -136,6 +157,7 @@ const Home = () => {
                     </div>
                   ))}
                </div>
+               <div style={{ marginTop: '60px' }}><CustomButton section={section} /></div>
             </div>
           )}
 
@@ -144,6 +166,7 @@ const Home = () => {
                <h2 style={{ ...titleStyle, textAlign: 'center' }}>{section.title}</h2>
                <p style={{ ...contentStyle, textAlign: 'center', margin: '0 auto 60px', maxWidth: '800px' }}>{section.content}</p>
                <MediaGallery images={images} singleImage={image} style="gallery" />
+               <div style={{ marginTop: '60px' }}><CustomButton section={section} /></div>
             </div>
           )}
 
@@ -152,13 +175,12 @@ const Home = () => {
               display: (style === 'minimal-centered' || !hasMedia) ? 'block' : 'flex',
               textAlign: (style === 'minimal-centered' || !hasMedia) ? (titleStyle.textAlign || 'center') : 'left',
               flexDirection: layout === 'right' ? 'row-reverse' : 'row', 
-              alignItems: 'center', 
-              gap: '80px' 
+              alignItems: 'center', gap: '80px' 
             }}>
               <div style={{ flex: 1, maxWidth: !hasMedia ? '800px' : 'none', margin: !hasMedia ? '0 auto' : '0' }}>
                  <h2 style={titleStyle}>{section.title}</h2>
                  <p style={contentStyle}>{section.content}</p>
-                 {section.showButton && (<Link to={section.buttonLink || "/"} className="luxury-btn outline" style={{ textDecoration: 'none' }}>자세히 보기</Link>)}
+                 <CustomButton section={section} />
               </div>
               {hasMedia && (
                 <div style={{ flex: 1, marginTop: (style === 'minimal-centered') ? '60px' : '0' }}>
@@ -174,6 +196,15 @@ const Home = () => {
 
   return (
     <div className="home-clean">
+      <nav className="nav scrolled">
+         <Link to="/" style={{ fontSize: '24px', fontWeight: '900', color: 'var(--primary)', textDecoration: 'none' }}>OLIGO CRUISE</Link>
+         <div style={{ display: 'flex', gap: '30px' }}>
+            <Link to="/" className="nav-link">홈</Link>
+            <a href="#products" className="nav-link">상품</a>
+            <Link to="/admin" className="nav-link" style={{ color: 'var(--primary)' }}>어드민</Link>
+         </div>
+      </nav>
+
       <section className="hero">
         <div className="hero-bg" style={{ position: 'absolute', right: 0, top: 0, width: '60%', height: '100%', zIndex: 0 }}>
           <SafeMedia src={hero.bgUrl} type={hero.bgType} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />

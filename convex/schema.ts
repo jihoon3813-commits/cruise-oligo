@@ -43,7 +43,14 @@ export default defineSchema({
       })),
     })),
     showButton: v.optional(v.boolean()),
+    buttonText: v.optional(v.string()),
     buttonLink: v.optional(v.string()),
+    buttonStyles: v.optional(v.object({
+      bgColor: v.optional(v.string()),
+      borderColor: v.optional(v.string()),
+      textColor: v.optional(v.string()),
+      size: v.optional(v.string()), // "small", "medium", "large"
+    })),
     bgColor: v.optional(v.string()),
     bgType: v.optional(v.string()), // "color", "image", "video"
     bgUrl: v.optional(v.string()), // For image/video backgrounds

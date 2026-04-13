@@ -27,6 +27,13 @@ const itemsValidator = v.optional(v.array(v.object({
   icon: v.optional(v.string()),
 })));
 
+const buttonStylesValidator = v.optional(v.object({
+  bgColor: v.optional(v.string()),
+  borderColor: v.optional(v.string()),
+  textColor: v.optional(v.string()),
+  size: v.optional(v.string()),
+}));
+
 export const list = query({
   args: {},
   handler: async (ctx) => {
@@ -45,7 +52,9 @@ export const add = mutation({
     items: itemsValidator,
     typography: typographyValidator,
     showButton: v.boolean(),
+    buttonText: v.optional(v.string()),
     buttonLink: v.optional(v.string()),
+    buttonStyles: buttonStylesValidator,
     bgColor: v.optional(v.string()),
     bgType: v.string(),
     bgUrl: v.optional(v.string()),
@@ -71,7 +80,9 @@ export const update = mutation({
     items: itemsValidator,
     typography: typographyValidator,
     showButton: v.optional(v.boolean()),
+    buttonText: v.optional(v.string()),
     buttonLink: v.optional(v.string()),
+    buttonStyles: buttonStylesValidator,
     bgColor: v.optional(v.string()),
     bgType: v.optional(v.string()),
     bgUrl: v.optional(v.string()),

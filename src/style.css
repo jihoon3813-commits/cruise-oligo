@@ -25,6 +25,13 @@
   box-sizing: border-box;
 }
 
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 80px;
+}
+
 body {
   font-family: 'Inter', 'Noto Sans KR', sans-serif;
   background-color: var(--bg-main);

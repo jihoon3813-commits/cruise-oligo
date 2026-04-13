@@ -3,6 +3,7 @@ import { v } from "convex/values";
 
 export default defineSchema({
   siteConfig: defineTable({
+    theme: v.optional(v.string()), // "white", "midnight", "cream", "grey", "lavender", "ocean"
     hero: v.object({
       style: v.optional(v.string()), // "classic", "full-bg", "split", "card", "minimal", "video-focus"
       title: v.string(),
@@ -12,6 +13,7 @@ export default defineSchema({
       bgType: v.string(),
       bgUrl: v.string(),
       bgOpacity: v.optional(v.number()),
+      paddingX: v.optional(v.number()), // Horizontal padding px
       textPosition: v.string(), // "left", "center", "right"
       verticalAlign: v.optional(v.string()), // "top", "middle", "bottom"
       typography: v.optional(v.object({

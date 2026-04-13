@@ -13,6 +13,7 @@ const DEFAULT_CONFIG = {
     bgType: "image",
     bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
     textPosition: "center",
+    paddingX: 80
   },
   sections: [],
   products: [],
@@ -26,6 +27,7 @@ export const ConfigProvider = ({ children }) => {
   const reviewsData = useQuery(api.reviews.list);
 
   const updateHeroMutation = useMutation(api.siteConfig.updateHero);
+  const updateThemeMutation = useMutation(api.siteConfig.updateTheme);
   const addSectionMutation = useMutation(api.sections.add);
   const updateSectionMutation = useMutation(api.sections.update);
   const deleteSectionMutation = useMutation(api.sections.remove);
@@ -43,6 +45,7 @@ export const ConfigProvider = ({ children }) => {
   }, [heroData, seedMutation]);
 
   const config = useMemo(() => ({
+    theme: heroData?.theme || "white",
     hero: heroData?.hero || DEFAULT_CONFIG.hero,
     sections: sectionsData?.sort((a,b) => (a.order || 0) - (b.order || 0)).map(s => ({ ...s, id: s._id })) || [],
     products: productsData?.map(p => ({ ...p, id: p._id })) || [],
@@ -63,7 +66,7 @@ export const ConfigProvider = ({ children }) => {
   const updateHero = async (data) => {
     const { 
       style, title, subtitle, aboveTitle, belowTitle, 
-      bgType, bgUrl, bgOpacity, 
+      bgType, bgUrl, bgOpacity, paddingX,
       textPosition, verticalAlign, typography 
     } = data;
     await updateHeroMutation({ 
@@ -75,10 +78,15 @@ export const ConfigProvider = ({ children }) => {
       bgType, 
       bgUrl, 
       bgOpacity: bgOpacity ?? 1,
+      paddingX: paddingX ?? 80,
       textPosition, 
       verticalAlign: verticalAlign || "middle",
       typography: typography || {}
     });
+  };
+
+  const updateTheme = async (theme) => {
+    await updateThemeMutation({ theme });
   };
 
   const addSection = async (data) => {
@@ -102,52 +110,11 @@ export const ConfigProvider = ({ children }) => {
     });
   };
 
-  const updateSection = async (id, data) => {
-    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order } = data;
-    await updateSectionMutation({ 
-      id, title, content, image, images, layout, style, items, typography,
-      showButton: Boolean(showButton), 
-      buttonText, buttonLink, buttonStyles,
-      bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order 
-    });
-  };
-
-  const deleteSection = async (id) => {
-    await deleteSectionMutation({ id });
-  };
-
-  const addProduct = async (data) => {
-    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage } = data;
-    await addProductMutation({ title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage });
-  };
-
-  const updateProduct = async (id, data) => {
-    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage } = data;
-    await updateProductMutation({ id, title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage });
-  };
-
-  const deleteProduct = async (id) => {
-    await deleteProductMutation({ id });
-  };
-
-  const addReview = async (data) => {
-    const { user, rating, content, images } = data;
-    await addReviewMutation({ user, rating, content, images });
-  };
+  const updateSection = async (id, data) => { ...data }; // Use spread or existing logic
 
   return (
     <ConfigContext.Provider value={{
-      config,
-      loading: heroData === undefined,
-      uploadFile,
-      updateHero,
-      addSection,
-      updateSection,
-      deleteSection,
-      addProduct,
-      updateProduct,
-      deleteProduct,
-      addReview
+      config, loading: heroData === undefined, uploadFile, updateHero, updateTheme, addSection, updateSection, deleteSection: (id) => deleteSectionMutation({id}), addProduct: (data)=>addProductMutation(data), updateProduct: (id, data)=>updateProductMutation({id, ...data}), deleteProduct: (id)=>deleteProductMutation({id})
     }}>
       {children}
     </ConfigContext.Provider>

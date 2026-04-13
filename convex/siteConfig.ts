@@ -18,6 +18,7 @@ export const updateHero = mutation({
     bgType: v.string(),
     bgUrl: v.string(),
     bgOpacity: v.optional(v.number()),
+    paddingX: v.optional(v.number()),
     textPosition: v.string(),
     verticalAlign: v.optional(v.string()),
     typography: v.optional(v.any()),
@@ -28,6 +29,18 @@ export const updateHero = mutation({
       await ctx.db.patch(existing._id, { hero: args });
     } else {
       await ctx.db.insert("siteConfig", { hero: args });
+    }
+  },
+});
+
+export const updateTheme = mutation({
+  args: { theme: v.string() },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.query("siteConfig").first();
+    if (existing) {
+      await ctx.db.patch(existing._id, { theme: args.theme });
+    } else {
+      // Mock hero data if needed or just don't allow theme change if no config
     }
   },
 });

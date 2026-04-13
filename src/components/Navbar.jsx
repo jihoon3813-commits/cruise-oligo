@@ -26,11 +26,11 @@ const Navbar = () => {
       </Link>
 
       <div className="nav-links">
-        <Link to="/" className="nav-link">Home</Link>
-        <Link to="/#membership" className="nav-link">Membership</Link>
-        <Link to="/#products" className="nav-link">Cruises</Link>
-        <Link to="/reviews" className="nav-link">Reviews</Link>
-        <Link to="/admin" className="luxury-button outline" style={{ padding: '8px 20px', fontSize: '12px' }}>Admin</Link>
+        <Link to="/" className="nav-link">홈</Link>
+        <Link to="/#membership" className="nav-link">멤버십</Link>
+        <Link to="/#products" className="nav-link">크루즈</Link>
+        <Link to="/reviews" className="nav-link">여행후기</Link>
+        <Link to="/admin" className="luxury-button outline" style={{ padding: '8px 20px', fontSize: '12px' }}>관리자</Link>
       </div>
 
       {/* Mobile menu logic would go here */}

@@ -11,46 +11,46 @@ const Footer = () => {
               <Ship className="gold-text" /> <span>OLIGO</span>
             </div>
             <p style={{ color: '#8c95a1', fontSize: '14px', lineHeight: '1.8' }}>
-              Premier luxury cruise membership provider. Discover the world in style with our curated nautical experiences.
+              프리미엄 럭셔리 크루즈 멤버십 서비스. 품격 있는 해상 여행의 정수를 올리고크루즈와 함께 경험해 보세요.
             </p>
           </div>
           
           <div>
-            <h4 style={{ fontSize: '18px', marginBottom: '30px' }}>Quick Links</h4>
+            <h4 style={{ fontSize: '18px', marginBottom: '30px' }}>빠른 링크</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: '15px', color: '#8c95a1', fontSize: '14px' }}>
-              <li>About Us</li>
-              <li>Membership Benefits</li>
-              <li>Cruise Destinations</li>
-              <li>Travel Reviews</li>
+              <li>회사 소개</li>
+              <li>멤버십 혜택</li>
+              <li>크루즈 여행지</li>
+              <li>여행 후기</li>
             </ul>
           </div>
 
           <div>
-            <h4 style={{ fontSize: '18px', marginBottom: '30px' }}>Support</h4>
+            <h4 style={{ fontSize: '18px', marginBottom: '30px' }}>고객 지원</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: '15px', color: '#8c95a1', fontSize: '14px' }}>
-              <li>Contact Us</li>
-              <li>FAQ</li>
-              <li>Privacy Policy</li>
-              <li>Terms of Service</li>
+              <li>문의하기</li>
+              <li>자주 묻는 질문</li>
+              <li>개인정보 처리방침</li>
+              <li>이용 약관</li>
             </ul>
           </div>
 
           <div>
-            <h4 style={{ fontSize: '18px', marginBottom: '30px' }}>Newsletter</h4>
-            <p style={{ color: '#8c95a1', fontSize: '14px', marginBottom: '20px' }}>Subscribe to get latest updates and exclusive offers.</p>
+            <h4 style={{ fontSize: '18px', marginBottom: '30px' }}>뉴스레터</h4>
+            <p style={{ color: '#8c95a1', fontSize: '14px', marginBottom: '20px' }}>뉴스레터를 구독하고 최신 소식과 독점 혜택을 받아보세요.</p>
             <div style={{ display: 'flex', gap: '10px' }}>
               <input 
                 type="email" 
-                placeholder="Your Email" 
+                placeholder="이메일 주소" 
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '12px', color: '#fff', width: '100%' }} 
               />
-              <button className="luxury-button" style={{ padding: '0 20px', fontSize: '12px' }}>Join</button>
+              <button className="luxury-button" style={{ padding: '0 20px', fontSize: '12px' }}>구독</button>
             </div>
           </div>
         </div>
 
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#555', fontSize: '12px' }}>
-          <p>© 2026 Oligo Cruise Membership. All rights reserved.</p>
+          <p>© 2026 올리고크루즈 멤버십. All rights reserved.</p>
           <div style={{ display: 'flex', gap: '20px' }}>
             <Instagram size={18} />
             <Facebook size={18} />

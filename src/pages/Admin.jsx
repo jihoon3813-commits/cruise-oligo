@@ -9,9 +9,9 @@ const Admin = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/admin', name: 'Home Layout', icon: <HomeIcon size={20} /> },
-    { path: '/admin/products', name: 'Products', icon: <Package size={20} /> },
-    { path: '/admin/reviews', name: 'Reviews', icon: <MessageSquare size={20} /> },
+    { path: '/admin', name: '홈 레이아웃 설정', icon: <HomeIcon size={20} /> },
+    { path: '/admin/products', name: '상품 관리', icon: <Package size={20} /> },
+    { path: '/admin/reviews', name: '후기 관리', icon: <MessageSquare size={20} /> },
   ];
 
   return (
@@ -19,8 +19,8 @@ const Admin = () => {
       {/* Sidebar */}
       <aside className="admin-sidebar shadow-xl">
         <div style={{ padding: '0 30px 40px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--accent)' }}>ADMIN PANEL</h2>
-          <p style={{ fontSize: '12px', opacity: 0.5 }}>Oligo Cruise Membership</p>
+          <h2 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--accent)' }}>관리자 패널</h2>
+          <p style={{ fontSize: '12px', opacity: 0.5 }}>올리고 크루즈 멤버십</p>
         </div>
         
         <nav style={{ marginTop: '30px' }}>
@@ -39,7 +39,7 @@ const Admin = () => {
         <div style={{ marginTop: 'auto', padding: '30px' }}>
           <Link to="/" className="flex items-center gap-2 text-sm opacity-70 hover:opacity-100 transition-all">
             <LogOut size={16} />
-            <span>View Site</span>
+            <span>사이트 보기</span>
           </Link>
         </div>
       </aside>

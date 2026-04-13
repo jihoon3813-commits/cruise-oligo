@@ -51,7 +51,7 @@ const Home = () => {
             <h1 className="hero-title">{hero.title.split('\n').map((line, i) => (
               <React.Fragment key={i}>{line}<br /></React.Fragment>
             ))}</h1>
-            <button className="luxury-button">Explore Membership</button>
+            <button className="luxury-button">멤버십 혜택 둘러보기</button>
           </motion.div>
         </div>
       </section>
@@ -80,7 +80,7 @@ const Home = () => {
               >
                 <h2 className="section-title" style={{ textAlign: 'left', margin: '0 0 30px 0' }}>{section.title}</h2>
                 <p style={{ fontSize: '18px', color: 'var(--text-light)', marginBottom: '40px' }}>{section.content}</p>
-                <button className="luxury-button outline">Learn More</button>
+                <button className="luxury-button outline">더 알아보기</button>
               </motion.div>
             </div>
           </div>
@@ -90,7 +90,7 @@ const Home = () => {
       {/* Products Section */}
       <section id="products" style={{ padding: '120px 0', background: '#fff' }}>
         <div className="container">
-          <h2 className="section-title">Exclusive Cruise Collection</h2>
+          <h2 className="section-title">독점 크루즈 컬렉션</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '30px' }}>
             {products.map(product => (
               <motion.div 
@@ -114,7 +114,7 @@ const Home = () => {
                       </span>
                     </div>
                     <Link to={`/product/${product.id}`} className="luxury-button outline" style={{ padding: '8px 15px', fontSize: '12px' }}>
-                      View Details
+                      상세 보기
                     </Link>
                   </div>
                 </div>

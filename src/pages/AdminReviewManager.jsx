@@ -24,10 +24,10 @@ const AdminReviewManager = () => {
   return (
     <div className="admin-content">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '28px' }}>Review Management</h1>
+        <h1 style={{ fontSize: '28px' }}>여행 후기 관리</h1>
         <button className="luxury-button" onClick={() => setIsAdding(true)}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Plus size={16} /> Write Review
+            <Plus size={16} /> 후기 작성
           </div>
         </button>
       </div>
@@ -57,12 +57,12 @@ const AdminReviewManager = () => {
         }}>
           <div className="admin-card" style={{ width: '100%', maxWidth: '500px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '25px' }}>
-              <h2 style={{ fontSize: '20px' }}>New Review</h2>
+              <h2 style={{ fontSize: '20px' }}>새 후기 작성</h2>
               <button onClick={() => setIsAdding(false)}><X size={20} /></button>
             </div>
             
             <div className="form-group">
-              <label>Reviewer Name</label>
+              <label>작성자 이름</label>
               <input 
                 className="form-control" 
                 value={newReview.user}
@@ -70,7 +70,7 @@ const AdminReviewManager = () => {
               />
             </div>
             <div className="form-group">
-              <label>Rating (1-5)</label>
+              <label>평점 (1-5)</label>
               <input 
                 type="number" className="form-control" min={1} max={5}
                 value={newReview.rating}
@@ -78,7 +78,7 @@ const AdminReviewManager = () => {
               />
             </div>
             <div className="form-group">
-              <label>Content</label>
+              <label>후기 내용</label>
               <textarea 
                 className="form-control" rows={4}
                 value={newReview.content}
@@ -86,7 +86,7 @@ const AdminReviewManager = () => {
               />
             </div>
             <div className="form-group">
-              <label>Image URL</label>
+              <label>후기 이미지 URL</label>
               <input 
                 className="form-control" 
                 value={newReview.images[0]}
@@ -95,7 +95,7 @@ const AdminReviewManager = () => {
             </div>
 
             <button className="luxury-button" style={{ width: '100%', marginTop: '10px' }} onClick={handleSave}>
-              Save Review
+              후기 저장
             </button>
           </div>
         </div>

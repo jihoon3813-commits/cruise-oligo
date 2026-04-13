@@ -42,10 +42,10 @@ const AdminProductManager = () => {
   return (
     <div className="admin-content">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '28px' }}>Product Management</h1>
+        <h1 style={{ fontSize: '28px' }}>상품 관리</h1>
         <button className="luxury-button" onClick={handleAddNew}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Plus size={16} /> Add Product
+            <Plus size={16} /> 상품 등록
           </div>
         </button>
       </div>
@@ -83,13 +83,13 @@ const AdminProductManager = () => {
             width: '100%', maxWidth: '900px', maxHeight: '90vh', overflowY: 'auto' 
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
-              <h2 style={{ fontSize: '24px' }}>{currentProduct.id.includes('Date') ? 'Add Product' : 'Edit Product'}</h2>
+              <h2 style={{ fontSize: '24px' }}>{currentProduct.id.includes('Date') ? '상품 등록' : '상품 수정'}</h2>
               <button onClick={() => setIsEditing(false)}><X size={24} /></button>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label>Product Title</label>
+                <label>상품명</label>
                 <input 
                   className="form-control" 
                   value={currentProduct.title} 
@@ -97,7 +97,7 @@ const AdminProductManager = () => {
                 />
               </div>
               <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label>Description</label>
+                <label>상품 설명</label>
                 <textarea 
                   className="form-control" 
                   value={currentProduct.description} 
@@ -106,7 +106,7 @@ const AdminProductManager = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Base Price (KRW)</label>
+                <label>기본 금액 (KRW)</label>
                 <input 
                   type="number" className="form-control" 
                   value={currentProduct.price} 
@@ -114,21 +114,21 @@ const AdminProductManager = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Payment Method</label>
+                <label>결제 방식 설정</label>
                 <select 
                   className="form-control" 
                   value={currentProduct.paymentType}
                   onChange={e => setCurrentProduct({...currentProduct, paymentType: e.target.value})}
                 >
-                  <option value="full">Lump Sum Discount</option>
-                  <option value="split">Down Payment + Installments</option>
+                  <option value="full">일시불 할인 방식</option>
+                  <option value="split">선금 + 잔금 분할납부 방식</option>
                 </select>
               </div>
 
               {currentProduct.paymentType === 'split' && (
                 <>
                   <div className="form-group">
-                    <label>Down Payment (KRW)</label>
+                    <label>선금 (KRW)</label>
                     <input 
                       type="number" className="form-control" 
                       value={currentProduct.downPayment} 
@@ -136,7 +136,7 @@ const AdminProductManager = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label>Installment Period (Months)</label>
+                    <label>분할 납부 기간 (개월)</label>
                     <input 
                       type="number" className="form-control" 
                       value={currentProduct.installments} 
@@ -147,7 +147,7 @@ const AdminProductManager = () => {
               )}
 
               <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label>Main Thumbnail URL</label>
+                <label>메인 썸네일 이미지 URL</label>
                 <input 
                   className="form-control" 
                   value={currentProduct.thumbnails[0]} 
@@ -156,12 +156,12 @@ const AdminProductManager = () => {
               </div>
 
               <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label>Schedule Image URL (Alternative to Text)</label>
+                <label>일정 요약 이미지 URL (텍스트 일정 대신 사용 시)</label>
                 <input 
                   className="form-control" 
                   value={currentProduct.scheduleImage} 
                   onChange={e => setCurrentProduct({...currentProduct, scheduleImage: e.target.value})} 
-                  placeholder="Leave empty if using text schedule"
+                  placeholder="이미지 형식의 일정표가 있을 경우 URL을 입력하세요"
                 />
               </div>
             </div>
@@ -172,14 +172,14 @@ const AdminProductManager = () => {
                 onClick={() => setIsEditing(false)}
                 style={{ padding: '10px 25px' }}
               >
-                Cancel
+                취소
               </button>
               <button 
                 className="luxury-button" 
                 onClick={handleSave}
                 style={{ padding: '10px 25px' }}
               >
-                Save Product
+                상품 저장
               </button>
             </div>
           </div>

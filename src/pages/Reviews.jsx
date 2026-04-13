@@ -10,8 +10,8 @@ const Reviews = () => {
     <div className="reviews-page" style={{ paddingTop: '150px', minHeight: '100vh', background: '#f8f9fa' }}>
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-          <h1 className="section-title">Travel Experiences</h1>
-          <p style={{ color: 'var(--text-light)', fontSize: '18px' }}>Read what our members say about their unforgettable journeys.</p>
+          <h1 className="section-title">생생한 여행 후기</h1>
+          <p style={{ color: 'var(--text-light)', fontSize: '18px' }}>잊지 못할 여정을 경험한 회원님들의 생생한 이야기를 확인해 보세요.</p>
         </div>
 
         <div style={{ columns: '2 400px', columnGap: '30px' }}>
@@ -48,7 +48,7 @@ const Reviews = () => {
                 </div>
                 <div>
                   <h4 style={{ fontWeight: '700' }}>{review.user}</h4>
-                  <span style={{ fontSize: '12px', color: '#999' }}>Verified Member</span>
+                  <span style={{ fontSize: '12px', color: '#999' }}>정식 회원</span>
                 </div>
               </div>
             </motion.div>

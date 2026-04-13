@@ -17,7 +17,31 @@ export default defineSchema({
     image: v.optional(v.string()), // Deprecated but kept for safety
     images: v.optional(v.array(v.string())), // Multiple images support
     layout: v.string(), // "left", "right"
-    style: v.optional(v.string()), // "classic", "split-card", "minimal-centered"
+    style: v.optional(v.string()), // "classic", "split-card", "minimal-centered", "gallery", "feature-cards", "process"
+    items: v.optional(v.array(v.object({
+      title: v.string(),
+      content: v.string(),
+      number: v.optional(v.string()), // e.g., "01"
+      icon: v.optional(v.string()),
+    }))),
+    typography: v.optional(v.object({
+      title: v.optional(v.object({
+        color: v.optional(v.string()),
+        fontSize: v.optional(v.number()),
+        fontFamily: v.optional(v.string()),
+        textAlign: v.optional(v.string()),
+        letterSpacing: v.optional(v.number()),
+        lineHeight: v.optional(v.number()),
+      })),
+      content: v.optional(v.object({
+        color: v.optional(v.string()),
+        fontSize: v.optional(v.number()),
+        fontFamily: v.optional(v.string()),
+        textAlign: v.optional(v.string()),
+        letterSpacing: v.optional(v.number()),
+        lineHeight: v.optional(v.number()),
+      })),
+    })),
     showButton: v.optional(v.boolean()),
     buttonLink: v.optional(v.string()),
     bgColor: v.optional(v.string()),

@@ -1,6 +1,32 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
+const typographyValidator = v.optional(v.object({
+  title: v.optional(v.object({
+    color: v.optional(v.string()),
+    fontSize: v.optional(v.number()),
+    fontFamily: v.optional(v.string()),
+    textAlign: v.optional(v.string()),
+    letterSpacing: v.optional(v.number()),
+    lineHeight: v.optional(v.number()),
+  })),
+  content: v.optional(v.object({
+    color: v.optional(v.string()),
+    fontSize: v.optional(v.number()),
+    fontFamily: v.optional(v.string()),
+    textAlign: v.optional(v.string()),
+    letterSpacing: v.optional(v.number()),
+    lineHeight: v.optional(v.number()),
+  })),
+}));
+
+const itemsValidator = v.optional(v.array(v.object({
+  title: v.string(),
+  content: v.string(),
+  number: v.optional(v.string()),
+  icon: v.optional(v.string()),
+})));
+
 export const list = query({
   args: {},
   handler: async (ctx) => {
@@ -16,6 +42,8 @@ export const add = mutation({
     images: v.optional(v.array(v.string())),
     layout: v.string(),
     style: v.string(),
+    items: itemsValidator,
+    typography: typographyValidator,
     showButton: v.boolean(),
     buttonLink: v.optional(v.string()),
     bgColor: v.optional(v.string()),
@@ -37,6 +65,8 @@ export const update = mutation({
     images: v.optional(v.array(v.string())),
     layout: v.optional(v.string()),
     style: v.optional(v.string()),
+    items: itemsValidator,
+    typography: typographyValidator,
     showButton: v.optional(v.boolean()),
     buttonLink: v.optional(v.string()),
     bgColor: v.optional(v.string()),

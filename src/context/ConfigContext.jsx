@@ -66,10 +66,12 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addSection = async (data) => {
-    const { title, content, image, images, layout, style, showButton, buttonLink, bgColor, bgType, bgUrl } = data;
+    const { title, content, image, images, layout, style, items, typography, showButton, buttonLink, bgColor, bgType, bgUrl } = data;
     await addSectionMutation({ 
       title, content, image, images, layout, 
       style: style || "classic", 
+      items: items || [],
+      typography: typography || {},
       showButton: showButton ?? true, 
       buttonLink, bgColor, 
       bgType: bgType || "color", 
@@ -79,9 +81,9 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const updateSection = async (id, data) => {
-    const { title, content, image, images, layout, style, showButton, buttonLink, bgColor, bgType, bgUrl, order } = data;
+    const { title, content, image, images, layout, style, items, typography, showButton, buttonLink, bgColor, bgType, bgUrl, order } = data;
     await updateSectionMutation({ 
-      id, title, content, image, images, layout, style, 
+      id, title, content, image, images, layout, style, items, typography,
       showButton: Boolean(showButton), 
       buttonLink, bgColor, bgType, bgUrl, order 
     });

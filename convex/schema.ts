@@ -14,8 +14,14 @@ export default defineSchema({
   sections: defineTable({
     title: v.string(),
     content: v.string(),
-    image: v.string(),
-    layout: v.string(),
+    image: v.string(), // Main content image
+    layout: v.string(), // "left", "right"
+    style: v.string(), // "classic", "split-card", "minimal-centered"
+    showButton: v.boolean(),
+    buttonLink: v.optional(v.string()),
+    bgColor: v.optional(v.string()),
+    bgType: v.string(), // "color", "image", "video"
+    bgUrl: v.optional(v.string()), // For image/video backgrounds
     order: v.number(),
   }),
   products: defineTable({

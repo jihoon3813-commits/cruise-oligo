@@ -14,6 +14,12 @@ export const add = mutation({
     content: v.string(),
     image: v.string(),
     layout: v.string(),
+    style: v.string(),
+    showButton: v.boolean(),
+    buttonLink: v.optional(v.string()),
+    bgColor: v.optional(v.string()),
+    bgType: v.string(),
+    bgUrl: v.optional(v.string()),
     order: v.number(),
   },
   handler: async (ctx, args) => {
@@ -28,6 +34,12 @@ export const update = mutation({
     content: v.string(),
     image: v.string(),
     layout: v.string(),
+    style: v.string(),
+    showButton: v.boolean(),
+    buttonLink: v.optional(v.string()),
+    bgColor: v.optional(v.string()),
+    bgType: v.string(),
+    bgUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { id, ...data } = args;

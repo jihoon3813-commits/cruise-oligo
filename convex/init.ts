@@ -21,9 +21,14 @@ export const seed = mutation({
     if (sections.length === 0) {
       await ctx.db.insert("sections", {
         title: "궁극의 럭셔리",
-        content: "올리고 크루즈 멤버십과 함께 세계에서 가장 권위 있는 크루즈를 경험해 보세요. 우리는 럭셔리 여행의 정의를 새롭게 하는 큐레이팅된 여정을 제공합니다.",
+        content: "올리고 크루즈 멤버십과 함께 세계에서 가장 권위 있는 크루즈를 경험해 보세요.",
         image: "https://images.unsplash.com/photo-1567815357002-ad216ca7bad0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-        layout: "text-left",
+        layout: "left",
+        style: "classic",
+        showButton: true,
+        buttonLink: "#membership",
+        bgColor: "#ffffff",
+        bgType: "color",
         order: 1
       });
     }

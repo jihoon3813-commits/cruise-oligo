@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Edit, Save, X, Package, CreditCard, Clock, MapPin } from 'lucide-react';
+import { Plus, Trash2, Edit, Save, X, Package, CreditCard, Clock, MapPin, Upload, Loader2, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminProductManager = () => {
-  const { config, addProduct, updateProduct, deleteProduct } = useConfig();
+  const { config, addProduct, updateProduct, deleteProduct, uploadFile } = useConfig();
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
 
@@ -44,6 +44,33 @@ const AdminProductManager = () => {
     }
   };
 
+  const MediaInput = ({ label, value, onChange }) => {
+    const [loading, setLoading] = useState(false);
+    const fileRef = useRef();
+
+    const onFileChange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      setLoading(true);
+      const storageId = await uploadFile(file);
+      onChange(`storage:${storageId}`);
+      setLoading(false);
+    };
+
+    return (
+      <div className="form-group">
+        <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>{label}</label>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <input className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder="URL 입력 또는 업로드" />
+          <button className="luxury-btn outline" style={{ padding: '0 12px' }} onClick={() => fileRef.current.click()} disabled={loading}>
+            {loading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
+          </button>
+          <input type="file" hidden ref={fileRef} onChange={onFileChange} />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -62,8 +89,10 @@ const AdminProductManager = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div style={{ height: '180px', position: 'relative' }}>
-              <img src={product.thumbnails[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div style={{ height: '180px', position: 'relative', background: 'var(--bg-sub)' }}>
+              {product.thumbnails[0] && (
+                <img src={product.thumbnails[0].startsWith('storage:') ? 'https://via.placeholder.com/400x180?text=Uploaded+Media' : product.thumbnails[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              )}
               <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '8px' }}>
                 <button 
                   onClick={() => handleEdit(product)}
@@ -86,7 +115,7 @@ const AdminProductManager = () => {
                  <div className="flex items-center gap-1"><Clock size={14} /> 14일</div>
               </div>
               <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary)' }}>{product.price.toLocaleString()}원</span>
+                <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary)' }}>{product.price?.toLocaleString()}원</span>
                 <span style={{ fontSize: '11px', fontWeight: '700', padding: '4px 10px', background: 'var(--bg-sub)', color: 'var(--text-muted)', borderRadius: '6px' }}>
                    {product.paymentType === 'full' ? '일시불 할인가' : '분할 납부형'}
                 </span>
@@ -177,12 +206,10 @@ const AdminProductManager = () => {
                 )}
 
                 <div style={{ gridColumn: 'span 2' }}>
-                  <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>대표 썸네일 URL</label>
-                  <input 
-                    className="form-control" 
-                    value={currentProduct.thumbnails[0]} 
-                    onChange={e => setCurrentProduct({...currentProduct, thumbnails: [e.target.value]})} 
-                  />
+                  <MediaInput label="대표 썸네일" value={currentProduct.thumbnails[0]} onChange={val => setCurrentProduct({...currentProduct, thumbnails: [val]})} />
+                </div>
+                <div style={{ gridColumn: 'span 2' }}>
+                  <MediaInput label="일정표 이미지 (없으면 텍스트 노출)" value={currentProduct.scheduleImage} onChange={val => setCurrentProduct({...currentProduct, scheduleImage: val})} />
                 </div>
               </div>
 

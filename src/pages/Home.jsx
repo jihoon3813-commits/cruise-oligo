@@ -1,25 +1,13 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useConfig } from '../context/ConfigContext';
-import { ArrowRight, Star, ExternalLink } from 'lucide-react';
+import { ArrowRight, Star, ExternalLink, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SafeMedia from '../components/SafeMedia';
 
 const Home = () => {
   const { config } = useConfig();
   const { hero, sections, products } = config;
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('active');
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, [sections]);
 
   const getPositionClass = (pos) => {
     if (pos === 'left') return 'justify-start text-left';
@@ -27,18 +15,114 @@ const Home = () => {
     return 'justify-center text-center';
   };
 
+  const renderSection = (section, index) => {
+    const isStyleClassic = section.style === 'classic' || !section.style;
+    const isStyleSplit = section.style === 'split-card';
+    const isStyleMinimal = section.style === 'minimal-centered';
+
+    const bgStyles = {
+      position: 'relative',
+      padding: '120px 0',
+      overflow: 'hidden',
+      background: section.bgType === 'color' ? (section.bgColor || '#ffffff') : 'transparent'
+    };
+
+    return (
+      <section key={section.id} style={bgStyles}>
+        {/* Background Media */}
+        {section.bgType !== 'color' && section.bgUrl && (
+          <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+             <SafeMedia 
+               src={section.bgUrl} 
+               type={section.bgType} 
+               style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+             />
+             <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.7)' }}></div>
+          </div>
+        )}
+
+        <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px', position: 'relative', zIndex: 1 }}>
+          
+          {/* Classic Style */}
+          {isStyleClassic && (
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: section.layout === 'right' ? 'row-reverse' : 'row', 
+              alignItems: 'center', 
+              gap: '80px' 
+            }}>
+              <div style={{ flex: 1 }}>
+                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                  <SafeMedia 
+                    src={section.image} 
+                    style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)' }} 
+                  />
+                </motion.div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <h2 style={{ fontSize: '42px', marginBottom: '24px', fontWeight: '800' }}>{section.title}</h2>
+                <p style={{ fontSize: '18px', color: 'var(--text-muted)', marginBottom: '32px' }}>{section.content}</p>
+                {section.showButton && (
+                  <Link to={section.buttonLink || "/"} className="luxury-btn outline" style={{ borderRadius: '12px', textDecoration: 'none' }}>
+                    자세히 보기
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Split Card Style */}
+          {isStyleSplit && (
+            <motion.div 
+              className="admin-card"
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              style={{ display: 'flex', overflow: 'hidden', padding: '0', borderRadius: '32px', minHeight: '500px' }}
+            >
+               <div style={{ flex: 1, position: 'relative' }}>
+                 <SafeMedia src={section.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+               </div>
+               <div style={{ flex: 1, padding: '60px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#fff' }}>
+                 <h2 style={{ fontSize: '48px', fontWeight: '800', marginBottom: '24px' }}>{section.title}</h2>
+                 <p style={{ fontSize: '18px', color: 'var(--text-muted)', marginBottom: '40px' }}>{section.content}</p>
+                 {section.showButton && (
+                   <Link to={section.buttonLink || "/"} className="luxury-btn" style={{ alignSelf: 'flex-start', textDecoration: 'none' }}>
+                     지금 탐험하기 <ArrowRight size={18} />
+                   </Link>
+                 )}
+               </div>
+            </motion.div>
+          )}
+
+          {/* Minimal Centered Style */}
+          {isStyleMinimal && (
+            <div style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
+               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                 <h2 style={{ fontSize: '56px', fontWeight: '800', marginBottom: '32px' }}>{section.title}</h2>
+                 <div style={{ width: '100px', height: '4px', background: 'var(--primary)', margin: '0 auto 40px' }}></div>
+                 <p style={{ fontSize: '20px', color: 'var(--text-muted)', marginBottom: '60px' }}>{section.content}</p>
+                 <SafeMedia src={section.image} style={{ width: '100%', borderRadius: '40px', marginBottom: '60px', boxShadow: 'var(--shadow-lg)' }} />
+                 {section.showButton && (
+                   <Link to={section.buttonLink || "/"} className="luxury-btn outline" style={{ borderRadius: '100px', padding: '16px 48px', textDecoration: 'none' }}>
+                     자세히 보기
+                   </Link>
+                 )}
+               </motion.div>
+            </div>
+          )}
+
+        </div>
+      </section>
+    );
+  };
+
   return (
     <div className="home-clean">
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-bg" style={{ position: 'absolute', right: 0, top: 0, width: '60%', height: '100%', zIndex: 0 }}>
-          {hero.bgType === 'video' ? (
-            <video autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
-              <source src={hero.bgUrl} type="video/mp4" />
-            </video>
-          ) : (
-            <img src={hero.bgUrl} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          )}
+          <SafeMedia src={hero.bgUrl} type={hero.bgType} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           <div className="hero-overlay"></div>
         </div>
 
@@ -62,40 +146,7 @@ const Home = () => {
       </section>
 
       {/* Dynamic Sections */}
-      {sections.map((section, index) => (
-        <section key={section.id} style={{ padding: '120px 0', background: index % 2 === 0 ? '#fff' : 'var(--bg-sub)' }}>
-          <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px' }}>
-            <div style={{ 
-              display: 'flex', 
-              flexDirection: section.layout === 'text-right' ? 'row-reverse' : 'row', 
-              alignItems: 'center', 
-              gap: '80px' 
-            }}>
-              <div style={{ flex: 1 }}>
-                <motion.img 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                  viewport={{ once: true }}
-                  src={section.image} 
-                  alt={section.title} 
-                  style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)' }} 
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <span style={{ color: 'var(--primary)', fontWeight: '700', fontSize: '14px', letterSpacing: '0.1em', marginBottom: '16px', display: 'block' }}>INFO</span>
-                <h2 style={{ fontSize: '42px', marginBottom: '24px', fontWeight: '800' }}>{section.title}</h2>
-                <p style={{ fontSize: '18px', color: 'var(--text-muted)', marginBottom: '32px' }}>
-                  {section.content}
-                </p>
-                <button className="luxury-btn outline" style={{ borderRadius: '12px' }}>
-                  자세히 보기
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-      ))}
+      {sections.map((section, index) => renderSection(section, index))}
 
       {/* Products Section */}
       <section id="products" style={{ padding: '120px 0', background: '#fff' }}>
@@ -110,7 +161,7 @@ const Home = () => {
               <Link key={product.id} to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
                 <motion.div className="product-card-modern">
                   <div style={{ height: '240px', overflow: 'hidden' }}>
-                    <img src={product.thumbnails[0]} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                   <div style={{ padding: '30px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>

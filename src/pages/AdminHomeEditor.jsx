@@ -1,30 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play } from 'lucide-react';
 
 const AdminHomeEditor = () => {
-  const { config, updateHero, updateSection, addSection, deleteSection } = useConfig();
+  const { config, updateHero, updateSection, addSection, deleteSection, uploadFile } = useConfig();
   const [heroForm, setHeroForm] = useState(config.hero);
+  const [activeSectionId, setActiveSectionId] = useState(null);
 
-  const handleHeroSave = () => {
-    updateHero(heroForm);
+  useEffect(() => {
+    if (config.hero) setHeroForm(config.hero);
+  }, [config.hero]);
+
+  const handleHeroSave = async () => {
+    await updateHero(heroForm);
     alert('홈페이지 대문 설정이 저장되었습니다.');
   };
 
-  const handleSectionUpdate = (id, field, value) => {
+  const handleSectionUpdate = async (id, field, value) => {
     const section = config.sections.find(s => s.id === id);
-    updateSection(id, { ...section, [field]: value });
+    await updateSection(id, { ...section, [field]: value });
   };
 
-  const handleAddNewSection = () => {
-    const newId = `section-${Date.now()}`;
-    addSection({
-      id: newId,
+  const handleAddNewSection = async () => {
+    await addSection({
       title: "새로운 패키지 소개",
       content: "이 여정의 특별한 점을 설명해 주세요...",
       image: "https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      layout: "text-left"
+      layout: "left",
+      style: "classic",
+      showButton: true,
+      buttonLink: "",
+      bgColor: "#ffffff",
+      bgType: "color"
     });
+  };
+
+  const handleRemoveSection = async (id) => {
+    if (window.confirm('이 섹션을 삭제하시겠습니까?')) {
+      await deleteSection(id);
+    }
+  };
+
+  const MediaInput = ({ label, value, onChange }) => {
+    const [loading, setLoading] = useState(false);
+    const fileRef = useRef();
+
+    const onFileChange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      setLoading(true);
+      const storageId = await uploadFile(file);
+      onChange(`storage:${storageId}`);
+      setLoading(false);
+    };
+
+    return (
+      <div className="form-group">
+        <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>{label}</label>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <input className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder="URL 입력 또는 업로드" />
+          <button className="luxury-btn outline" style={{ padding: '0 12px' }} onClick={() => fileRef.current.click()} disabled={loading}>
+            {loading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
+          </button>
+          <input type="file" ref={fileRef} hidden onChange={onFileChange} />
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -41,48 +82,17 @@ const AdminHomeEditor = () => {
             <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>메인 헤드라인</label>
             <textarea 
               className="form-control" 
-              value={heroForm.title} 
+              value={heroForm?.title || ""} 
               onChange={e => setHeroForm({...heroForm, title: e.target.value})}
               rows={3}
             />
           </div>
-          <div className="form-group">
-            <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>슬로건 (태그라인)</label>
-            <input 
-              className="form-control" 
-              value={heroForm.subtitle} 
-              onChange={e => setHeroForm({...heroForm, subtitle: e.target.value})}
-            />
-          </div>
-          <div className="form-group">
-            <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>텍스트 정렬</label>
-            <select 
-              className="form-control" 
-              value={heroForm.textPosition}
-              onChange={e => setHeroForm({...heroForm, textPosition: e.target.value})}
-            >
-              <option value="left">왼쪽 정렬</option>
-              <option value="center">가운데 정렬</option>
-              <option value="right">오른쪽 정렬</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>미디어 소스 URL</label>
-            <input 
-              className="form-control" 
-              value={heroForm.bgUrl} 
-              onChange={e => setHeroForm({...heroForm, bgUrl: e.target.value})}
-            />
-          </div>
+          <MediaInput label="배경 미디어 (이미지/영상)" value={heroForm?.bgUrl} onChange={val => setHeroForm({...heroForm, bgUrl: val})} />
           <div className="form-group">
             <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>미디어 타입</label>
-            <select 
-              className="form-control" 
-              value={heroForm.bgType}
-              onChange={e => setHeroForm({...heroForm, bgType: e.target.value})}
-            >
-              <option value="image">스틸 이미지</option>
-              <option value="video">시네마틱 영상</option>
+            <select className="form-control" value={heroForm?.bgType} onChange={e => setHeroForm({...heroForm, bgType: e.target.value})}>
+              <option value="image">이미지</option>
+              <option value="video">영상</option>
             </select>
           </div>
         </div>
@@ -105,62 +115,116 @@ const AdminHomeEditor = () => {
           </button>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           {config.sections.map((section, index) => (
-            <div key={section.id} className="admin-card" style={{ padding: '32px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                   <div style={{ width: '28px', height: '28px', background: 'var(--bg-sub)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '800' }}>{index + 1}</div>
-                   <h3 style={{ fontSize: '17px', fontWeight: '700' }}>{section.title || '제목 없음'}</h3>
+            <div key={section.id} className="admin-card" style={{ 
+              padding: '0', overflow: 'hidden', 
+              border: activeSectionId === section.id ? '2px solid var(--primary)' : '1px solid var(--border-light)' 
+            }}>
+              <div 
+                style={{ padding: '20px 32px', background: 'var(--bg-sub)', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                onClick={() => setActiveSectionId(activeSectionId === section.id ? null : section.id)}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                   <div style={{ width: '28px', height: '28px', background: 'var(--primary)', color: '#fff', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '800' }}>{index + 1}</div>
+                   <h3 style={{ fontSize: '16px', fontWeight: '700' }}>{section.title || '제목 없음'}</h3>
+                   <span style={{ fontSize: '11px', background: 'rgba(37, 99, 235, 0.1)', color: 'var(--primary)', padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>{section.style}</span>
                 </div>
-                <button onClick={() => deleteSection(section.id)} style={{ color: '#ef4444', background: 'rgba(239, 68, 68, 0.05)', padding: '8px', borderRadius: '8px', border: 'none', cursor: 'pointer' }}>
-                  <Trash2 size={18} />
-                </button>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button onClick={(e) => { e.stopPropagation(); handleRemoveSection(section.id); }} style={{ color: '#ef4444', border: 'none', background: 'none' }}><Trash2 size={18} /></button>
+                </div>
               </div>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
-                <div className="form-group">
-                  <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>제목</label>
-                  <input 
-                    className="form-control" 
-                    value={section.title} 
-                    onChange={e => handleSectionUpdate(section.id, 'title', e.target.value)}
-                  />
-                </div>
-                <div className="form-group">
-                  <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>레이아웃</label>
-                  <select 
-                    className="form-control" 
-                    value={section.layout}
-                    onChange={e => handleSectionUpdate(section.id, 'layout', e.target.value)}
-                  >
-                    <option value="text-left">텍스트 왼쪽 | 이미지 오른쪽</option>
-                    <option value="text-right">텍스트 오른쪽 | 이미지 왼쪽</option>
-                  </select>
-                </div>
-                <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                  <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>본문 상세 설명</label>
-                  <textarea 
-                    className="form-control" 
-                    value={section.content} 
-                    onChange={e => handleSectionUpdate(section.id, 'content', e.target.value)}
-                    rows={4}
-                  />
-                </div>
-                <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                  <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>이미지 URL</label>
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <input 
-                      className="form-control" 
-                      value={section.image} 
-                      onChange={e => handleSectionUpdate(section.id, 'image', e.target.value)}
-                    />
-                    <div style={{ width: '48px', height: '48px', borderRadius: '8px', border: '1px solid var(--border-light)', overflow: 'hidden' }}>
-                      <img src={section.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              {activeSectionId === section.id && (
+                <div style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                  {/* Style Settings */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+                    <div 
+                      onClick={() => handleSectionUpdate(section.id, 'style', 'classic')}
+                      style={{ padding: '16px', borderRadius: '12px', border: section.style === 'classic' ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}
+                    >
+                      <Layers size={20} style={{ marginBottom: '8px' }} />
+                      <p style={{ fontSize: '12px', fontWeight: '700' }}>Classic Side</p>
+                    </div>
+                    <div 
+                      onClick={() => handleSectionUpdate(section.id, 'style', 'split-card')}
+                      style={{ padding: '16px', borderRadius: '12px', border: section.style === 'split-card' ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}
+                    >
+                      <Palette size={20} style={{ marginBottom: '8px' }} />
+                      <p style={{ fontSize: '12px', fontWeight: '700' }}>Split Card</p>
+                    </div>
+                    <div 
+                      onClick={() => handleSectionUpdate(section.id, 'style', 'minimal-centered')}
+                      style={{ padding: '16px', borderRadius: '12px', border: section.style === 'minimal-centered' ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}
+                    >
+                      <Type size={20} style={{ marginBottom: '8px' }} />
+                      <p style={{ fontSize: '12px', fontWeight: '700' }}>Minimal Center</p>
                     </div>
                   </div>
+
+                  {/* Content Settings */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
+                    <div style={{ gridColumn: 'span 2' }}>
+                      <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>제목</label>
+                      <input className="form-control" value={section.title} onChange={e => handleSectionUpdate(section.id, 'title', e.target.value)} />
+                    </div>
+                    <div style={{ gridColumn: 'span 2' }}>
+                      <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>상세 내용</label>
+                      <textarea className="form-control" rows={4} value={section.content} onChange={e => handleSectionUpdate(section.id, 'content', e.target.value)} />
+                    </div>
+                    <MediaInput label="메인 이미지" value={section.image} onChange={val => handleSectionUpdate(section.id, 'image', val)} />
+                    <div className="form-group">
+                       <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>이미지 위치</label>
+                       <select className="form-control" value={section.layout} onChange={e => handleSectionUpdate(section.id, 'layout', e.target.value)}>
+                         <option value="left">왼쪽</option>
+                         <option value="right">오른쪽</option>
+                       </select>
+                    </div>
+                  </div>
+
+                  {/* Background & Button Settings */}
+                  <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '32px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
+                    <div className="form-group">
+                       <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>배경 타입</label>
+                       <select className="form-control" value={section.bgType} onChange={e => handleSectionUpdate(section.id, 'bgType', e.target.value)}>
+                         <option value="color">단색 배경</option>
+                         <option value="image">배경 이미지</option>
+                         <option value="video">배경 영상</option>
+                       </select>
+                    </div>
+                    {section.bgType === 'color' ? (
+                      <div className="form-group">
+                        <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>배경색 선택</label>
+                        <input type="color" className="form-control" style={{ height: '45px', padding: '4px' }} value={section.bgColor || '#ffffff'} onChange={e => handleSectionUpdate(section.id, 'bgColor', e.target.value)} />
+                      </div>
+                    ) : (
+                      <MediaInput label="배경 경로" value={section.bgUrl} onChange={val => handleSectionUpdate(section.id, 'bgUrl', val)} />
+                    )}
+
+                    <div className="form-group">
+                       <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>자세히보기 버튼</label>
+                       <div style={{ display: 'flex', gap: '12px' }}>
+                         <button 
+                           className={`luxury-btn ${section.showButton ? '' : 'outline'}`} 
+                           style={{ flex: 1, padding: '10px' }}
+                           onClick={() => handleSectionUpdate(section.id, 'showButton', true)}
+                         >표시</button>
+                         <button 
+                           className={`luxury-btn ${section.showButton ? 'outline' : ''}`} 
+                           style={{ flex: 1, padding: '10px' }}
+                           onClick={() => handleSectionUpdate(section.id, 'showButton', false)}
+                         >숨김</button>
+                       </div>
+                    </div>
+                    {section.showButton && (
+                      <div className="form-group">
+                        <label style={{ fontSize: '13px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>버튼 링크</label>
+                        <input className="form-control" value={section.buttonLink || ""} onChange={e => handleSectionUpdate(section.id, 'buttonLink', e.target.value)} placeholder="/reviews 등 상성 주소" />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           ))}
         </div>

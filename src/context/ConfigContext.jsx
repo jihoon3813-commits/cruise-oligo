@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo, useEffect } from 'react';
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
@@ -33,6 +33,14 @@ export const ConfigProvider = ({ children }) => {
   const updateProductMutation = useMutation(api.products.update);
   const deleteProductMutation = useMutation(api.products.remove);
   const addReviewMutation = useMutation(api.reviews.add);
+  const seedMutation = useMutation(api.init.seed);
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+
+  useEffect(() => {
+    if (heroData === null) {
+      seedMutation();
+    }
+  }, [heroData, seedMutation]);
 
   const config = useMemo(() => ({
     hero: heroData?.hero || DEFAULT_CONFIG.hero,
@@ -41,12 +49,29 @@ export const ConfigProvider = ({ children }) => {
     reviews: reviewsData?.map(r => ({ ...r, id: r._id })) || [],
   }), [heroData, sectionsData, productsData, reviewsData]);
 
+  const uploadFile = async (file) => {
+    const postUrl = await generateUploadUrl();
+    const result = await fetch(postUrl, {
+      method: "POST",
+      headers: { "Content-Type": file.type },
+      body: file,
+    });
+    const { storageId } = await result.json();
+    return storageId; // We'll use a component to resolve storageId to URL or just store high-level
+  };
+
   const updateHero = async (data) => {
     await updateHeroMutation(data);
   };
 
   const addSection = async (data) => {
-    await addSectionMutation({ ...data, order: config.sections.length });
+    await addSectionMutation({ 
+      ...data, 
+      style: data.style || "classic",
+      showButton: data.showButton ?? true,
+      bgType: data.bgType || "color",
+      order: config.sections.length 
+    });
   };
 
   const updateSection = async (id, data) => {
@@ -76,7 +101,8 @@ export const ConfigProvider = ({ children }) => {
   return (
     <ConfigContext.Provider value={{
       config,
-      loading: !heroData || !sectionsData || !productsData || !reviewsData,
+      loading: heroData === undefined,
+      uploadFile,
       updateHero,
       addSection,
       updateSection,

@@ -9,6 +9,7 @@
   --text-main: #0F172A;
   --text-muted: #64748B;
   --border-light: #E2E8F0;
+  --glass-white: rgba(255, 255, 255, 0.8);
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -21,6 +22,7 @@ body.theme-midnight {
   --text-main: #F8FAFC;
   --text-muted: #94A3B8;
   --border-light: #334155;
+  --glass-white: rgba(15, 23, 42, 0.8);
 }
 
 /* Theme: Creamy Sand */
@@ -32,6 +34,7 @@ body.theme-cream {
   --text-main: #2C1810;
   --text-muted: #6B4423;
   --border-light: #DEB887;
+  --glass-white: rgba(253, 245, 230, 0.8);
 }
 
 /* Theme: Cool Grey */
@@ -43,6 +46,7 @@ body.theme-grey {
   --text-main: #1E293B;
   --text-muted: #475569;
   --border-light: #CBD5E1;
+  --glass-white: rgba(241, 245, 249, 0.8);
 }
 
 /* Theme: Lavender Dream */
@@ -54,6 +58,7 @@ body.theme-lavender {
   --text-main: #1E1B4B;
   --text-muted: #4338CA;
   --border-light: #DDD6FE;
+  --glass-white: rgba(245, 243, 255, 0.8);
 }
 
 /* Theme: Ocean Breeze */
@@ -65,6 +70,7 @@ body.theme-ocean {
   --text-main: #0C4A6E;
   --text-muted: #075985;
   --border-light: #BAE6FD;
+  --glass-white: rgba(240, 249, 255, 0.8);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -92,11 +98,69 @@ h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spa
 .nav-link { font-size: 15px; font-weight: 600; color: var(--text-main); text-decoration: none; transition: 0.3s; }
 .nav-link:hover { color: var(--primary); }
 
-.luxury-btn { padding: 12px 28px; background: var(--primary); color: #fff; border: none; border-radius: 50px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+.luxury-btn { padding: 12px 28px; background: var(--primary); color: #fff; border: none; border-radius: 50px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
 .luxury-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
 .luxury-btn.outline { background: transparent; border: 1px solid var(--border-light); color: var(--text-main); }
+.luxury-btn.outline:hover { border-color: var(--primary); color: var(--primary); background: rgba(37, 99, 235, 0.05); }
 
 .form-control { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-sub); color: var(--text-main); transition: 0.3s; }
 .form-control:focus { border-color: var(--primary); outline: none; background: var(--bg-main); }
 
-.admin-card { background: var(--bg-main); border-radius: 16px; padding: 30px; border: 1px solid var(--border-light); }
+/* Admin UI Components */
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-sub);
+}
+
+.admin-nav {
+  width: 280px;
+  background: var(--bg-main);
+  border-right: 1px solid var(--border-light);
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  color: var(--text-muted);
+  border-radius: 12px;
+  margin-bottom: 6px;
+  transition: var(--transition-smooth);
+  text-decoration: none;
+}
+
+.admin-nav-link:hover {
+  background: var(--bg-sub);
+  color: var(--text-main);
+}
+
+.admin-nav-link.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.admin-card {
+  background: var(--bg-main);
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}

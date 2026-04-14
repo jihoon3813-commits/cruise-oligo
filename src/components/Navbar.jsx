@@ -49,7 +49,6 @@ const Navbar = () => {
 
   // Build dynamic menu items
   const menuItems = [
-    { name: '홈', id: 'top', type: 'scroll' },
     ...config.sections
       .filter(s => s.menuName)
       .map(s => ({ name: s.menuName, id: `section-${s.id}`, type: 'scroll' })),
@@ -85,10 +84,6 @@ const Navbar = () => {
               {item.name}
             </button>
           ))}
-          <div style={{ width: '1px', height: '20px', background: 'var(--border-light)', display: window.innerWidth < 1024 ? 'none' : 'block' }}></div>
-          <Link to="/admin" className="luxury-btn" style={{ padding: '10px 24px', fontSize: '13px' }}>
-            {window.innerWidth < 768 ? '관리' : '관리자'} <ArrowUpRight size={14} />
-          </Link>
           
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

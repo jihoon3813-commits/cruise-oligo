@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useConfig } from '../context/ConfigContext';
 import { Plus, Trash2, Edit, Save, X, Package, CreditCard, Clock, MapPin, Upload, Loader2, Image as ImageIcon, Type, Palette, Layout, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import SafeMedia from '../components/SafeMedia';
 
 const AdminProductManager = () => {
   const { config, addProduct, updateProduct, deleteProduct, uploadFile } = useConfig();
@@ -84,11 +85,31 @@ const AdminProductManager = () => {
       <div className="form-group">
         {label && <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>{label}</label>}
         <div style={{ display: 'flex', gap: '10px' }}>
-          <input className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
+          <div style={{ position: 'relative', flex: 1 }}>
+             <input className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
+             {value && value.startsWith('storage:') && <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '10px', color: 'var(--primary)', fontWeight: '700' }}>UPLOADED</div>}
+          </div>
           <button className="luxury-btn outline" style={{ padding: '0 12px' }} onClick={() => fileRef.current.click()} disabled={loading}>
             {loading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
           </button>
           <input type="file" hidden ref={fileRef} onChange={onFileChange} />
+        </div>
+      </div>
+    );
+  };
+
+  const PriceInput = ({ label, value, onChange }) => {
+    const displayValue = value ? value.toLocaleString() : "";
+    const handleChange = (e) => {
+      const val = e.target.value.replace(/[^0-9]/g, "");
+      onChange(val ? parseInt(val) : 0);
+    };
+    return (
+      <div className="form-group">
+        <label className="admin-label">{label}</label>
+        <div style={{ position: 'relative' }}>
+          <input className="form-control" value={displayValue} onChange={handleChange} placeholder="0" style={{ textAlign: 'right', paddingRight: '40px' }} />
+          <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '13px', color: 'var(--text-muted)' }}>원</span>
         </div>
       </div>
     );
@@ -119,7 +140,11 @@ const AdminProductManager = () => {
         {config.products.map(product => (
           <motion.div key={product.id} className="admin-card" style={{ padding: '0', overflow: 'hidden' }} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div style={{ height: '180px', position: 'relative', background: 'var(--bg-sub)' }}>
-               {product.thumbnails?.[0] && <img src={product.thumbnails[0].startsWith('storage:') ? 'https://via.placeholder.com/400x180?text=Uploaded+Media' : product.thumbnails[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+               {product.thumbnails?.[0] ? (
+                 <SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+               ) : (
+                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>기본 이미지 없음</div>
+               )}
                <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', gap: '8px' }}>
                   <button onClick={() => handleEdit(product)} style={{ background: '#fff', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}><Edit size={16} color="var(--primary)" /></button>
                   <button onClick={() => handleDelete(product.id)} style={{ background: '#fff', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}><Trash2 size={16} color="#ef4444" /></button>
@@ -159,10 +184,7 @@ const AdminProductManager = () => {
                       <label className="admin-label">설명</label>
                       <textarea className="form-control" value={currentProduct.description} onChange={e => setCurrentProduct({...currentProduct, description: e.target.value})} rows={3} />
                   </div>
-                  <div>
-                      <label className="admin-label">기준 판매가 (원)</label>
-                      <input type="number" className="form-control" value={currentProduct.price} onChange={e => setCurrentProduct({...currentProduct, price: parseInt(e.target.value)})} />
-                  </div>
+                  <PriceInput label="기준 판매가" value={currentProduct.price} onChange={val => setCurrentProduct({...currentProduct, price: val})} />
                   <div>
                       <label className="admin-label">결제 타입</label>
                       <select className="form-control" value={currentProduct.paymentType} onChange={e => setCurrentProduct({...currentProduct, paymentType: e.target.value})}>
@@ -172,10 +194,7 @@ const AdminProductManager = () => {
                   </div>
                   {currentProduct.paymentType === 'split' && (
                     <>
-                      <div>
-                          <label className="admin-label">착수금 (원)</label>
-                          <input type="number" className="form-control" value={currentProduct.downPayment || 0} onChange={e => setCurrentProduct({...currentProduct, downPayment: parseInt(e.target.value)})} />
-                      </div>
+                      <PriceInput label="착수금" value={currentProduct.downPayment || 0} onChange={val => setCurrentProduct({...currentProduct, downPayment: val})} />
                       <div>
                           <label className="admin-label">할부 개월수</label>
                           <input type="number" className="form-control" value={currentProduct.installments || 1} onChange={e => setCurrentProduct({...currentProduct, installments: parseInt(e.target.value)})} />
@@ -191,12 +210,12 @@ const AdminProductManager = () => {
                     <div className="form-group">
                         <label className="admin-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             상세 갤러리 이미지
-                            <button className="luxury-btn outline" style={{ padding: '4px 12px', fontSize: '11px' }} onClick={() => setCurrentProduct({...currentProduct, thumbnails: [...currentProduct.thumbnails, ""]})}>
+                            <button className="luxury-btn outline" style={{ padding: '4px 12px', fontSize: '11px' }} onClick={() => setCurrentProduct({...currentProduct, thumbnails: [...(currentProduct.thumbnails || []), ""]})}>
                                 <Plus size={12} /> 이미지 추가
                             </button>
                         </label>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
-                            {currentProduct.thumbnails.map((thumb, idx) => (
+                            {(currentProduct.thumbnails || [""]).map((thumb, idx) => (
                                 <div key={idx} style={{ display: 'flex', gap: '10px' }}>
                                     <MediaInput value={thumb} onChange={val => {
                                         const newThumbs = [...currentProduct.thumbnails];
@@ -214,7 +233,11 @@ const AdminProductManager = () => {
                     <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '32px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <label className="admin-label" style={{ marginBottom: 0 }}><Calendar size={16} style={{marginRight:8}}/> 상세 여행 일정 (스케줄)</label>
-                            <button className="luxury-btn outline" style={{ padding: '4px 12px', fontSize: '11px' }} onClick={() => setCurrentProduct({...currentProduct, schedule: [...(currentProduct.schedule || []), { day: (currentProduct.schedule?.length || 0) + 1, title: "", content: "" }]})}>
+                            <button className="luxury-btn outline" style={{ padding: '4px 12px', fontSize: '11px' }} onClick={() => {
+                                const newSchedule = [...(currentProduct.schedule || [])];
+                                newSchedule.push({ day: newSchedule.length + 1, title: "", content: "" });
+                                setCurrentProduct({...currentProduct, schedule: newSchedule});
+                            }}>
                                 <Plus size={12} /> 스케줄 추가
                             </button>
                         </div>
@@ -226,12 +249,12 @@ const AdminProductManager = () => {
                                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                         <input className="form-control" placeholder="일정 제목" value={step.title} onChange={e => {
                                             const newSchedule = [...currentProduct.schedule];
-                                            newSchedule[idx].title = e.target.value;
+                                            newSchedule[idx] = { ...newSchedule[idx], title: e.target.value };
                                             setCurrentProduct({...currentProduct, schedule: newSchedule});
                                         }} />
                                         <textarea className="form-control" placeholder="상세 내용" rows={2} value={step.content} onChange={e => {
                                             const newSchedule = [...currentProduct.schedule];
-                                            newSchedule[idx].content = e.target.value;
+                                            newSchedule[idx] = { ...newSchedule[idx], content: e.target.value };
                                             setCurrentProduct({...currentProduct, schedule: newSchedule});
                                         }} />
                                     </div>

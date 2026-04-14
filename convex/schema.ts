@@ -63,6 +63,7 @@ export default defineSchema({
       buttonColor: v.optional(v.string()),
       buttonTextColor: v.optional(v.string()),
     })),
+    privacyPolicy: v.optional(v.string()),
   }),
   sections: defineTable({
     title: v.string(),

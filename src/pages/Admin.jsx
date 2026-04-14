@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Image, Package, MessageSquare, Home as HomeIcon, LogOut, ChevronRight, Settings, Bell, Search } from 'lucide-react';
+import { LayoutDashboard, Image, Package, MessageSquare, Home as HomeIcon, LogOut, ChevronRight, Settings, Bell, Search, PhoneCall, ShieldCheck } from 'lucide-react';
 import AdminHomeEditor from './AdminHomeEditor';
 import AdminProductManager from './AdminProductManager';
 import AdminReviewManager from './AdminReviewManager';
 import AdminProductDetailEditor from './AdminProductDetailEditor';
+import AdminReservationManager from './AdminReservationManager';
+import AdminSettings from './AdminSettings';
 
 const Admin = () => {
   const location = useLocation();
@@ -14,6 +16,8 @@ const Admin = () => {
     { path: '/admin/products', name: '상품 리스트', icon: <Package size={20} /> },
     { path: '/admin/product-detail', name: '상품 상세 브랜딩', icon: <Settings size={20} /> },
     { path: '/admin/reviews', name: '리뷰 관리', icon: <MessageSquare size={20} /> },
+    { path: '/admin/reservations', name: '상담 신청 내역', icon: <PhoneCall size={20} /> },
+    { path: '/admin/settings', name: '웹사이트 설정', icon: <ShieldCheck size={20} /> },
   ];
 
   return (
@@ -88,6 +92,8 @@ const Admin = () => {
             <Route path="/products" element={<AdminProductManager />} />
             <Route path="/product-detail" element={<AdminProductDetailEditor />} />
             <Route path="/reviews" element={<AdminReviewManager />} />
+            <Route path="/reservations" element={<AdminReservationManager />} />
+            <Route path="/settings" element={<AdminSettings />} />
           </Routes>
         </div>
       </main>

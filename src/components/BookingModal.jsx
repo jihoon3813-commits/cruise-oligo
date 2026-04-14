@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, Phone, Package, FileText, CheckCircle2, Loader2, ArrowRight } from 'lucide-react';
+import { X, User, Phone, Package, FileText, CheckCircle2, Loader2, ArrowRight, ShieldCheck, ChevronRight } from 'lucide-react';
 import { useConfig } from '../context/ConfigContext';
 
 const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
-  const { addReservation } = useConfig();
+  const { addReservation, config } = useConfig();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showPrivacyDetail, setShowPrivacyDetail] = useState(false);
   const [form, setForm] = useState({
     name: '',
     phone: '',
-    notes: ''
+    notes: '',
+    agreed: false
   });
 
   const formatPhone = (val) => {
@@ -31,10 +33,16 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
       alert('이름과 정확한 연락처를 입력해 주세요.');
       return;
     }
+    if (!form.agreed) {
+      alert('개인정보 수집 및 이용에 동의해 주세요.');
+      return;
+    }
     setLoading(true);
     try {
       await addReservation({
-        ...form,
+        name: form.name,
+        phone: form.phone,
+        notes: form.notes,
         productTitle
       });
       setSuccess(true);
@@ -42,6 +50,28 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
       alert('신청 중 오류가 발생했습니다.');
     }
     setLoading(false);
+  };
+
+  const inputStyle = {
+    background: '#f1f5f9', // Lighter background
+    border: '1px solid #e2e8f0',
+    color: '#0F172A', // Dark text
+    padding: '16px',
+    borderRadius: '16px',
+    fontSize: '15px',
+    width: '100%',
+    transition: '0.2s',
+    outline: 'none'
+  };
+
+  const labelStyle = {
+    fontSize: '13px', 
+    fontWeight: '800', 
+    marginBottom: '8px', 
+    display: 'flex', 
+    alignItems: 'center', 
+    gap: '6px',
+    color: '#334155' // Darker label for better contrast
   };
 
   return (
@@ -77,27 +107,23 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
               </div>
             ) : (
               <>
-                <div style={{ padding: '32px 40px', background: '#f8fafc', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h2 style={{ fontSize: '20px', fontWeight: '900' }}>전문 상담 신청</h2>
-                  <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={24} /></button>
+                <div style={{ padding: '24px 40px', background: '#f8fafc', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h2 style={{ fontSize: '18px', fontWeight: '900' }}>전문 상담 신청</h2>
+                  <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#94a3b8' }}><X size={24} /></button>
                 </div>
                 
-                <form onSubmit={handleSubmit} style={{ padding: '40px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <form onSubmit={handleSubmit} style={{ padding: '32px 40px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     
-                    <div className="form-group">
-                      <label style={{ fontSize: '12px', fontWeight: '800', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Package size={14} color={accentColor} /> 신청 상품
-                      </label>
-                      <input className="form-control" value={productTitle} readOnly style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }} />
+                    <div>
+                      <label style={labelStyle}><Package size={14} color={accentColor} /> 신청 상품</label>
+                      <input style={{ ...inputStyle, background: '#f8fafc', color: '#64748b', fontWeight: '700' }} value={productTitle} readOnly />
                     </div>
 
-                    <div className="form-group">
-                      <label style={{ fontSize: '12px', fontWeight: '800', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <User size={14} color={accentColor} /> 성함
-                      </label>
+                    <div>
+                      <label style={labelStyle}><User size={14} color={accentColor} /> 성함</label>
                       <input 
-                        className="form-control" 
+                        style={inputStyle}
                         placeholder="이름을 입력하세요" 
                         value={form.name}
                         onChange={e => setForm({ ...form, name: e.target.value })}
@@ -105,12 +131,10 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
                       />
                     </div>
 
-                    <div className="form-group">
-                      <label style={{ fontSize: '12px', fontWeight: '800', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Phone size={14} color={accentColor} /> 연락처
-                      </label>
+                    <div>
+                      <label style={labelStyle}><Phone size={14} color={accentColor} /> 연락처</label>
                       <input 
-                        className="form-control" 
+                        style={inputStyle}
                         type="tel"
                         inputMode="numeric"
                         placeholder="010-0000-0000" 
@@ -120,17 +144,25 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
                       />
                     </div>
 
-                    <div className="form-group">
-                      <label style={{ fontSize: '12px', fontWeight: '800', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <FileText size={14} color={accentColor} /> 비고 (문의사항)
-                      </label>
+                    <div>
+                      <label style={labelStyle}><FileText size={14} color={accentColor} /> 비고 (문의사항)</label>
                       <textarea 
-                        className="form-control" 
+                        style={{ ...inputStyle, resize: 'none' }}
                         placeholder="궁금하신 내용을 입력해 주세요" 
-                        rows={3} 
+                        rows={2} 
                         value={form.notes}
                         onChange={e => setForm({ ...form, notes: e.target.value })}
                       />
+                    </div>
+
+                    <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '700' }}>
+                           <input type="checkbox" checked={form.agreed} onChange={e => setForm({...form, agreed: e.target.checked})} style={{ width: '18px', height: '18px', accentColor: accentColor }} />
+                           개인정보 수집 및 이용 동의
+                        </label>
+                        <button type="button" onClick={() => setShowPrivacyDetail(true)} style={{ border: 'none', background: 'none', fontSize: '11px', color: '#64748b', textDecoration: 'underline', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                            자세히 보기 <ChevronRight size={12} />
+                        </button>
                     </div>
 
                     <button 
@@ -140,9 +172,9 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
                       style={{ 
                         width: '100%', 
                         padding: '18px', 
-                        borderRadius: '16px', 
+                        borderRadius: '100px', 
                         justifyContent: 'center', 
-                        marginTop: '12px',
+                        marginTop: '10px',
                         background: accentColor || 'var(--primary)'
                       }}
                     >
@@ -150,14 +182,30 @@ const BookingModal = ({ isOpen, onClose, productTitle, accentColor }) => {
                         <>전문 상담 신청하기 <ArrowRight size={18} style={{ marginLeft: '8px' }} /></>
                       )}
                     </button>
-                    
-                    <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)' }}>
-                      개인정보는 상담 목적으로만 사용되며 안전하게 보호됩니다.
-                    </p>
                   </div>
                 </form>
               </>
             )}
+
+            <AnimatePresence>
+                {showPrivacyDetail && (
+                    <motion.div 
+                        initial={{ opacity: 0, x: '100%' }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: '100%' }}
+                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: '#fff', zIndex: 10, padding: '40px', display: 'flex', flexDirection: 'column' }}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: '900' }}>개인정보 수집 및 이용</h3>
+                            <button onClick={() => setShowPrivacyDetail(false)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}><X size={24} /></button>
+                        </div>
+                        <div style={{ flex: 1, overflowY: 'auto', fontSize: '13px', lineHeight: '1.7', color: '#475569', background: '#f8fafc', padding: '24px', borderRadius: '20px' }}>
+                            <div style={{ whiteSpace: 'pre-wrap' }}>{config.privacyPolicy}</div>
+                        </div>
+                        <button className="luxury-btn outline" onClick={() => setShowPrivacyDetail(false)} style={{ width: '100%', marginTop: '24px', justifyContent: 'center' }}>확인</button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
           </motion.div>
         </div>
       )}

@@ -40,6 +40,7 @@ export const ConfigProvider = ({ children }) => {
   const updateProductBrandingMutation = useMutation(api.siteConfig.updateProductBranding);
   const updateReviewBrandingMutation = useMutation(api.siteConfig.updateReviewBranding);
   const updateProductDetailBrandingMutation = useMutation(api.siteConfig.updateProductDetailBranding);
+  const updatePrivacyPolicyMutation = useMutation(api.siteConfig.updatePrivacyPolicy);
   const addReservationMutation = useMutation(api.reservations.add);
   const reservationsData = useQuery(api.reservations.list);
 
@@ -57,7 +58,8 @@ export const ConfigProvider = ({ children }) => {
     reviews: reviewsData?.map(r => ({ ...r, id: r._id })) || [],
     productListBranding: heroData?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" },
     reviewSectionBranding: heroData?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" },
-    productDetailBranding: heroData?.productDetailBranding || { layout: "luxury", theme: "light", titleColor: "#0F172A", priceColor: "var(--primary)", accentColor: "var(--primary)", buttonColor: "var(--primary)", buttonTextColor: "#ffffff" }
+    productDetailBranding: heroData?.productDetailBranding || { layout: "luxury", theme: "light", titleColor: "#0F172A", priceColor: "var(--primary)", accentColor: "var(--primary)", buttonColor: "var(--primary)", buttonTextColor: "#ffffff" },
+    privacyPolicy: heroData?.privacyPolicy || "개인정보 수집 및 이용에 동의합니다."
   }), [heroData, sectionsData, productsData, reviewsData]);
 
   const uploadFile = async (file) => {
@@ -173,6 +175,10 @@ export const ConfigProvider = ({ children }) => {
     await updateProductDetailBrandingMutation(data);
   };
 
+  const updatePrivacyPolicy = async (content) => {
+    await updatePrivacyPolicyMutation({ content });
+  };
+
   const addReservation = async (data) => {
     await addReservationMutation({
       ...data,
@@ -211,6 +217,7 @@ export const ConfigProvider = ({ children }) => {
       updateProductBranding,
       updateReviewBranding,
       updateProductDetailBranding,
+      updatePrivacyPolicy,
       addReservation,
       reservations: reservationsData || []
     }}>

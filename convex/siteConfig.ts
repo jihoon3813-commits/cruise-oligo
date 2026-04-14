@@ -95,3 +95,13 @@ export const updateProductDetailBranding = mutation({
     }
   },
 });
+
+export const updatePrivacyPolicy = mutation({
+  args: { content: v.string() },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.query("siteConfig").first();
+    if (existing) {
+      await ctx.db.patch(existing._id, { privacyPolicy: args.content });
+    }
+  },
+});

@@ -41,7 +41,6 @@ export const ConfigProvider = ({ children }) => {
   const updateReviewBrandingMutation = useMutation(api.siteConfig.updateReviewBranding);
   const updateProductDetailBrandingMutation = useMutation(api.siteConfig.updateProductDetailBranding);
   const updatePrivacyPolicyMutation = useMutation(api.siteConfig.updatePrivacyPolicy);
-  const updateGlobalSettingsMutation = useMutation(api.siteConfig.updateGlobalSettings);
   const addReservationMutation = useMutation(api.reservations.add);
   const reservationsData = useQuery(api.reservations.list);
 
@@ -60,11 +59,7 @@ export const ConfigProvider = ({ children }) => {
     productListBranding: heroData?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" },
     reviewSectionBranding: heroData?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" },
     productDetailBranding: heroData?.productDetailBranding || { layout: "luxury", theme: "light", titleColor: "#0F172A", priceColor: "var(--primary)", accentColor: "var(--primary)", buttonColor: "var(--primary)", buttonTextColor: "#ffffff" },
-    privacyPolicy: heroData?.privacyPolicy || "개인정보 수집 및 이용에 동의합니다.",
-    logo: heroData?.logo || null,
-    favicon: heroData?.favicon || null,
-    ogImage: heroData?.ogImage || null,
-    description: heroData?.description || "고품격 크루즈 여행의 시작, 올리고 크루즈"
+    privacyPolicy: heroData?.privacyPolicy || "개인정보 수집 및 이용에 동의합니다."
   }), [heroData, sectionsData, productsData, reviewsData]);
 
   const uploadFile = async (file) => {
@@ -184,10 +179,6 @@ export const ConfigProvider = ({ children }) => {
     await updatePrivacyPolicyMutation({ content });
   };
 
-  const updateGlobalSettings = async (data) => {
-    await updateGlobalSettingsMutation(data);
-  };
-
   const addReservation = async (data) => {
     await addReservationMutation({
       ...data,
@@ -227,7 +218,6 @@ export const ConfigProvider = ({ children }) => {
       updateReviewBranding,
       updateProductDetailBranding,
       updatePrivacyPolicy,
-      updateGlobalSettings,
       addReservation,
       reservations: reservationsData || []
     }}>

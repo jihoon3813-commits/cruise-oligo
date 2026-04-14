@@ -11,6 +11,7 @@
   --border-light: #E2E8F0;
   --glass-white: rgba(255, 255, 255, 0.8);
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --container-padding: 80px;
 }
 
 /* Theme: Midnight */
@@ -79,7 +80,7 @@ body.theme-ocean {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 80px;
+  padding: 0 var(--container-padding);
 }
 
 body {
@@ -163,4 +164,42 @@ h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spa
 
 .animate-fade-in {
   animation: fadeIn 0.5s ease forwards;
+}
+
+/* Mobile Best Practices */
+@media (max-width: 1024px) {
+  --container-padding: 40px;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --container-padding: 24px;
+  }
+  
+  .nav {
+    padding: 0 20px;
+    height: 64px;
+  }
+  
+  .nav-links {
+    display: none; /* Add a toggle in Navbar.jsx later if needed */
+  }
+
+  .admin-shell {
+    flex-direction: column;
+  }
+
+  .admin-nav {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .admin-nav-link {
+    padding: 10px;
+    font-size: 13px;
+  }
 }

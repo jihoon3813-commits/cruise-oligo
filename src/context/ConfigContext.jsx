@@ -167,6 +167,15 @@ export const ConfigProvider = ({ children }) => {
     await deleteProductMutation({ id });
   };
 
+  const addReview = async (data) => {
+    const { author, rating, content, images, productTitle } = data;
+    await addReviewMutation({ author, rating, content, images, productTitle });
+  };
+
+  const deleteReview = async (id) => {
+    await deleteReviewMutation({ id });
+  };
+
   return (
     <ConfigContext.Provider value={{
       config,
@@ -180,6 +189,8 @@ export const ConfigProvider = ({ children }) => {
       addProduct,
       updateProduct,
       deleteProduct,
+      addReview,
+      deleteReview,
       updateProductBranding,
       updateReviewBranding
     }}>

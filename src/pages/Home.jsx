@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConfig } from '../context/ConfigContext';
-import { ArrowRight, Star, ExternalLink, ChevronLeft, ChevronRight, User, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Star, ExternalLink, ChevronLeft, ChevronRight, User, CheckCircle2, MapPin, Calendar, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SafeMedia from '../components/SafeMedia';
 
@@ -335,7 +335,36 @@ const Home = () => {
       <section style={{ padding: isMobile ? '40px 0' : '80px 0', background: rb.bgColor || 'var(--bg-sub)' }}>
          <div className="container" style={{ padding: isMobile ? '0 20px' : 'inherit' }}>
             <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '80px' }}><h2 style={{ fontSize: isMobile ? '28px' : '48px', fontWeight: '800', color: rb.titleColor || 'var(--text-main)' }}>{rb.title || "여행 후기"}</h2></div>
-            {(rb.layout === 'grid' || isMobile) ? (<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>{config.reviews.map((rev, i) => (<div key={i} className="admin-card" style={{ padding: '20px', background: '#fff', borderRadius: '20px' }}><div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '10px' }}>{[...Array(5)].map((_, j) => <Star key={j} size={12} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}</div><p style={{ fontSize: '14px', lineHeight: '1.5', color: 'var(--text-main)', marginBottom: '16px', fontWeight: '500' }}>"{rev.content}"</p><div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '11px' }}>{rev.author?.[0]}</div><div><div style={{ fontWeight: '800', fontSize: '12px' }}>{rev.author}</div><div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{rev.productTitle}</div></div></div></div>))}</div>) : (<div style={{ position: 'relative', overflow: 'hidden', padding: '16px 0' }}><div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px', scrollSnapType: 'x mandatory' }}>{config.reviews.map((rev, i) => (<div key={i} style={{ minWidth: '320px', background: '#fff', padding: '32px', borderRadius: '24px', scrollSnapAlign: 'start', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}><div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '16px' }}>{[...Array(5)].map((_, j) => <Star key={j} size={16} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}</div><p style={{ fontSize: '16px', lineHeight: '1.6', color: 'var(--text-main)', marginBottom: '24px', fontStyle: 'italic' }}>"{rev.content}"</p><div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>{rev.author?.[0]}</div><div><div style={{ fontWeight: '800' }}>{rev.author}</div><div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{rev.productTitle}</div></div></div></div>))}</div></div>)}
+            {(rb.layout === 'grid' || isMobile) ? (
+               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+                  {config.reviews.map((rev, i) => (
+                    <div key={i} className="admin-card" style={{ padding: '24px', background: '#fff', borderRadius: '24px', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
+                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                              <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '15px', boxShadow: '0 4px 10px var(--primary)40' }}>{(rev.author || rev.user)?.[0]}</div>
+                              <div>
+                                 <div style={{ fontWeight: '800', fontSize: '15px' }}>{rev.author || rev.user}</div>
+                                 <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{rev.productTitle || "프리미엄 회원"}</div>
+                              </div>
+                           </div>
+                           <div style={{ display: 'flex', gap: '2px', color: '#fbbf24' }}>
+                              {[...Array(5)].map((_, j) => <Star key={j} size={14} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
+                           </div>
+                        </div>
+                        <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--text-main)', marginBottom: '20px', fontWeight: '500', fontStyle: 'italic', flex: 1 }}>"{rev.content}"</p>
+                        {rev.images && rev.images.length > 0 && (
+                           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(3, rev.images.length)}, 1fr)`, gap: '8px', marginBottom: '16px' }}>
+                              {rev.images.slice(0, 3).map((img, idx) => (
+                                 <div key={idx} style={{ aspectRatio: '1', borderRadius: '12px', overflow: 'hidden' }}>
+                                    <SafeMedia src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                 </div>
+                              ))}
+                           </div>
+                        )}
+                    </div>
+                  ))}
+               </div>
+            ) : (<div style={{ position: 'relative', overflow: 'hidden', padding: '16px 0' }}><div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px', scrollSnapType: 'x mandatory' }}>{config.reviews.map((rev, i) => (<div key={i} style={{ minWidth: '340px', background: '#fff', padding: '32px', borderRadius: '24px', scrollSnapAlign: 'start', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}><div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '16px' }}>{[...Array(5)].map((_, j) => <Star key={j} size={16} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}</div><p style={{ fontSize: '16px', lineHeight: '1.6', color: 'var(--text-main)', marginBottom: '24px', fontStyle: 'italic' }}>"{rev.content}"</p><div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>{(rev.author || rev.user)?.[0]}</div><div><div style={{ fontWeight: '800' }}>{rev.author || rev.user}</div><div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{rev.productTitle}</div></div></div></div>))}</div></div>)}
          </div>
       </section>
     );
@@ -348,14 +377,44 @@ const Home = () => {
       {renderHero()}
       {sections.map(section => renderSection(section))}
       {renderReviews()}
-      <section id="products" style={{ padding: isMobile ? '60px 0' : '120px 0', background: config.productListBranding?.bgColor || 'var(--bg-main)' }}>
+      <section id="products" style={{ padding: isMobile ? '60px 0' : '100px 0', background: config.productListBranding?.bgColor || 'var(--bg-main)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '80px' }}><h2 style={{ fontSize: isMobile ? '28px' : '48px', fontWeight: '800', color: config.productListBranding?.titleColor || 'var(--text-main)' }}>{config.productListBranding?.title || "추천 패키지"}</h2></div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-            {products.map(product => {
+          <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '64px' }}>
+             <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary)', letterSpacing: '0.1em', display: 'block', marginBottom: '12px' }}>CURATED SELECTION</span>
+             <h2 style={{ fontSize: isMobile ? '32px' : '48px', fontWeight: '900', color: config.productListBranding?.titleColor || 'var(--text-main)', letterSpacing: '-0.03em' }}>{config.productListBranding?.title || "추천 패키지"}</h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '32px' }}>
+            {products.map((product, idx) => {
               const typo = product.typography || {};
-              const getStyle = (t) => { const base = typo[t]?.fontSize || (t === 'title' ? 22 : 15); const min = Math.max(12, Math.floor(base * 0.6)); return { fontSize: `clamp(${min}px, 3.8vw, ${base}px)`, color: typo[t]?.color, fontWeight: t === 'title' || t === 'price' ? '800' : '400' }; };
-              return (<Link key={product.id} to={`/product/${product.id}`} style={{ textDecoration: 'none' }}><div className="product-card-modern"><div style={{ height: isMobile ? '180px' : '240px', overflow: 'hidden' }}><SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div><div style={{ padding: isMobile ? '16px' : '30px' }}><h3 style={{ ...getStyle('title'), marginBottom: '6px' }}>{product.title}</h3><p style={{ ...getStyle('description'), marginBottom: '12px' }}>{product.description}</p><div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span style={getStyle('price')}>{product.price?.toLocaleString()}원</span><span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)' }}>자세히 보기 &gt;</span></div></div></div></Link>);
+              const getStyle = (t) => { const base = typo[t]?.fontSize || (t === 'title' ? 22 : 15); const min = Math.max(12, Math.floor(base * 0.6)); return { fontSize: `clamp(${min}px, 3.8vw, ${base}px)`, color: typo[t]?.color, fontWeight: t === 'title' || t === 'price' ? '900' : '400' }; };
+              return (
+                <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} viewport={{ once: true }}>
+                   <Link to={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <div className="product-card-luxury">
+                        <div className="product-card-image-wrap">
+                           <SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: '0.6s' }} />
+                           <div className="product-card-overlay"></div>
+                           <div style={{ position: 'absolute', top: '20px', left: '20px', background: 'rgba(15, 23, 42, 0.8)', color: '#fff', padding: '6px 16px', borderRadius: '100px', fontSize: '11px', fontWeight: '800', backdropFilter: 'blur(4px)' }}>PREMIUM</div>
+                           <div className="product-card-badge"><MapPin size={12} /> {product.schedule?.length ? `${product.schedule.length}일 코스` : '프리미엄 여정'}</div>
+                        </div>
+                        <div style={{ padding: '30px', background: '#fff' }}>
+                           <h3 style={{ ...getStyle('title'), marginBottom: '10px', lineHeight: '1.3' }}>{product.title}</h3>
+                           <p style={{ ...getStyle('description'), marginBottom: '24px', opacity: 0.7, height: '44px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{product.description}</p>
+                           
+                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid var(--border-light)', paddingTop: '20px' }}>
+                              <div>
+                                 <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Starting From</span>
+                                 <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--primary)', letterSpacing: '-1px' }}>{product.price?.toLocaleString()}<small style={{fontSize:'14px', fontWeight:'700', marginLeft:'2px'}}>원</small></span>
+                              </div>
+                              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--bg-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', transition: '0.3s' }} className="product-go-icon">
+                                 <ArrowRight size={20} />
+                              </div>
+                           </div>
+                        </div>
+                      </div>
+                   </Link>
+                </motion.div>
+              );
             })}
           </div>
         </div>

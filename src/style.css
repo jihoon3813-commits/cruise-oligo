@@ -203,3 +203,62 @@ h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spa
     font-size: 13px;
   }
 }
+
+/* Premium UI Elements */
+.product-card-luxury {
+  border-radius: 32px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+  transition: var(--transition-smooth);
+}
+
+.product-card-luxury:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+}
+
+.product-card-luxury:hover .product-card-image-wrap img {
+  transform: scale(1.1);
+}
+
+.product-card-luxury:hover .product-go-icon {
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+
+.product-card-image-wrap {
+  position: relative;
+  height: 280px;
+  overflow: hidden;
+}
+
+.product-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 100%);
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.product-card-luxury:hover .product-card-overlay {
+  opacity: 1;
+}
+
+.product-card-badge {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: var(--glass-white);
+  backdrop-filter: blur(8px);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+

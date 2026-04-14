@@ -10,7 +10,9 @@ export const list = query({
 
 export const add = mutation({
   args: {
-    user: v.string(),
+    author: v.optional(v.string()), // Use author instead of user for better schema alignment
+    user: v.optional(v.string()), // Fallback
+    productTitle: v.optional(v.string()),
     rating: v.number(),
     content: v.string(),
     images: v.optional(v.array(v.string())),

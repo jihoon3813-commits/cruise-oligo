@@ -679,7 +679,7 @@ const AdminHomeEditor = () => {
                                              
                                              <div style={{ gridColumn: 'span 2', background: '#fff', padding: '16px', borderRadius: '12px', marginTop: '12px' }}>
                                                 <label style={{ fontSize: '11px', fontWeight: '800', marginBottom: '10px', display: 'block' }}>글자 색상 개별 설정</label>
-                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                                                    <div className="form-group">
                                                       <label style={{fontSize:'9px'}}>소제목 색상</label>
                                                       <input type="color" className="form-control" value={item.typography?.above?.color || "#2563EB"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, above: { ...ni[i].typography?.above, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
@@ -714,6 +714,7 @@ const AdminHomeEditor = () => {
                                                         <div className="form-group"><label style={{fontSize:'9px'}}>배경색</label><input type="color" className="form-control" style={{height:'32px', padding:'2px'}} value={item.buttonStyles?.bgColor || "#2563EB"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], buttonStyles: { ...ni[i].buttonStyles, bgColor: e.target.value } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
                                                         <div className="form-group"><label style={{fontSize:'9px'}}>글자색</label><input type="color" className="form-control" style={{height:'32px', padding:'2px'}} value={item.buttonStyles?.textColor || "#ffffff"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], buttonStyles: { ...ni[i].buttonStyles, textColor: e.target.value } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
                                                         <div className="form-group"><label style={{fontSize:'9px'}}>테두리색</label><input type="color" className="form-control" style={{height:'32px', padding:'2px'}} value={item.buttonStyles?.borderColor || "#2563EB"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], buttonStyles: { ...ni[i].buttonStyles, borderColor: e.target.value } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+
                                                      </div>
                                                   </div>
                                                 )}

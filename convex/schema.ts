@@ -104,6 +104,7 @@ export default defineSchema({
         above: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
         title: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
         content: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
+        highlights: v.optional(v.object({ color: v.optional(v.string()), labelColor: v.optional(v.string()) })),
       })),
     }))),
     typography: v.optional(v.object({

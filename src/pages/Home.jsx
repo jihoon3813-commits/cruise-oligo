@@ -254,11 +254,11 @@ const Home = () => {
                                
                                {item.highlights && item.highlights.length > 0 && (
                                   <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '20px' }}>
-                                     <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--primary)', marginBottom: '10px', textTransform: 'uppercase' }}>주요 하이라이트</div>
+                                     <div style={{ fontSize: '11px', fontWeight: '900', color: item.typography?.highlights?.labelColor || 'var(--primary)', marginBottom: '10px', textTransform: 'uppercase' }}>주요 하이라이트</div>
                                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                         {item.highlights.map((h, j) => (
-                                           <li key={j} style={{ fontSize: '13px', color: 'var(--text-main)', display: 'flex', gap: '8px', alignItems: 'center', fontWeight: '600' }}>
-                                              <span style={{ color: 'var(--primary)', flexShrink: 0 }}>
+                                           <li key={j} style={{ fontSize: '13px', color: item.typography?.highlights?.color || 'var(--text-main)', display: 'flex', gap: '8px', alignItems: 'center', fontWeight: '600' }}>
+                                              <span style={{ color: item.typography?.highlights?.labelColor || 'var(--primary)', flexShrink: 0 }}>
                                                  {item.highlightStyle === 'star' ? '★' : (item.highlightStyle === 'dash' ? '—' : '●')}
                                               </span>
                                               {h}

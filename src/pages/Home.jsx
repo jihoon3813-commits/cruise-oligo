@@ -128,7 +128,6 @@ const Home = () => {
     const isMobile = window.innerWidth < 768;
     const hasMedia = image || (images && images.length > 0);
     
-    // Adjusted default padding (shorter than before)
     const wrapperStyle = { 
       position: 'relative', 
       paddingTop: `${isMobile ? Math.min(40, paddingTop ?? 40) : (paddingTop ?? 80)}px`, 
@@ -138,7 +137,8 @@ const Home = () => {
     };
 
     const header = (
-      <div style={{ marginBottom: isMobile ? '32px' : '48px', maxWidth: style === 'minimal-centered' ? '800px' : 'none', margin: style === 'minimal-centered' ? '0 auto' : '0' }}>
+      <div style={{ marginBottom: isMobile ? '32px' : '48px', maxWidth: (style === 'minimal-centered' || style === 'luxury-row') ? '800px' : 'none', margin: (style === 'minimal-centered' || style === 'luxury-row') ? '0 auto' : '0', textAlign: style === 'minimal-centered' ? 'center' : 'inherit' }}>
+         {section.aboveTitle && <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary)', letterSpacing: '0.1em', display: 'block', marginBottom: '12px', textTransform: 'uppercase' }}>{section.aboveTitle}</span>}
          <h2 style={{ ...getTextStyle(typography, 'title'), marginBottom: '20px' }}><MultiLineText text={section.title}/></h2>
          <p style={{ ...getTextStyle(typography, 'content'), opacity: 0.8 }}><MultiLineText text={section.content}/></p>
          <div style={{marginTop: '24px'}}><CustomButton section={section} /></div>
@@ -155,9 +155,7 @@ const Home = () => {
              <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: layout === 'right' ? '1.2fr 1fr' : '1fr 1.2fr', gap: isMobile ? '40px' : '80px', alignItems: 'start' }}>
                 <div style={{ order: layout === 'right' ? 2 : 1 }}>
                    <div style={{ marginBottom: '48px' }}>
-                      <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary)', letterSpacing: '0.1em', display: 'block', marginBottom: '12px', textTransform: 'uppercase' }}>{section.aboveTitle || "Promotion"}</span>
-                      <h2 style={{ ...getTextStyle(typography, 'title'), fontWeight: '900', marginBottom: '24px' }}><MultiLineText text={section.title}/></h2>
-                      <p style={{ ...getTextStyle(typography, 'content'), opacity: 0.8, marginBottom: '32px' }}><MultiLineText text={section.content}/></p>
+                      {header}
                       {image && <SafeMedia src={image} style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)' }} />}
                    </div>
                 </div>

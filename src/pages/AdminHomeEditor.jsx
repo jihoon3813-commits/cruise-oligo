@@ -473,7 +473,7 @@ const AdminHomeEditor = () => {
 
                           {editTab === 'content' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                               <div className="form-group"><label>상단 보조 타이틀 (luxury-row 전용)</label><input className="form-control" value={section.aboveTitle || ""} onChange={e => handleSectionUpdate(section.id, { ...section, aboveTitle: e.target.value })} /></div>
+                               <div className="form-group"><label>상단 보조 타이틀 (모든 스타일 적용)</label><input className="form-control" value={section.aboveTitle || ""} onChange={e => handleSectionUpdate(section.id, { ...section, aboveTitle: e.target.value })} /></div>
                                <div className="form-group"><label>섹션 타이틀 (줄바꿈 가능)</label><textarea className="form-control" value={section.title} onChange={e => handleSectionUpdate(section.id, { ...section, title: e.target.value })} rows={2} /></div>
                                <div className="form-group"><label>서브 설명 (줄바꿈 가능)</label><textarea className="form-control" value={section.content} onChange={e => handleSectionUpdate(section.id, { ...section, content: e.target.value })} rows={4} /></div>
                                

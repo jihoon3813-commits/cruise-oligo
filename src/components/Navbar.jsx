@@ -19,27 +19,29 @@ const Navbar = () => {
 
   return (
     <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
-      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-        <div style={{ padding: '8px', background: 'var(--primary)', borderRadius: '10px', display: 'flex' }}>
-          <Ship size={24} color="#fff" />
-        </div>
-        <span style={{ fontWeight: '900', fontSize: '24px', letterSpacing: '-0.02em', color: 'var(--text-main)' }}>OLIGO</span>
-      </Link>
-
-      <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
-        {['홈', '멤버십', '크루즈', '여행후기'].map((text) => (
-          <Link 
-            key={text} 
-            to={text === '홈' ? '/' : text === '여행후기' ? '/reviews' : `#${text}`} 
-            className="nav-link"
-          >
-            {text}
-          </Link>
-        ))}
-        <div style={{ width: '1px', height: '20px', background: 'var(--border-light)' }}></div>
-        <Link to="/admin" className="luxury-btn" style={{ padding: '10px 24px' }}>
-           관리자 <ArrowUpRight size={14} style={{ marginLeft: '4px' }} />
+      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0' }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+          <div style={{ padding: '8px', background: 'var(--primary)', borderRadius: '10px', display: 'flex' }}>
+            <Ship size={24} color="#fff" />
+          </div>
+          <span style={{ fontWeight: '900', fontSize: '24px', letterSpacing: '-0.02em', color: 'var(--text-main)' }}>OLIGO</span>
         </Link>
+
+        <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+          {['홈', '상품', '여행후기'].map((text) => (
+            <Link 
+              key={text} 
+              to={text === '홈' ? '/' : text === '여행후기' ? '/reviews' : text === '상품' ? '#products' : `#${text}`} 
+              className="nav-link"
+            >
+              {text}
+            </Link>
+          ))}
+          <div style={{ width: '1px', height: '20px', background: 'var(--border-light)' }}></div>
+          <Link to="/admin" className="luxury-btn" style={{ padding: '10px 24px', fontSize: '13px' }}>
+            관리자 <ArrowUpRight size={14} />
+          </Link>
+        </div>
       </div>
     </nav>
   );

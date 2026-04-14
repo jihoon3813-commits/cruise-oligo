@@ -191,12 +191,6 @@ const Home = () => {
 
   return (
     <div className="home-clean">
-      <nav className="nav scrolled">
-         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0' }}>
-            <Link to="/" style={{ fontSize: '24px', fontWeight: '900', color: 'var(--primary)', textDecoration: 'none' }}>OLIGO CRUISE</Link>
-            <div style={{ display: 'flex', gap: '30px' }}><Link to="/" className="nav-link">홈</Link><a href="#products" className="nav-link">상품</a><Link to="/admin" className="nav-link" style={{ color: 'var(--primary)' }}>어드민</Link></div>
-         </div>
-      </nav>
       {renderHero()}
       {sections.map(section => renderSection(section))}
       <section id="products" style={{ padding: '120px 0', background: '#fff' }}>

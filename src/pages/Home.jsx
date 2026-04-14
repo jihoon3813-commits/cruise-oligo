@@ -113,8 +113,8 @@ const Home = () => {
       const orderA = a.order ?? 0;
       const orderB = b.order ?? 0;
       if (orderA !== orderB) return orderA - orderB;
-      // Fallback for same order: use original array index or _id
-      return (a._id || "").localeCompare(b._id || "");
+      // Use 'id' (which is mapped from _id in context) for stable sort
+      return (a.id || "").localeCompare(b.id || "");
     });
   }, [sections]);
 
@@ -330,7 +330,11 @@ const Home = () => {
   return (
     <div className="home-clean">
       {renderHero()}
-      {sortedSections.map(section => renderSection(section))}
+      {sortedSections.map(section => (
+        <React.Fragment key={section.id}>
+          {renderSection(section)}
+        </React.Fragment>
+      ))}
       {!sortedSections.some(s => s.type === 'products') && renderProductSection({ id: 'fallback-p', type: 'products', title: '추천 패키지' })}
       {!sortedSections.some(s => s.type === 'reviews') && renderReviewSection({ id: 'fallback-r', type: 'reviews', title: '여행 후기' })}
     </div>

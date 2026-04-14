@@ -197,11 +197,32 @@ const Home = () => {
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '80px' }}><h2 style={{ fontSize: '48px', fontWeight: '800' }}>추천 패키지</h2></div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '32px' }}>
-            {products.map(product => (
-              <Link key={product.id} to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
-                <div className="product-card-modern"><div style={{ height: '240px', overflow: 'hidden' }}><SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div><div style={{ padding: '30px' }}><h3 style={{ fontSize: '24px', marginBottom: '12px' }}>{product.title}</h3><p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>{product.description}</p></div></div>
-              </Link>
-            ))}
+            {products.map(product => {
+              const typo = product.typography || {};
+              const getStyle = (t) => ({
+                fontSize: typo[t]?.fontSize ? `${typo[t].fontSize}px` : undefined,
+                color: typo[t]?.color,
+                fontWeight: t === 'title' || t === 'price' ? '800' : '400'
+              });
+
+              return (
+                <Link key={product.id} to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
+                  <div className="product-card-modern">
+                    <div style={{ height: '240px', overflow: 'hidden' }}>
+                      <SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <div style={{ padding: '30px' }}>
+                      <h3 style={{ ...getStyle('title'), marginBottom: '12px' }}>{product.title}</h3>
+                      <p style={{ ...getStyle('description'), marginBottom: '20px' }}>{product.description}</p>
+                      <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                         <span style={getStyle('price')}>{product.price?.toLocaleString()}원</span>
+                         <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)' }}>자세히 보기 &gt;</span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

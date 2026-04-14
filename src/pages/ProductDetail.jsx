@@ -27,20 +27,24 @@ const ProductDetail = () => {
             <div style={{ overflow: 'hidden', borderRadius: '24px', background: 'var(--bg-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-light)' }}>
               <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary)' }}>+{product.thumbnails.length} Photos</span>
             </div>
-          </div>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '80px' }}>
-          {/* Left: Info & Schedule */}
+          </d          {/* Left: Info & Schedule */}
           <div>
-            <h1 style={{ fontSize: '56px', fontWeight: '800', marginBottom: '24px' }}>{product.title}</h1>
+            <h1 style={{ 
+                fontSize: product.typography?.title?.fontSize ? `${product.typography.title.fontSize * 1.5}px` : '56px', 
+                color: product.typography?.title?.color, 
+                fontWeight: '800', marginBottom: '24px' 
+            }}>{product.title}</h1>
             <div style={{ display: 'flex', gap: '24px', marginBottom: '48px', color: 'var(--text-muted)', fontSize: '15px', fontWeight: '600' }}>
               <div className="flex items-center gap-2" style={{ background: 'var(--bg-sub)', padding: '8px 16px', borderRadius: '100px' }}><MapPin size={18} /> 지중해</div>
               <div className="flex items-center gap-2" style={{ background: 'var(--bg-sub)', padding: '8px 16px', borderRadius: '100px' }}><Ship size={18} /> 최고급 크루즈</div>
               <div className="flex items-center gap-2" style={{ background: 'var(--bg-sub)', padding: '8px 16px', borderRadius: '100px' }}><Calendar size={18} /> 14일 여정</div>
             </div>
 
-            <p style={{ fontSize: '20px', lineHeight: '1.8', color: 'var(--text-muted)', marginBottom: '80px' }}>
+            <p style={{ 
+                fontSize: product.typography?.description?.fontSize ? `${product.typography.description.fontSize * 1.2}px` : '20px', 
+                color: product.typography?.description?.color || 'var(--text-muted)', 
+                lineHeight: '1.8', marginBottom: '80px' 
+            }}>
               {product.description}
             </p>
 
@@ -70,8 +74,15 @@ const ProductDetail = () => {
               
               <div style={{ marginBottom: '32px' }}>
                 <span style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.1em' }}>총 상품 금액</span>
-                <div style={{ fontSize: '36px', fontWeight: '900', color: 'var(--primary)', marginTop: '8px' }}>
+                <div style={{ 
+                    fontSize: product.typography?.price?.fontSize ? `${product.typography.price.fontSize * 1.5}px` : '36px', 
+                    color: product.typography?.price?.color || 'var(--primary)', 
+                    fontWeight: '900', marginTop: '8px' 
+                }}>
                   {product.price.toLocaleString()}원
+                </div>
+              </div>
+roduct.price.toLocaleString()}원
                 </div>
               </div>
 

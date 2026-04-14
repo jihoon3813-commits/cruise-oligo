@@ -82,6 +82,7 @@ export default defineSchema({
     installments: v.optional(v.number()),
     schedule: v.optional(v.array(v.object({ day: v.number(), title: v.string(), content: v.string() }))),
     scheduleImage: v.optional(v.string()),
+    typography: v.optional(v.any()),
   }),
   reviews: defineTable({
     user: v.string(),

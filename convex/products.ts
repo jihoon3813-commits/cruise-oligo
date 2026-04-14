@@ -25,6 +25,7 @@ export const add = mutation({
     downPayment: v.optional(v.number()),
     installments: v.optional(v.number()),
     scheduleImage: v.optional(v.string()),
+    typography: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("products", args);
@@ -42,6 +43,7 @@ export const update = mutation({
     downPayment: v.optional(v.number()),
     installments: v.optional(v.number()),
     scheduleImage: v.optional(v.string()),
+    typography: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
     const { id, ...data } = args;

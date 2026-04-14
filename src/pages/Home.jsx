@@ -79,9 +79,18 @@ const HeroText = ({ hero }) => {
   );
 };
 
-const ImageSlider = ({ images = [], singleImage }) => {
+const ImageSlider = ({ images = [], singleImage, duration = 3 }) => {
   const [current, setCurrent] = useState(0);
   const allImages = (images && images.length > 0) ? images : (singleImage ? [singleImage] : []);
+
+  useEffect(() => {
+    if (allImages.length <= 1 || duration <= 0) return;
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % allImages.length);
+    }, duration * 1000);
+    return () => clearInterval(timer);
+  }, [allImages.length, duration]);
+
   if (allImages.length === 0) return null;
   if (allImages.length === 1) return <SafeMedia src={allImages[0]} style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)', display: 'block' }} />;
   return (
@@ -107,7 +116,7 @@ const Home = () => {
     return <Link to={section.buttonLink || "/"} style={{ ...currentSize, backgroundColor: styles.bgColor || 'var(--primary)', color: styles.textColor || '#ffffff', border: `2px solid ${styles.borderColor || styles.bgColor || 'var(--primary)'}`, borderRadius: '100px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none', transition: '0.3s', boxShadow: '0 4px 14px rgba(0,0,0,0.1)' }}>{section.buttonText || "자세히 보기"} <ArrowRight size={16} /></Link>;
   };
 
-  const MediaGallery = ({ images = [], singleImage, style }) => {
+  const MediaGallery = ({ images = [], singleImage, style, duration }) => {
     const allImages = (images && images.length > 0) ? images : (singleImage ? [singleImage] : []);
     if (allImages.length === 0) return null;
     if (style === 'gallery') {
@@ -121,7 +130,7 @@ const Home = () => {
         </div>
       );
     }
-    return <ImageSlider images={allImages} singleImage={singleImage} />;
+    return <ImageSlider images={allImages} singleImage={singleImage} duration={duration} />;
   };
 
   const renderSection = (section) => {
@@ -180,7 +189,7 @@ const Home = () => {
                    <div style={{ marginBottom: '48px' }}>
                       {header}
                       <div style={{ marginTop: '32px' }}>
-                         <MediaGallery images={images} singleImage={image} />
+                         <MediaGallery images={images} singleImage={image} duration={section.slideDuration} />
                       </div>
                    </div>
                 </div>
@@ -205,14 +214,14 @@ const Home = () => {
           {style === 'split-card' && (
              <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '32px' : '48px' }}>
                 <div style={{ ...getCardStyle(), padding: isMobile ? '32px 20px' : '80px', flexDirection: 'column', order: layout === 'right' ? 2 : 1 }}>{header}</div>
-                <div style={{ order: layout === 'right' ? 1 : 2 }}><MediaGallery images={images} singleImage={image} /></div>
+                <div style={{ order: layout === 'right' ? 1 : 2 }}><MediaGallery images={images} singleImage={image} duration={section.slideDuration} /></div>
              </div>
           )}
 
           {style === 'minimal-centered' && (
              <div style={{ textAlign: 'center' }}>
                 {header}
-                {hasMedia && <div style={{ marginTop: '48px', maxWidth: '1000px', margin: '48px auto 0' }}><MediaGallery images={images} singleImage={image} /></div>}
+                {hasMedia && <div style={{ marginTop: '48px', maxWidth: '1000px', margin: '48px auto 0' }}><MediaGallery images={images} singleImage={image} duration={section.slideDuration} /></div>}
              </div>
           )}
 
@@ -263,7 +272,7 @@ const Home = () => {
                          </motion.div>
                       ))
                    ) : (
-                      <div style={{ gridColumn: 'span 3' }}><MediaGallery images={images} singleImage={image} style="gallery" /></div>
+                      <div style={{ gridColumn: 'span 3' }}><MediaGallery images={images} singleImage={image} style="gallery" duration={section.slideDuration} /></div>
                    )}
                 </div>
              </div>
@@ -271,7 +280,7 @@ const Home = () => {
 
           {style === 'feature-cards' && (
               <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: hasMedia ? '1fr 1fr' : '1fr', gap: isMobile ? '32px' : '80px' }}>
-                 <div style={{ marginBottom: isMobile ? '32px' : 0 }}>{header}<div style={{marginTop:'32px'}}><MediaGallery images={images} singleImage={image} /></div></div>
+                 <div style={{ marginBottom: isMobile ? '32px' : 0 }}>{header}<div style={{marginTop:'32px'}}><MediaGallery images={images} singleImage={image} duration={section.slideDuration} /></div></div>
                  <div style={{ display: 'grid', gridTemplateColumns: (items || []).length > 2 && !isMobile ? '1fr 1fr' : '1fr', gap: '20px' }}>
                     {(items || []).map((item, i) => (
                        <motion.div key={i} whileHover={{ y: -5 }} style={{ ...getCardStyle(), display: 'flex', gap: isMobile ? '16px' : '24px', alignItems: 'start' }}>

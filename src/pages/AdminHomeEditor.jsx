@@ -705,6 +705,23 @@ const AdminHomeEditor = () => {
                                   <input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity} onChange={e => handleSectionUpdate(section.id, { ...section, bgOpacity: parseFloat(e.target.value) })} onClick={e => e.stopPropagation()} />
                                 </div>
                                <MultiMediaInput label="갤러리/이미지 리스트" values={section.images || []} onChange={v => handleSectionUpdate(section.id, { ...section, images: v })} uploadFile={uploadFile} />
+                               {section.images && section.images.length > 1 && (
+                                 <div className="form-group" style={{ gridColumn: 'span 2', background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px' }}>
+                                    <label style={{ fontSize: '12px', fontWeight: '800', marginBottom: '12px', display: 'block' }}>자동 슬라이드 간격 (초)</label>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                       <input 
+                                          type="range" min="1" max="10" step="0.5" 
+                                          className="form-control" style={{ flex: 1 }}
+                                          value={section.slideDuration || 3} 
+                                          onChange={e => handleSectionUpdate(section.id, { ...section, slideDuration: parseFloat(e.target.value) })} 
+                                       />
+                                       <div style={{ width: '60px', textAlign: 'center', fontWeight: '800', fontSize: '15px', color: 'var(--primary)' }}>
+                                          {section.slideDuration || 3}s
+                                       </div>
+                                    </div>
+                                    <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '8px' }}>* 0으로 설정하면 자동 재생이 꺼집니다.</p>
+                                 </div>
+                               )}
                                <div className="form-group" style={{ gridColumn: 'span 2' }}>
                                   <label>레이아웃 방향</label>
                                   <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>

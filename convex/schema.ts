@@ -75,6 +75,7 @@ export default defineSchema({
     content: v.string(),
     image: v.optional(v.string()), // Deprecated but kept for safety
     images: v.optional(v.array(v.string())), // Multiple images support
+    slideDuration: v.optional(v.number()), // New: auto-sliding speed in seconds
     layout: v.string(), // "left", "right"
     style: v.optional(v.string()), 
     aboveTitle: v.optional(v.string()), 

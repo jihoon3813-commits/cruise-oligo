@@ -39,6 +39,16 @@ const THEME_DEFAULTS = {
   }
 };
 
+const ColorInput = ({ label, value, onChange, placeholder = "#000000" }) => (
+  <div className="form-group">
+    <label style={{ fontSize: '12px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>{label}</label>
+    <div style={{ display: 'flex', gap: '10px' }}>
+      <input type="color" className="form-control" style={{ width: '50px', height: '42px', padding: '4px', cursor: 'pointer' }} value={value || placeholder} onInput={e => onChange(e.target.value)} />
+      <input type="text" className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
+    </div>
+  </div>
+);
+
 const AdminProductDetailEditor = () => {
   const { config, updateProductDetailBranding } = useConfig();
   const [form, setForm] = useState(config.productDetailBranding);
@@ -67,16 +77,6 @@ const AdminProductDetailEditor = () => {
       });
     }
   };
-
-  const ColorInput = ({ label, value, onChange, placeholder = "#000000" }) => (
-    <div className="form-group">
-      <label style={{ fontSize: '12px', fontWeight: '700', marginBottom: '8px', display: 'block' }}>{label}</label>
-      <div style={{ display: 'flex', gap: '10px' }}>
-        <input type="color" className="form-control" style={{ width: '50px', height: '42px', padding: '4px', cursor: 'pointer' }} value={value || placeholder} onInput={e => onChange(e.target.value)} />
-        <input type="text" className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
-      </div>
-    </div>
-  );
 
   return (
     <div className="admin-editor-wrap">

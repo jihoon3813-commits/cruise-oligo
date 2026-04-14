@@ -533,6 +533,24 @@ const AdminHomeEditor = () => {
                                              <div className="form-group"><label style={{fontSize:'10px'}}>우측 태그 (예: 도심 출발)</label><DebouncedInput className="form-control" value={item.tag} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], tag:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
                                              <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 타이틀</label><DebouncedInput className="form-control" value={item.title} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], title:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
                                              <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 설명</label><DebouncedTextarea className="form-control" value={item.content} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], content:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} rows={2} /></div>
+                                             
+                                             <div style={{ gridColumn: 'span 2', background: '#fff', padding: '16px', borderRadius: '12px', marginTop: '12px' }}>
+                                                <label style={{ fontSize: '11px', fontWeight: '800', marginBottom: '10px', display: 'block' }}>글자 색상 개별 설정</label>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                                                   <div className="form-group">
+                                                      <label style={{fontSize:'9px'}}>소제목 색상</label>
+                                                      <input type="color" className="form-control" value={item.typography?.above?.color || "#2563EB"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, above: { ...ni[i].typography?.above, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                   </div>
+                                                   <div className="form-group">
+                                                      <label style={{fontSize:'9px'}}>타이틀 색상</label>
+                                                      <input type="color" className="form-control" value={item.typography?.title?.color || "#0F172A"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, title: { ...ni[i].typography?.title, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                   </div>
+                                                   <div className="form-group">
+                                                      <label style={{fontSize:'9px'}}>본문 색상</label>
+                                                      <input type="color" className="form-control" value={item.typography?.content?.color || "#64748B"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, content: { ...ni[i].typography?.content, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
+                                                   </div>
+                                                </div>
+                                             </div>
                                           </div>
                                        </div>
                                      ))}

@@ -159,6 +159,16 @@ const Home = () => {
        };
     };
 
+    const getItemTextStyle = (item, type, defaultSize) => {
+        const itemTypo = item.typography?.[type] || {};
+        const sectionTypo = typography?.[type === 'above' ? 'title' /* fallback to title's color if above is missing */ : type] || {};
+        return {
+            color: itemTypo.color || sectionTypo.color || (type === 'content' ? 'var(--text-muted)' : 'var(--text-main)'),
+            fontSize: `${itemTypo.fontSize || defaultSize}px`,
+            fontWeight: type === 'content' ? '500' : '900'
+        };
+    };
+
     return (
       <section key={section.id} style={wrapperStyle}>
         {bgType !== 'color' && bgUrl && <div style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: bgOpacity ?? 1 }}><SafeMedia src={bgUrl} type={bgType} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
@@ -180,12 +190,12 @@ const Home = () => {
                      <motion.div key={i} initial={{ opacity:0, x: 20 }} whileInView={{ opacity:1, x: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={getCardStyle()}>
                         <div style={{ width: isMobile ? '40px' : '56px', height: isMobile ? '40px' : '56px', flexShrink: 0, border: '2px solid var(--primary)', color: 'var(--primary)', opacity: 0.8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: isMobile ? '13px' : '16px', fontWeight: '900', borderRadius: '12px' }}>{item.number}</div>
                         <div style={{ flex: 1 }}>
-                           {item.aboveTitle && <div style={{ fontSize: '12px', fontWeight: '900', color: 'var(--primary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{item.aboveTitle}</div>}
+                           {item.aboveTitle && <div style={{ marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em', ...getItemTextStyle(item, 'above', 12) }}>{item.aboveTitle}</div>}
                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                              <h4 style={{ fontSize: isMobile ? '18px' : '22px', fontWeight: '900', color: 'var(--text-main)' }}>{item.title}</h4>
+                              <h4 style={{ ...getItemTextStyle(item, 'title', isMobile ? 18 : 22) }}>{item.title}</h4>
                               {item.tag && <span style={{ fontSize: '11px', background: 'var(--primary)', color: '#fff', padding: '4px 14px', borderRadius: '100px', fontWeight: '800', boxShadow: '0 4px 10px var(--primary)30' }}>{item.tag}</span>}
                            </div>
-                           <p style={{ fontSize: isMobile ? '14px' : '16px', color: 'var(--text-muted)', lineHeight: '1.7', fontWeight: '500' }}>{item.content}</p>
+                           <p style={{ lineHeight: '1.7', ...getItemTextStyle(item, 'content', isMobile ? 14 : 16) }}>{item.content}</p>
                         </div>
                      </motion.div>
                    ))}
@@ -221,7 +231,10 @@ const Home = () => {
                     {(items || []).map((item, i) => (
                        <motion.div key={i} whileHover={{ y: -5 }} style={getCardStyle()}>
                           <div style={{ width: '40px', height: '40px', background: 'var(--primary)', color: '#fff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', flexShrink: 0 }}>{item.number || i + 1}</div>
-                          <div><h4 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', color: 'var(--text-main)' }}>{item.title}</h4><p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: '1.6' }}>{item.content}</p></div>
+                          <div>
+                            <h4 style={{ ...getItemTextStyle(item, 'title', 18), marginBottom: '8px' }}>{item.title}</h4>
+                            <p style={{ ...getItemTextStyle(item, 'content', 14), lineHeight: '1.6' }}>{item.content}</p>
+                          </div>
                        </motion.div>
                     ))}
                  </div>
@@ -235,8 +248,8 @@ const Home = () => {
                   {(items || []).map((item, i) => (
                     <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ position: 'relative' }}>
                        <div style={{ width: '64px', height: '64px', background: 'var(--primary)', color: '#fff', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: '20px', fontWeight: '900', boxShadow: '0 10px 20px var(--primary)30' }}>{item.number || i + 1}</div>
-                       <h4 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '12px', color: 'var(--text-main)' }}>{item.title}</h4>
-                       <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: '1.6' }}>{item.content}</p>
+                       <h4 style={{ ...getItemTextStyle(item, 'title', 18), marginBottom: '12px' }}>{item.title}</h4>
+                       <p style={{ ...getItemTextStyle(item, 'content', 14), lineHeight: '1.6' }}>{item.content}</p>
                        {!isMobile && i < (items.length - 1) && <ArrowRight style={{ position: 'absolute', top: '32px', right: '-40px', transform: 'translateX(50%)', opacity: 0.2 }} size={24} />}
                     </motion.div>
                   ))}

@@ -28,6 +28,11 @@ const itemsValidator = v.optional(v.array(v.object({
   aboveTitle: v.optional(v.string()),
   tag: v.optional(v.string()),
   icon: v.optional(v.string()),
+  typography: v.optional(v.object({
+    above: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
+    title: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
+    content: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
+  })),
 })));
 
 const buttonStylesValidator = v.optional(v.object({

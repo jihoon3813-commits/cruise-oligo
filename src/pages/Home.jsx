@@ -252,7 +252,7 @@ const Home = () => {
       <section style={{ padding: '120px 0', background: rb.bgColor || 'var(--bg-sub)' }}>
          <div className="container">
             <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-               <h2 style={{ fontSize: '48px', fontWeight: '800', color: rb.titleColor || 'inherit' }}>
+               <h2 style={{ fontSize: '48px', fontWeight: '800', color: rb.titleColor || 'var(--text-main)' }}>
                   {rb.title || "여행 후기"}
                </h2>
             </div>
@@ -300,10 +300,10 @@ const Home = () => {
       {renderHero()}
       {sections.map(section => renderSection(section))}
       {renderReviews()}
-      <section id="products" style={{ padding: '120px 0', background: config.productListBranding?.bgColor || '#ffffff' }}>
+      <section id="products" style={{ padding: '120px 0', background: config.productListBranding?.bgColor || 'var(--bg-main)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-             <h2 style={{ fontSize: '48px', fontWeight: '800', color: config.productListBranding?.titleColor || 'inherit' }}>
+             <h2 style={{ fontSize: '48px', fontWeight: '800', color: config.productListBranding?.titleColor || 'var(--text-main)' }}>
                 {config.productListBranding?.title || "추천 패키지"}
              </h2>
           </div>

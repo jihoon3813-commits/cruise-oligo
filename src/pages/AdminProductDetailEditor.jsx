@@ -1,7 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Settings, Image, Type, Palette, Layout, Save, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Settings, Image, Type, Palette, Layout, Save, ChevronRight, CheckCircle2, RotateCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+const THEME_DEFAULTS = {
+  light: {
+    titleColor: "#0F172A",
+    priceColor: "#2563EB",
+    descriptionColor: "#64748B",
+    accentColor: "#2563EB",
+    badgeColor: "#F1F5F9",
+    badgeTextColor: "#0F172A",
+    sectionTitleColor: "#0F172A",
+    buttonColor: "#2563EB",
+    buttonTextColor: "#ffffff"
+  },
+  dark: {
+    titleColor: "#f8fafc",
+    priceColor: "#60a5fa",
+    descriptionColor: "#94a3b8",
+    accentColor: "#60a5fa",
+    badgeColor: "rgba(255,255,255,0.1)",
+    badgeTextColor: "#f8fafc",
+    sectionTitleColor: "#f8fafc",
+    buttonColor: "#3b82f6",
+    buttonTextColor: "#ffffff"
+  },
+  glass: {
+    titleColor: "#1e293b",
+    priceColor: "#0891b2",
+    descriptionColor: "#475569",
+    accentColor: "#0891b2",
+    badgeColor: "rgba(255,255,255,0.5)",
+    badgeTextColor: "#1e293b",
+    sectionTitleColor: "#1e293b",
+    buttonColor: "#0e7490",
+    buttonTextColor: "#ffffff"
+  }
+};
 
 const AdminProductDetailEditor = () => {
   const { config, updateProductDetailBranding } = useConfig();
@@ -18,6 +54,18 @@ const AdminProductDetailEditor = () => {
     await updateProductDetailBranding(form);
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
+  };
+
+  const handleReset = (theme) => {
+    const targetTheme = theme || form.theme || 'light';
+    const defaults = THEME_DEFAULTS[targetTheme];
+    if (window.confirm(`${targetTheme === 'light' ? '라이트' : targetTheme === 'dark' ? '다크' : '글래스'} 테마의 기본 색상으로 초기화하시겠습니까?`)) {
+      setForm({
+        ...form,
+        theme: targetTheme,
+        ...defaults
+      });
+    }
   };
 
   const ColorInput = ({ label, value, onChange, placeholder = "#000000" }) => (
@@ -40,10 +88,15 @@ const AdminProductDetailEditor = () => {
                <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>개별 상품 페이지의 디자인 테마와 레이아웃을 설정합니다.</p>
             </div>
          </div>
-         <button className="luxury-btn" onClick={handleSave} style={{ gap: '8px' }}>
-            {saveSuccess ? <CheckCircle2 size={18} /> : <Save size={18} />}
-            {saveSuccess ? '저장 완료' : '설정 저장'}
-         </button>
+         <div style={{ display: 'flex', gap: '12px' }}>
+            <button className="luxury-btn outline" onClick={() => handleReset()} style={{ gap: '8px' }}>
+               <RotateCcw size={18} /> 테마 초기화
+            </button>
+            <button className="luxury-btn" onClick={handleSave} style={{ gap: '8px' }}>
+               {saveSuccess ? <CheckCircle2 size={18} /> : <Save size={18} />}
+               {saveSuccess ? '저장 완료' : '설정 저장'}
+            </button>
+         </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '32px' }}>

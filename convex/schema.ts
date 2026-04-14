@@ -57,11 +57,15 @@ export default defineSchema({
     image: v.optional(v.string()), // Deprecated but kept for safety
     images: v.optional(v.array(v.string())), // Multiple images support
     layout: v.string(), // "left", "right"
-    style: v.optional(v.string()), // "classic", "split-card", "minimal-centered", "gallery", "feature-cards", "process"
+    style: v.optional(v.string()), 
+    aboveTitle: v.optional(v.string()), 
     items: v.optional(v.array(v.object({
+      id: v.optional(v.string()),
       title: v.string(),
       content: v.string(),
-      number: v.optional(v.string()), // e.g., "01"
+      number: v.optional(v.string()), 
+      aboveTitle: v.optional(v.string()), 
+      tag: v.optional(v.string()), 
       icon: v.optional(v.string()),
     }))),
     typography: v.optional(v.object({

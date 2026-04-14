@@ -21,9 +21,12 @@ const typographyValidator = v.optional(v.object({
 }));
 
 const itemsValidator = v.optional(v.array(v.object({
+  id: v.optional(v.string()),
   title: v.string(),
   content: v.string(),
   number: v.optional(v.string()),
+  aboveTitle: v.optional(v.string()),
+  tag: v.optional(v.string()),
   icon: v.optional(v.string()),
 })));
 
@@ -45,6 +48,7 @@ export const add = mutation({
   args: {
     title: v.string(),
     content: v.string(),
+    aboveTitle: v.optional(v.string()),
     image: v.optional(v.string()),
     images: v.optional(v.array(v.string())),
     layout: v.string(),
@@ -73,6 +77,7 @@ export const update = mutation({
     id: v.id("sections"),
     title: v.optional(v.string()),
     content: v.optional(v.string()),
+    aboveTitle: v.optional(v.string()),
     image: v.optional(v.string()),
     images: v.optional(v.array(v.string())),
     layout: v.optional(v.string()),

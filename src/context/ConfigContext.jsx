@@ -95,9 +95,9 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addSection = async (data) => {
-    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom } = data;
+    const { title, content, aboveTitle, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom } = data;
     await addSectionMutation({ 
-      title, content, image, images, layout, 
+      title, content, aboveTitle, image, images, layout, 
       style: style || "classic", 
       items: items || [],
       typography: typography || {},
@@ -105,6 +105,7 @@ export const ConfigProvider = ({ children }) => {
       buttonText: buttonText || "자세히 보기",
       buttonLink, 
       buttonStyles: buttonStyles || { size: "medium" },
+      cardStyles: cardStyles || { shadow: 0.1, borderRadius: 24, borderWidth: 1, borderColor: "#e2e8f0", bgColor: "#ffffff" },
       bgColor, 
       bgType: bgType || "color", 
       bgUrl, 
@@ -116,11 +117,12 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const updateSection = async (id, data) => {
-    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order } = data;
+    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, aboveTitle } = data;
     await updateSectionMutation({ 
       id, title, content, image, images, layout, style, items, typography,
       showButton: Boolean(showButton), 
-      buttonText, buttonLink, buttonStyles,
+      buttonText, buttonLink, buttonStyles, cardStyles,
+      aboveTitle,
       bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order 
     });
   };

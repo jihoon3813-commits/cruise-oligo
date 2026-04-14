@@ -25,6 +25,7 @@ export const add = mutation({
     downPayment: v.optional(v.number()),
     installments: v.optional(v.number()),
     scheduleImage: v.optional(v.string()),
+    schedule: v.optional(v.array(v.object({ day: v.number(), title: v.string(), content: v.string() }))),
     typography: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
@@ -43,6 +44,7 @@ export const update = mutation({
     downPayment: v.optional(v.number()),
     installments: v.optional(v.number()),
     scheduleImage: v.optional(v.string()),
+    schedule: v.optional(v.array(v.object({ day: v.number(), title: v.string(), content: v.string() }))),
     typography: v.optional(v.any()),
   },
   handler: async (ctx, args) => {

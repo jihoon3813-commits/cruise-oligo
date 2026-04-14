@@ -110,11 +110,47 @@ export const ConfigProvider = ({ children }) => {
     });
   };
 
-  const updateSection = async (id, data) => { ...data }; // Use spread or existing logic
+  const updateSection = async (id, data) => {
+    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order } = data;
+    await updateSectionMutation({ 
+      id, title, content, image, images, layout, style, items, typography,
+      showButton: Boolean(showButton), 
+      buttonText, buttonLink, buttonStyles,
+      bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order 
+    });
+  };
+
+  const deleteSection = async (id) => {
+    await deleteSectionMutation({ id });
+  };
+
+  const addProduct = async (data) => {
+    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage } = data;
+    await addProductMutation({ title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage });
+  };
+
+  const updateProduct = async (id, data) => {
+    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage } = data;
+    await updateProductMutation({ id, title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage });
+  };
+
+  const deleteProduct = async (id) => {
+    await deleteProductMutation({ id });
+  };
 
   return (
     <ConfigContext.Provider value={{
-      config, loading: heroData === undefined, uploadFile, updateHero, updateTheme, addSection, updateSection, deleteSection: (id) => deleteSectionMutation({id}), addProduct: (data)=>addProductMutation(data), updateProduct: (id, data)=>updateProductMutation({id, ...data}), deleteProduct: (id)=>deleteProductMutation({id})
+      config,
+      loading: heroData === undefined,
+      uploadFile,
+      updateHero,
+      updateTheme,
+      addSection,
+      updateSection,
+      deleteSection,
+      addProduct,
+      updateProduct,
+      deleteProduct
     }}>
       {children}
     </ConfigContext.Provider>

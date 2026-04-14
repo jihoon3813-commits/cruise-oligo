@@ -1,7 +1,7 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useConfig } from '../context/ConfigContext';
-import { Calendar, CreditCard, Ship, MapPin } from 'lucide-react';
+import { Calendar, CreditCard, Ship, MapPin, ArrowLeft, ChevronRight, Star, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SafeMedia from '../components/SafeMedia';
 
@@ -10,117 +10,119 @@ const ProductDetail = () => {
   const { config } = useConfig();
   const product = config.products.find(p => p.id === id);
 
-  if (!product) return <div className="container padding-y" style={{ paddingTop: '160px' }}>상품을 찾을 수 없습니다.</div>;
+  if (!product) return <div className="container" style={{ paddingTop: '160px' }}>상품을 찾을 수 없습니다.</div>;
+
+  const typo = product.typography || {};
+  const getStyle = (t, baseSize, scale = 1) => ({
+    fontSize: typo[t]?.fontSize ? `${typo[t].fontSize * scale}px` : baseSize,
+    color: typo[t]?.color,
+    fontWeight: t === 'title' || t === 'price' ? '900' : '400'
+  });
 
   return (
-    <div className="product-detail" style={{ paddingTop: '120px' }}>
-      <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px' }}>
-        {/* Header Gallery */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', height: '550px', marginBottom: '60px' }}>
-          <div style={{ overflow: 'hidden', borderRadius: '24px', boxShadow: 'var(--shadow-lg)' }}>
+    <div className="product-detail" style={{ paddingTop: '100px', paddingBottom: '100px', background: 'var(--bg-main)' }}>
+      <div className="container">
+        {/* Breadcrumb */}
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '32px', fontSize: '14px', color: 'var(--text-muted)' }}>
+          <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>홈</Link>
+          <ChevronRight size={14} />
+          <span style={{ color: 'var(--text-main)', fontWeight: '700' }}>{product.title}</span>
+        </div>
+
+        {/* Gallery Section */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', height: '600px', marginBottom: '64px' }}>
+          <div style={{ overflow: 'hidden', borderRadius: '32px', boxShadow: 'var(--shadow-lg)' }}>
             <SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
-          <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: '20px' }}>
-            <div style={{ overflow: 'hidden', borderRadius: '24px' }}>
-              <SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.7)' }} alt="" />
+          <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: '24px' }}>
+            <div style={{ overflow: 'hidden', borderRadius: '32px' }}>
+               <SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.7)' }} />
             </div>
-            <div style={{ overflow: 'hidden', borderRadius: '24px', background: 'var(--bg-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-light)' }}>
-              <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary)' }}>+{product.thumbnails.length} Photos</span>
+            <div style={{ background: 'var(--bg-sub)', borderRadius: '32px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-light)' }}>
+               <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--primary)' }}>+{product.thumbnails.length}</span>
+               <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginTop: '4px' }}>Photos</span>
             </div>
-          </d          {/* Left: Info & Schedule */}
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: '80px', alignItems: 'start' }}>
+          {/* Main Content */}
           <div>
-            <h1 style={{ 
-                fontSize: product.typography?.title?.fontSize ? `${product.typography.title.fontSize * 1.5}px` : '56px', 
-                color: product.typography?.title?.color, 
-                fontWeight: '800', marginBottom: '24px' 
-            }}>{product.title}</h1>
-            <div style={{ display: 'flex', gap: '24px', marginBottom: '48px', color: 'var(--text-muted)', fontSize: '15px', fontWeight: '600' }}>
-              <div className="flex items-center gap-2" style={{ background: 'var(--bg-sub)', padding: '8px 16px', borderRadius: '100px' }}><MapPin size={18} /> 지중해</div>
-              <div className="flex items-center gap-2" style={{ background: 'var(--bg-sub)', padding: '8px 16px', borderRadius: '100px' }}><Ship size={18} /> 최고급 크루즈</div>
-              <div className="flex items-center gap-2" style={{ background: 'var(--bg-sub)', padding: '8px 16px', borderRadius: '100px' }}><Calendar size={18} /> 14일 여정</div>
+            <h1 style={{ ...getStyle('title', '64px', 1.2), lineHeight: '1.1', marginBottom: '24px' }}>{product.title}</h1>
+            
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '48px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-sub)', padding: '10px 20px', borderRadius: '100px', fontSize: '14px', fontWeight: '700' }}>
+                 <Clock size={16} color="var(--primary)" /> 14일 여정
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-sub)', padding: '10px 20px', borderRadius: '100px', fontSize: '14px', fontWeight: '700' }}>
+                 <Ship size={16} color="var(--primary)" /> 럭셔리 크루즈
+              </div>
             </div>
 
-            <p style={{ 
-                fontSize: product.typography?.description?.fontSize ? `${product.typography.description.fontSize * 1.2}px` : '20px', 
-                color: product.typography?.description?.color || 'var(--text-muted)', 
-                lineHeight: '1.8', marginBottom: '80px' 
-            }}>
+            <p style={{ ...getStyle('description', '22px', 1.1), lineHeight: '1.8', marginBottom: '80px' }}>
               {product.description}
             </p>
 
-            <h2 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '40px' }}>럭셔리 여행 일정</h2>
-            {product.scheduleImage ? (
-              <SafeMedia src={product.scheduleImage} style={{ width: '100%', borderRadius: '32px', border: '1px solid var(--border-light)' }} />
-            ) : (
-              <div style={{ borderLeft: '3px solid var(--primary)', paddingLeft: '40px', display: 'flex', flexDirection: 'column', gap: '48px' }}>
-                {(product.schedule || []).map((item, idx) => (
-                  <div key={idx} style={{ position: 'relative' }}>
-                    <div style={{ 
-                      position: 'absolute', left: '-53px', top: '4px', width: '24px', height: '24px', 
-                      background: 'var(--primary)', borderRadius: '50%', border: '5px solid #fff', boxShadow: '0 0 0 2px var(--primary)'
-                    }} />
-                    <h3 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '12px' }}>Day {item.day}: {item.title}</h3>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '16px', lineHeight: '1.6' }}>{item.content}</p>
-                  </div>
-                ))}
-              </div>
-            )}
+            <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '80px' }}>
+              <h2 style={{ fontSize: '32px', fontWeight: '900', marginBottom: '48px' }}>상세 여행 데일리 루틴</h2>
+              {product.scheduleImage ? (
+                <SafeMedia src={product.scheduleImage} style={{ width: '100%', borderRadius: '40px', boxShadow: 'var(--shadow-md)' }} />
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+                   {(product.schedule || []).map((item, i) => (
+                     <div key={i} style={{ display: 'flex', gap: '40px' }}>
+                        <div style={{ fontSize: '14px', fontWeight: '900', color: 'var(--primary)', minWidth: '60px', paddingTop: '6px' }}>DAY 0{item.day}</div>
+                        <div>
+                           <h4 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '12px' }}>{item.title}</h4>
+                           <p style={{ color: 'var(--text-muted)', lineHeight: '1.7' }}>{item.content}</p>
+                        </div>
+                     </div>
+                   ))}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Right: Pricing Sticky */}
-          <aside>
-            <div style={{ position: 'sticky', top: '120px', background: '#fff', padding: '48px', borderRadius: '32px', boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border-light)' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '32px' }}>예약 요약</h3>
-              
-              <div style={{ marginBottom: '32px' }}>
-                <span style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.1em' }}>총 상품 금액</span>
-                <div style={{ 
-                    fontSize: product.typography?.price?.fontSize ? `${product.typography.price.fontSize * 1.5}px` : '36px', 
-                    color: product.typography?.price?.color || 'var(--primary)', 
-                    fontWeight: '900', marginTop: '8px' 
-                }}>
-                  {product.price.toLocaleString()}원
-                </div>
-              </div>
-roduct.price.toLocaleString()}원
-                </div>
-              </div>
-
-              <div style={{ padding: '24px', background: 'var(--bg-sub)', borderRadius: '20px', marginBottom: '40px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', fontWeight: '800', fontSize: '15px' }}>
-                  <CreditCard size={18} className="text-primary" /> 
-                  결제 정책 상세
-                </div>
-                {product.paymentType === 'full' ? (
-                  <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: '1.6' }}>일시불 결제 시 즉시 예약 확정 및 프리미엄 라운지 이용권이 제공됩니다.</p>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>선불 계약금</span>
-                      <span style={{ fontWeight: '800', fontSize: '16px' }}>{product.downPayment.toLocaleString()}원</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>납부 기간</span>
-                      <span style={{ fontWeight: '800', fontSize: '16px' }}>최대 {product.installments}개월</span>
-                    </div>
+          {/* Sticky Sidebar */}
+          <aside style={{ position: 'sticky', top: '120px' }}>
+            <div className="admin-card" style={{ padding: '48px', borderRadius: '40px', boxShadow: '0 40px 80px rgba(0,0,0,0.08)' }}>
+               <div style={{ marginBottom: '40px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>총 패키지 금액</span>
+                  <div style={{ ...getStyle('price', '42px', 1.2), marginTop: '8px' }}>
+                     {product.price.toLocaleString()}원
                   </div>
-                )}
-              </div>
+               </div>
 
-              <button className="luxury-btn" style={{ width: '100%', padding: '18px', borderRadius: '16px', fontSize: '16px' }}>지금 예약 신청하기</button>
-              <p style={{ textAlign: 'center', fontSize: '12px', marginTop: '20px', color: 'var(--text-muted)' }}>* 상담원 확인 후 최종 예약이 확정됩니다.</p>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '40px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px', background: 'var(--bg-sub)', borderRadius: '20px' }}>
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <CreditCard size={20} color="var(--primary)" />
+                        <span style={{ fontWeight: '700', fontSize: '14px' }}>결제 방식</span>
+                     </div>
+                     <span style={{ fontWeight: '800', fontSize: '14px' }}>{product.paymentType === 'full' ? '일시불 할인가' : '분할 납부형'}</span>
+                  </div>
+                  {product.paymentType === 'split' && (
+                    <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                          <span style={{ color: 'var(--text-muted)' }}>착수금</span>
+                          <span style={{ fontWeight: '700' }}>{product.downPayment?.toLocaleString()}원</span>
+                       </div>
+                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                          <span style={{ color: 'var(--text-muted)' }}>월 분납금</span>
+                          <span style={{ fontWeight: '700' }}>{Math.round((product.price - (product.downPayment || 0)) / (product.installments || 1)).toLocaleString()}원 x {product.installments}개월</span>
+                       </div>
+                    </div>
+                  )}
+               </div>
+
+               <button className="luxury-btn" style={{ width: '100%', padding: '20px', borderRadius: '20px', fontSize: '16px', justifyContent: 'center' }}>
+                  지금 바로 예약하기
+               </button>
+               <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)', marginTop: '20px' }}>* 전문가 상담 후 최종 예약이 확정됩니다.</p>
             </div>
           </aside>
         </div>
       </div>
-
-      <section style={{ background: 'var(--bg-sub)', padding: '120px 0', marginTop: '120px' }}>
-        <div className="container" style={{ textAlign: 'center' }}>
-            <h2 style={{ fontSize: '48px', fontWeight: '800', marginBottom: '24px' }}>특별한 여행을 시작할 준비가 되셨나요?</h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '18px', marginBottom: '48px' }}>올리고 크루즈 멤버십만을 위한 독점적인 서비스가 기다리고 있습니다.</p>
-            <button className="luxury-btn" style={{ padding: '16px 48px' }}>멤버십 가입 문의</button>
-        </div>
-      </section>
     </div>
   );
 };

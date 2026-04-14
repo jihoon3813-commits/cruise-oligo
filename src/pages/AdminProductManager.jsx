@@ -4,6 +4,85 @@ import { Plus, Trash2, Edit, Save, X, Package, CreditCard, Clock, MapPin, Upload
 import { motion, AnimatePresence } from 'framer-motion';
 import SafeMedia from '../components/SafeMedia';
 
+const MediaInput = ({ label, value, onChange, placeholder = "URL 입력 또는 업로드", uploadFile }) => {
+  const [loading, setLoading] = useState(false);
+  const fileRef = useRef();
+  const onFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setLoading(true);
+    const storageId = await uploadFile(file);
+    onChange(`storage:${storageId}`);
+    setLoading(false);
+  };
+  return (
+    <div className="form-group">
+      {label && <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>{label}</label>}
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ position: 'relative', flex: 1 }}>
+           <input className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
+           {value && value.startsWith('storage:') && <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '10px', color: 'var(--primary)', fontWeight: '700' }}>UPLOADED</div>}
+        </div>
+        <button className="luxury-btn outline" style={{ padding: '0 12px' }} onClick={() => fileRef.current.click()} disabled={loading}>
+          {loading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
+        </button>
+        <input type="file" hidden ref={fileRef} onChange={onFileChange} />
+      </div>
+    </div>
+  );
+};
+
+const PriceInput = ({ label, value, onChange }) => {
+  const [localValue, setLocalValue] = useState(value ? value.toString() : "");
+
+  useEffect(() => {
+    // Only update local value if it's different from the formatted current state
+    const currentNum = parseInt(localValue.replace(/[^0-9]/g, "")) || 0;
+    if (value !== currentNum) {
+      setLocalValue(value ? value.toString() : "");
+    }
+  }, [value]);
+
+  const handleChange = (e) => {
+    const raw = e.target.value.replace(/[^0-9]/g, "");
+    setLocalValue(raw);
+    const num = parseInt(raw) || 0;
+    onChange(num);
+  };
+
+  const displayValue = localValue ? parseInt(localValue).toLocaleString() : "";
+
+  return (
+    <div className="form-group">
+      <label className="admin-label">{label}</label>
+      <div style={{ position: 'relative' }}>
+        <input 
+          className="form-control" 
+          value={displayValue} 
+          onChange={handleChange} 
+          placeholder="0" 
+          style={{ textAlign: 'right', paddingRight: '40px' }} 
+        />
+        <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '13px', color: 'var(--text-muted)' }}>원</span>
+      </div>
+    </div>
+  );
+};
+
+const TypographyTool = ({ target, label, currentProduct, handleTypographyUpdate }) => {
+  const typo = currentProduct.typography?.[target] || {};
+  const update = (f, v) => handleTypographyUpdate(target, f, v);
+  return (
+    <div style={{ background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px', marginBottom: '16px' }}>
+      <label style={{ fontWeight: 800, fontSize: '13px', marginBottom: '12px', display: 'block' }}>{label} 스타일</label>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+        <div className="form-group"><label style={{ fontSize: '11px' }}>폰트 크기 (px)</label><input type="number" className="form-control" value={typo.fontSize || 16} onChange={e => update('fontSize', parseInt(e.target.value))} /></div>
+        <div className="form-group"><label style={{ fontSize: '11px' }}>글자 색상</label><input type="color" className="form-control" style={{ height: '38px', padding: 4 }} value={typo.color || '#000000'} onChange={e => update('color', e.target.value)} /></div>
+      </div>
+    </div>
+  );
+};
+
 const AdminProductManager = () => {
   const { config, addProduct, updateProduct, deleteProduct, uploadFile } = useConfig();
   const [isEditing, setIsEditing] = useState(false);
@@ -69,65 +148,6 @@ const AdminProductManager = () => {
     const targetTypo = typo[target] || {};
     const updatedTypo = { ...typo, [target]: { ...targetTypo, [field]: value } };
     setCurrentProduct({ ...currentProduct, typography: updatedTypo });
-  };
-
-  const MediaInput = ({ label, value, onChange, placeholder = "URL 입력 또는 업로드" }) => {
-    const [loading, setLoading] = useState(false);
-    const fileRef = useRef();
-    const onFileChange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      setLoading(true);
-      const storageId = await uploadFile(file);
-      onChange(`storage:${storageId}`);
-      setLoading(false);
-    };
-    return (
-      <div className="form-group">
-        {label && <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>{label}</label>}
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <div style={{ position: 'relative', flex: 1 }}>
-             <input className="form-control" value={value || ""} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
-             {value && value.startsWith('storage:') && <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '10px', color: 'var(--primary)', fontWeight: '700' }}>UPLOADED</div>}
-          </div>
-          <button className="luxury-btn outline" style={{ padding: '0 12px' }} onClick={() => fileRef.current.click()} disabled={loading}>
-            {loading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
-          </button>
-          <input type="file" hidden ref={fileRef} onChange={onFileChange} />
-        </div>
-      </div>
-    );
-  };
-
-  const PriceInput = ({ label, value, onChange }) => {
-    const displayValue = value ? value.toLocaleString() : "";
-    const handleChange = (e) => {
-      const val = e.target.value.replace(/[^0-9]/g, "");
-      onChange(val ? parseInt(val) : 0);
-    };
-    return (
-      <div className="form-group">
-        <label className="admin-label">{label}</label>
-        <div style={{ position: 'relative' }}>
-          <input className="form-control" value={displayValue} onChange={handleChange} placeholder="0" style={{ textAlign: 'right', paddingRight: '40px' }} />
-          <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '13px', color: 'var(--text-muted)' }}>원</span>
-        </div>
-      </div>
-    );
-  };
-
-  const TypographyTool = ({ target, label }) => {
-    const typo = currentProduct.typography?.[target] || {};
-    const update = (f, v) => handleTypographyUpdate(target, f, v);
-    return (
-      <div style={{ background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px', marginBottom: '16px' }}>
-        <label style={{ fontWeight: 800, fontSize: '13px', marginBottom: '12px', display: 'block' }}>{label} 스타일</label>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-          <div className="form-group"><label style={{ fontSize: '11px' }}>폰트 크기 (px)</label><input type="number" className="form-control" value={typo.fontSize || 16} onChange={e => update('fontSize', parseInt(e.target.value))} /></div>
-          <div className="form-group"><label style={{ fontSize: '11px' }}>글자 색상</label><input type="color" className="form-control" style={{ height: '38px', padding: 4 }} value={typo.color || '#000000'} onChange={e => update('color', e.target.value)} /></div>
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -227,7 +247,7 @@ const AdminProductManager = () => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
                             {(currentProduct.thumbnails || [""]).map((thumb, idx) => (
                                 <div key={idx} style={{ display: 'flex', gap: '10px' }}>
-                                    <MediaInput value={thumb} onChange={val => {
+                                    <MediaInput value={thumb} uploadFile={uploadFile} onChange={val => {
                                         const newThumbs = [...currentProduct.thumbnails];
                                         newThumbs[idx] = val;
                                         setCurrentProduct({...currentProduct, thumbnails: newThumbs});
@@ -279,7 +299,7 @@ const AdminProductManager = () => {
                         </div>
 
                         <div style={{ marginTop: '24px' }}>
-                            <MediaInput label="일정표 이미지 업로드 (루틴 텍스트 대신 사용 가능)" value={currentProduct.scheduleImage} onChange={val => setCurrentProduct({...currentProduct, scheduleImage: val})} />
+                            <MediaInput label="일정표 이미지 업로드 (루틴 텍스트 대신 사용 가능)" value={currentProduct.scheduleImage} uploadFile={uploadFile} onChange={val => setCurrentProduct({...currentProduct, scheduleImage: val})} />
                         </div>
                     </div>
                 </div>
@@ -287,9 +307,9 @@ const AdminProductManager = () => {
 
               {editTab === 'style' && (
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                   <TypographyTool target="title" label="상품 제목" />
-                   <TypographyTool target="price" label="상품 가격" />
-                   <TypographyTool target="description" label="상품 설명" />
+                   <TypographyTool target="title" label="상품 제목" currentProduct={currentProduct} handleTypographyUpdate={handleTypographyUpdate} />
+                   <TypographyTool target="price" label="상품 가격" currentProduct={currentProduct} handleTypographyUpdate={handleTypographyUpdate} />
+                   <TypographyTool target="description" label="상품 설명" currentProduct={currentProduct} handleTypographyUpdate={handleTypographyUpdate} />
                 </div>
               )}
 

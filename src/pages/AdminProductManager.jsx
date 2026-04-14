@@ -234,9 +234,12 @@ const AdminProductManager = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <label className="admin-label" style={{ marginBottom: 0 }}><Calendar size={16} style={{marginRight:8}}/> 상세 여행 일정 (스케줄)</label>
                             <button className="luxury-btn outline" style={{ padding: '4px 12px', fontSize: '11px' }} onClick={() => {
-                                const newSchedule = [...(currentProduct.schedule || [])];
-                                newSchedule.push({ day: newSchedule.length + 1, title: "", content: "" });
-                                setCurrentProduct({...currentProduct, schedule: newSchedule});
+                                console.log("Adding schedule item...");
+                                setCurrentProduct(prev => {
+                                  const newSchedule = [...(prev.schedule || [])];
+                                  newSchedule.push({ day: newSchedule.length + 1, title: "", content: "" });
+                                  return { ...prev, schedule: newSchedule };
+                                });
                             }}>
                                 <Plus size={12} /> 스케줄 추가
                             </button>

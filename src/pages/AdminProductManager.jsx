@@ -30,6 +30,7 @@ const AdminProductManager = () => {
       title: "",
       description: "",
       price: 0,
+      originalPrice: 0,
       thumbnails: [""],
       paymentType: "full",
       downPayment: 0,
@@ -153,7 +154,15 @@ const AdminProductManager = () => {
             <div style={{ padding: '24px' }}>
                <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '8px', color: 'var(--text-main)' }}>{product.title}</h3>
                <div style={{ display: 'flex', gap: '12px', color: 'var(--text-muted)', fontSize: '13px', marginBottom: '16px' }}><div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><MapPin size={14} /> 지중해</div><div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={14} /> 14일</div></div>
-               <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary)' }}>{product.price?.toLocaleString()}원</span><span style={{ fontSize: '11px', fontWeight: '700', padding: '4px 10px', background: 'var(--bg-sub)', color: 'var(--text-muted)', borderRadius: '6px' }}>{product.paymentType === 'full' ? '일시불' : '분할납부'}</span></div>
+               <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                 <div style={{ display: 'flex', flexDirection: 'column' }}>
+                   {product.originalPrice && product.originalPrice > product.price && (
+                     <span style={{ fontSize: '12px', color: 'var(--text-muted)', textDecoration: 'line-through', marginBottom: '2px' }}>{product.originalPrice.toLocaleString()}원</span>
+                   )}
+                   <span style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary)' }}>{product.price?.toLocaleString()}원</span>
+                 </div>
+                 <span style={{ fontSize: '11px', fontWeight: '700', padding: '4px 10px', background: 'var(--bg-sub)', color: 'var(--text-muted)', borderRadius: '6px' }}>{product.paymentType === 'full' ? '일시불' : '분할납부'}</span>
+               </div>
             </div>
           </motion.div>
         ))}
@@ -184,7 +193,8 @@ const AdminProductManager = () => {
                       <label className="admin-label">설명</label>
                       <textarea className="form-control" value={currentProduct.description} onChange={e => setCurrentProduct({...currentProduct, description: e.target.value})} rows={3} />
                   </div>
-                  <PriceInput label="기준 판매가" value={currentProduct.price} onChange={val => setCurrentProduct({...currentProduct, price: val})} />
+                  <PriceInput label="정가 (할인 전)" value={currentProduct.originalPrice || 0} onChange={val => setCurrentProduct({...currentProduct, originalPrice: val})} />
+                  <PriceInput label="기준 판매가 (할인가)" value={currentProduct.price} onChange={val => setCurrentProduct({...currentProduct, price: val})} />
                   <div>
                       <label className="admin-label">결제 타입</label>
                       <select className="form-control" value={currentProduct.paymentType} onChange={e => setCurrentProduct({...currentProduct, paymentType: e.target.value})}>

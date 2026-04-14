@@ -437,8 +437,18 @@ const Home = () => {
                            
                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid var(--border-light)', paddingTop: '20px' }}>
                               <div>
-                                 <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Starting From</span>
-                                 <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--primary)', letterSpacing: '-1px' }}>{product.price?.toLocaleString()}<small style={{fontSize:'14px', fontWeight:'700', marginLeft:'2px'}}>원</small></span>
+                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                                    {product.originalPrice && product.originalPrice > product.price && (
+                                      <span style={{ fontSize: '13px', color: 'var(--text-muted)', textDecoration: 'line-through' }}>{product.originalPrice.toLocaleString()}원</span>
+                                    )}
+                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '700' }}>Starting From</span>
+                                 </div>
+                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                                    <span style={{ fontSize: '24px', fontWeight: '900', color: 'var(--primary)', letterSpacing: '-1px' }}>{product.price?.toLocaleString()}<small style={{fontSize:'14px', fontWeight:'700', marginLeft:'2px'}}>원</small></span>
+                                    {product.originalPrice && product.originalPrice > product.price && (
+                                      <span style={{ fontSize: '14px', fontWeight: '900', color: '#ef4444' }}>{Math.round((1 - product.price / product.originalPrice) * 100)}% ↓</span>
+                                    )}
+                                 </div>
                               </div>
                               <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--bg-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', transition: '0.3s' }} className="product-go-icon">
                                  <ArrowRight size={20} />

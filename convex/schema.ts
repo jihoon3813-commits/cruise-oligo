@@ -154,6 +154,7 @@ export default defineSchema({
     title: v.string(),
     description: v.string(),
     price: v.number(),
+    originalPrice: v.optional(v.number()),
     thumbnails: v.array(v.string()),
     paymentType: v.string(),
     downPayment: v.optional(v.number()),

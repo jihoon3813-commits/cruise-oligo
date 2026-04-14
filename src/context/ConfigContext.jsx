@@ -37,6 +37,7 @@ export const ConfigProvider = ({ children }) => {
   const addReviewMutation = useMutation(api.reviews.add);
   const seedMutation = useMutation(api.init.seed);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+  const updateProductBrandingMutation = useMutation(api.siteConfig.updateProductBranding);
 
   useEffect(() => {
     if (heroData === null) {
@@ -50,6 +51,7 @@ export const ConfigProvider = ({ children }) => {
     sections: sectionsData?.sort((a,b) => (a.order || 0) - (b.order || 0)).map(s => ({ ...s, id: s._id })) || [],
     products: productsData?.map(p => ({ ...p, id: p._id })) || [],
     reviews: reviewsData?.map(r => ({ ...r, id: r._id })) || [],
+    productListBranding: heroData?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" }
   }), [heroData, sectionsData, productsData, reviewsData]);
 
   const uploadFile = async (file) => {
@@ -126,13 +128,17 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addProduct = async (data) => {
-    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage } = data;
-    await addProductMutation({ title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage });
+    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, typography } = data;
+    await addProductMutation({ title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, typography });
   };
 
   const updateProduct = async (id, data) => {
-    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage } = data;
-    await updateProductMutation({ id, title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage });
+    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, typography } = data;
+    await updateProductMutation({ id, title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, typography });
+  };
+
+  const updateProductBranding = async (data) => {
+    await updateProductBrandingMutation(data);
   };
 
   const deleteProduct = async (id) => {
@@ -151,7 +157,8 @@ export const ConfigProvider = ({ children }) => {
       deleteSection,
       addProduct,
       updateProduct,
-      deleteProduct
+      deleteProduct,
+      updateProductBranding
     }}>
       {children}
     </ConfigContext.Provider>

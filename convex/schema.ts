@@ -34,6 +34,11 @@ export default defineSchema({
           size: v.optional(v.string()), // "small", "medium", "large"
         }))
       }))),
+      productListBranding: v.optional(v.object({
+        title: v.optional(v.string()),
+        titleColor: v.optional(v.string()),
+        bgColor: v.optional(v.string()),
+      })),
     }),
   }),
   sections: defineTable({

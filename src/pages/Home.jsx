@@ -248,9 +248,13 @@ const Home = () => {
     <div className="home-clean">
       {renderHero()}
       {sections.map(section => renderSection(section))}
-      <section id="products" style={{ padding: '120px 0', background: '#fff' }}>
+      <section id="products" style={{ padding: '120px 0', background: config.productListBranding?.bgColor || '#ffffff' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: '80px' }}><h2 style={{ fontSize: '48px', fontWeight: '800' }}>추천 패키지</h2></div>
+          <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+             <h2 style={{ fontSize: '48px', fontWeight: '800', color: config.productListBranding?.titleColor || 'inherit' }}>
+                {config.productListBranding?.title || "추천 패키지"}
+             </h2>
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '32px' }}>
             {products.map(product => {
               const typo = product.typography || {};

@@ -1,17 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets } from 'lucide-react';
+import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminHomeEditor = () => {
-  const { config, updateHero, updateTheme, updateSection, addSection, deleteSection, uploadFile } = useConfig();
+  const { config, updateHero, updateTheme, updateSection, addSection, deleteSection, uploadFile, updateProductBranding } = useConfig();
   const [heroForm, setHeroForm] = useState(config.hero);
+  const [productBrandingForm, setProductBrandingForm] = useState(config.productListBranding);
+  const [activeCategory, setActiveCategory] = useState('theme'); // 'theme', 'hero', 'sections', 'productList'
   const [activeSectionId, setActiveSectionId] = useState(null);
   const [heroTab, setHeroTab] = useState('style');
   const [editTab, setEditTab] = useState('style'); 
 
   useEffect(() => {
     if (config.hero) setHeroForm(config.hero);
-  }, [config.hero]);
+    if (config.productListBranding) setProductBrandingForm(config.productListBranding);
+  }, [config]);
 
   const handleHeroSave = async () => {
     await updateHero(heroForm);
@@ -21,6 +25,13 @@ const AdminHomeEditor = () => {
   const handleThemeChange = async (theme) => {
     await updateTheme(theme);
   };
+
+  const categories = [
+    { id: 'theme', name: '전체 디자인 테마', icon: <Palette size={20} /> },
+    { id: 'hero', name: '히어로 섹션 편집', icon: <Layout size={20} /> },
+    { id: 'sections', name: '홍보 섹션 상세 관리', icon: <Layers size={20} /> },
+    { id: 'productList', name: '상품 리스트 브랜딩', icon: <Package size={20} /> },
+  ];
 
   const handleHeroTypoUpdate = (target, field, value) => {
     const typo = heroForm.typography || {};
@@ -96,6 +107,12 @@ const AdminHomeEditor = () => {
     }
   };
 
+  const handleRemoveSection = async (id) => {
+    if (window.confirm('이 섹션을 삭제하시겠습니까?')) {
+      await deleteSection(id);
+    }
+  };
+
   const handleAddNewSection = async () => {
     await addSection({
       title: "새로운 섹션",
@@ -119,12 +136,6 @@ const AdminHomeEditor = () => {
       paddingTop: 120,
       paddingBottom: 120
     });
-  };
-
-  const handleRemoveSection = async (id) => {
-    if (window.confirm('이 섹션을 삭제하시겠습니까?')) {
-      await deleteSection(id);
-    }
   };
 
   const MediaInput = ({ label, value, onChange }) => {
@@ -195,282 +206,262 @@ const AdminHomeEditor = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-      {/* Global Theme Config */}
-      <section className="admin-card">
-         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-            <div style={{ padding: '10px', background: 'rgba(37, 99, 235, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}><Palette size={24} /></div>
-            <h2 style={{ fontSize: '20px', fontWeight: '800' }}>홈페이지 전체 테마 (Color Tone)</h2>
-         </div>
-         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
-            {themes.map(t => (
-              <button key={t.id} onClick={() => handleThemeChange(t.id)} style={{ padding: '20px', borderRadius: '16px', border: config.theme === t.id ? '2px solid var(--primary)' : '1px solid var(--border-light)', background: config.theme === t.id ? 'var(--bg-sub)' : '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', transition: '0.3s' }}>
-                 <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: t.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>{t.icon}</div>
-                 <span style={{ fontWeight: '700', fontSize: '14px' }}>{t.label}</span>
-                 {config.theme === t.id && <Check size={16} color="var(--primary)" />}
-              </button>
-            ))}
-         </div>
-      </section>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      {/* Category Navigation */}
+      <div style={{ display: 'flex', gap: '8px', background: '#fff', padding: '8px', borderRadius: '16px', boxShadow: 'var(--shadow-sm)', overflowX: 'auto' }}>
+        {categories.map(cat => (
+          <button 
+            key={cat.id} 
+            onClick={() => setActiveCategory(cat.id)}
+            className={`luxury-btn ${activeCategory === cat.id ? '' : 'outline'}`}
+            style={{ padding: '10px 24px', whiteSpace: 'nowrap', borderRadius: '12px', gap: '8px' }}
+          >
+            {cat.icon} {cat.name}
+          </button>
+        ))}
+      </div>
 
-      {/* Hero Editor */}
-      <section className="admin-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ padding: '10px', background: 'rgba(37, 99, 235, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}><Monitor size={24} /></div>
-              <h2 style={{ fontSize: '20px', fontWeight: '800' }}>히어로 브랜딩 (대문) 설정</h2>
-           </div>
-           <button className="luxury-btn" onClick={handleHeroSave}><Save size={18} /> 설정 저장</button>
-        </div>
-
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '32px' }}>
-           {['style', 'content', 'visual', 'typography', 'buttons'].map(t => (
-             <button key={t} onClick={() => setHeroTab(t)} className={`luxury-btn ${heroTab === t ? '' : 'outline'}`} style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '12px' }}>{t.toUpperCase()}</button>
-           ))}
-        </div>
-
-        {heroTab === 'style' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-             {['classic', 'full-bg', 'split', 'card', 'minimal', 'video-focus'].map(s => (
-               <div key={s} onClick={() => setHeroForm({...heroForm, style: s})} style={{ padding: '20px', borderRadius: '16px', border: heroForm?.style === s ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}><p style={{ fontSize: '12px', fontWeight: '700' }}>{s.toUpperCase()}</p></div>
-             ))}
-          </div>
-        )}
-
-        {heroTab === 'content' && (
-           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div className="form-group"><label>상단 강조 문구</label><input className="form-control" value={heroForm?.aboveTitle || ""} onChange={e => setHeroForm({...heroForm, aboveTitle: e.target.value})} /></div>
-              <div className="form-group"><label>메인 타이틀</label><textarea className="form-control" value={heroForm?.title} onChange={e => setHeroForm({...heroForm, title: e.target.value})} rows={3} /></div>
-              <div className="form-group"><label>서브 타이틀</label><input className="form-control" value={heroForm?.subtitle} onChange={e => setHeroForm({...heroForm, subtitle: e.target.value})} /></div>
-              <div className="form-group"><label>하단 상세 문구</label><input className="form-control" value={heroForm?.belowTitle || ""} onChange={e => setHeroForm({...heroForm, belowTitle: e.target.value})} /></div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                 <div className="form-group"><label>가로 정렬</label><select className="form-control" value={heroForm?.textPosition} onChange={e => setHeroForm({...heroForm, textPosition: e.target.value})}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
-                 <div className="form-group"><label>세로 정렬</label><select className="form-control" value={heroForm?.verticalAlign || "middle"} onChange={e => setHeroForm({...heroForm, verticalAlign: e.target.value})}><option value="top">Top</option><option value="middle">Middle</option><option value="bottom">Bottom</option></select></div>
+      <AnimatePresence mode="wait">
+        <motion.div 
+          key={activeCategory}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+        >
+          {activeCategory === 'theme' && (
+            <section className="admin-card">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                 <div style={{ padding: '10px', background: 'rgba(37, 99, 235, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}><Palette size={24} /></div>
+                 <h2 style={{ fontSize: '20px', fontWeight: '800' }}>홈페이지 전체 디자인 테마</h2>
               </div>
-              <div className="form-group" style={{ borderTop: '1px solid var(--border-light)', paddingTop: '20px' }}>
-                 <label>히어로 섹션 좌우 여백 (px)</label>
-                 <input type="range" min="0" max="250" step="10" className="form-control" value={heroForm?.paddingX ?? 80} onChange={e => setHeroForm({...heroForm, paddingX: parseInt(e.target.value)})} />
-              </div>
-           </div>
-        )}
-
-        {heroTab === 'visual' && (
-           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-              <MediaInput label="배경 URL / 파일" value={heroForm?.bgUrl} onChange={v => setHeroForm({...heroForm, bgUrl: v})} />
-              <div className="form-group"><label>배경 타입</label><select className="form-control" value={heroForm?.bgType} onChange={e => setHeroForm({...heroForm, bgType: e.target.value})}><option value="image">Image</option><option value="video">Video</option></select></div>
-              <div className="form-group" style={{ gridColumn: 'span 2' }}><label>배경 밝기 설정 ({heroForm?.bgOpacity ?? 1}) (0: 어둡게, 1: 보통, 2: 밝게)</label><input type="range" min="0" max="2" step="0.1" className="form-control" value={heroForm?.bgOpacity ?? 1} onChange={e => setHeroForm({...heroForm, bgOpacity: parseFloat(e.target.value)})} /></div>
-           </div>
-        )}
-
-        {heroTab === 'typography' && (
-           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-              <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>메인 타이틀 폰트</label><TypographyTool data={heroForm} target="title" onUpdate={handleHeroTypoUpdate} /></div>
-              <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>서브 타이틀 폰트</label><TypographyTool data={heroForm} target="subtitle" onUpdate={handleHeroTypoUpdate} /></div>
-           </div>
-        )}
-
-        {heroTab === 'buttons' && (
-           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                 <label style={{ fontWeight: 800 }}>히어로 버튼 구성 (최대 2개)</label>
-                 <button className="luxury-btn outline" onClick={() => {
-                   const btns = heroForm.buttons || [];
-                   if (btns.length >= 2) return;
-                   const newBtn = { id: Date.now().toString(), text: "지금 시작하기", link: "/", show: true, style: { size: "medium", bgColor: "#2563EB", textColor: "#ffffff", borderColor: "#2563EB" } };
-                   setHeroForm({ ...heroForm, buttons: [...btns, newBtn] });
-                 }}><Plus size={14} /> 버튼 추가</button>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                 {(heroForm.buttons || []).map((btn, idx) => (
-                   <div key={btn.id} style={{ background: 'var(--bg-sub)', padding: '24px', borderRadius: '20px', border: '1px solid var(--border-light)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                         <span style={{ fontWeight: 800, fontSize: '14px' }}>버튼 #{idx + 1}</span>
-                         <div style={{ display: 'flex', gap: '8px' }}>
-                            <button className={`luxury-btn ${btn.show ? '' : 'outline'}`} style={{ padding: '4px 12px', fontSize: '10px' }} onClick={() => {
-                               const btns = [...heroForm.buttons];
-                               btns[idx] = { ...btns[idx], show: !btns[idx].show };
-                               setHeroForm({ ...heroForm, buttons: btns });
-                            }}>{btn.show ? '활성' : '비활성'}</button>
-                            <button style={{ color: '#ef4444', border: 'none', background: 'none' }} onClick={() => setHeroForm({ ...heroForm, buttons: heroForm.buttons.filter((_, i) => i !== idx) })}><Trash2 size={16} /></button>
-                         </div>
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                         <div className="form-group"><label style={{ fontSize: '11px' }}>버튼 문구</label><input className="form-control" value={btn.text} onChange={e => {
-                            const btns = [...heroForm.buttons]; btns[idx] = { ...btns[idx], text: e.target.value }; setHeroForm({ ...heroForm, buttons: btns });
-                         }} /></div>
-                         <div className="form-group"><label style={{ fontSize: '11px' }}>링크 URL</label><input className="form-control" value={btn.link} onChange={e => {
-                            const btns = [...heroForm.buttons]; btns[idx] = { ...btns[idx], link: e.target.value }; setHeroForm({ ...heroForm, buttons: btns });
-                         }} /></div>
-                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                            <div className="form-group"><label style={{ fontSize: '11px' }}>배경색</label><input type="color" className="form-control" style={{ height: 38, padding: 4 }} value={btn.style?.bgColor || "#2563EB"} onChange={e => {
-                               const btns = [...heroForm.buttons]; btns[idx] = { ...btns[idx], style: { ...btns[idx].style, bgColor: e.target.value } }; setHeroForm({ ...heroForm, buttons: btns });
-                            }} /></div>
-                            <div className="form-group"><label style={{ fontSize: '11px' }}>테두리색</label><input type="color" className="form-control" style={{ height: 38, padding: 4 }} value={btn.style?.borderColor || "#2563EB"} onChange={e => {
-                               const btns = [...heroForm.buttons]; btns[idx] = { ...btns[idx], style: { ...btns[idx].style, borderColor: e.target.value } }; setHeroForm({ ...heroForm, buttons: btns });
-                            }} /></div>
-                            <div className="form-group"><label style={{ fontSize: '11px' }}>글자색</label><input type="color" className="form-control" style={{ height: 38, padding: 4 }} value={btn.style?.textColor || "#ffffff"} onChange={e => {
-                               const btns = [...heroForm.buttons]; btns[idx] = { ...btns[idx], style: { ...btns[idx].style, textColor: e.target.value } }; setHeroForm({ ...heroForm, buttons: btns });
-                            }} /></div>
-                            <div className="form-group"><label style={{ fontSize: '11px' }}>크기</label><select className="form-control" value={btn.style?.size || "medium"} onChange={e => {
-                               const btns = [...heroForm.buttons]; btns[idx] = { ...btns[idx], style: { ...btns[idx].style, size: e.target.value } }; setHeroForm({ ...heroForm, buttons: btns });
-                            }}><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></div>
-                         </div>
-                      </div>
-                   </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+                 {themes.map(t => (
+                   <button key={t.id} onClick={() => handleThemeChange(t.id)} style={{ padding: '24px', borderRadius: '20px', border: config.theme === t.id ? '2px solid var(--primary)' : '1px solid var(--border-light)', background: config.theme === t.id ? 'var(--bg-sub)' : '#fff', cursor: 'pointer', textAlign: 'center', transition: '0.3s' }}>
+                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: t.color, margin: '0 auto 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>{t.icon}</div>
+                      <span style={{ fontWeight: '800', fontSize: '15px', display: 'block' }}>{t.label}</span>
+                      {config.theme === t.id && <span style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: '700', marginTop: '4px', display: 'block' }}>현재 적용됨</span>}
+                   </button>
                  ))}
               </div>
-           </div>
-        )}
-      </section>
+            </section>
+          )}
 
-      {/* Sections Config */}
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: '800' }}>홍보 섹션 상세 관리</h2>
-          <button className="luxury-btn outline" onClick={handleAddNewSection}><Plus size={16} /> 신규 섹션 추가</button>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {config.sections.map((section, index) => (
-            <div key={section.id} className="admin-card" style={{ padding: '0', overflow: 'hidden', border: activeSectionId === section.id ? '2px solid var(--primary)' : '1px solid var(--border-light)' }}>
-              <div 
-                style={{ padding: '20px 32px', background: 'var(--bg-sub)', cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}
-                onClick={() => setActiveSectionId(activeSectionId === section.id ? null : section.id)}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                     <button onClick={e => { e.stopPropagation(); handleMoveSection(section.id, 'up'); }} style={{ border: 'none', background: 'none' }}><ChevronUp size={14} /></button>
-                     <button onClick={e => { e.stopPropagation(); handleMoveSection(section.id, 'down'); }} style={{ border: 'none', background: 'none' }}><ChevronDown size={14} /></button>
-                   </div>
-                   <span style={{ fontWeight: '800' }}>{index + 1}</span>
-                   <h3 style={{ fontSize: '16px' }}>{section.title}</h3>
-                </div>
-                <button onClick={e => { e.stopPropagation(); handleRemoveSection(section.id); }} style={{ color: '#ef4444', border: 'none', background: 'none' }}><Trash2 size={18} /></button>
+          {activeCategory === 'hero' && (
+            <section className="admin-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ padding: '10px', background: 'rgba(37, 99, 235, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}><Layout size={24} /></div>
+                    <h2 style={{ fontSize: '20px', fontWeight: '800' }}>히어로 섹션 (대문) 설정</h2>
+                 </div>
+                 <button className="luxury-btn" onClick={handleHeroSave}><Save size={18} /> 설정 저장</button>
               </div>
 
-              {activeSectionId === section.id && (
-                <div style={{ padding: '32px' }}>
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
-                     {[
-                       { id: 'style', icon: <Grid size={14} />, label: 'Style' },
-                       { id: 'content', icon: <List size={14} />, label: 'Content' },
-                       { id: 'visual', icon: <Palette size={14} />, label: 'Visual' },
-                       { id: 'typography', icon: <Type size={14} />, label: 'Fonts' },
-                       { id: 'button', icon: <MousePointerClick size={14} />, label: 'Button' }
-                     ].map(t => (
-                       <button key={t.id} onClick={() => setEditTab(t.id)} className={`luxury-btn ${editTab === t.id ? '' : 'outline'}`} style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '12px' }}>
-                         {t.icon} {t.label}
-                       </button>
-                     ))}
-                  </div>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', overflowX: 'auto' }}>
+                 {['style', 'content', 'visual', 'typography', 'buttons'].map(t => (
+                   <button key={t} onClick={() => setHeroTab(t)} className={`luxury-btn ${heroTab === t ? '' : 'outline'}`} style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '11px' }}>{t.toUpperCase()}</button>
+                 ))}
+              </div>
 
-                  {editTab === 'style' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                      {[{ id: 'classic', label: 'Classic' }, { id: 'split-card', label: 'Split Card' }, { id: 'minimal-centered', label: 'Minimal' }, { id: 'gallery', label: 'Gallery' }, { id: 'feature-cards', label: 'Feature Cards' }, { id: 'process', label: 'Process' }].map(s => (
-                        <div key={s.id} onClick={() => handleSectionUpdate(section.id, 'style', s.id)} style={{ padding: '20px', borderRadius: '16px', border: section.style === s.id ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}><p style={{ fontSize: '12px', fontWeight: '700' }}>{s.label.toUpperCase()}</p></div>
+              <div style={{ background: 'var(--bg-sub)', padding: '32px', borderRadius: '24px' }}>
+                 {heroTab === 'style' && (
+                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                      {['classic', 'full-bg', 'split', 'card', 'minimal', 'video-focus'].map(s => (
+                        <div key={s} onClick={() => setHeroForm({...heroForm, style: s})} style={{ padding: '20px', borderRadius: '16px', background: '#fff', border: heroForm?.style === s ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}><p style={{ fontSize: '12px', fontWeight: '700' }}>{s.toUpperCase()}</p></div>
                       ))}
-                    </div>
-                  )}
+                   </div>
+                 )}
 
-                  {editTab === 'content' && (
+                 {heroTab === 'content' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                       <div className="form-group"><label>타이틀</label><input className="form-control" value={section.title} onChange={e => handleSectionUpdate(section.id, 'title', e.target.value)} /></div>
-                       <div className="form-group"><label>본문 내용</label><textarea className="form-control" value={section.content} onChange={e => handleSectionUpdate(section.id, 'content', e.target.value)} rows={4} /></div>
-                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
-                          <div className="form-group"><label>상단 여백 (px)</label><input type="number" className="form-control" value={section.paddingTop ?? 120} onChange={e => handleSectionUpdate(section.id, 'paddingTop', parseInt(e.target.value))} /></div>
-                          <div className="form-group"><label>하단 여백 (px)</label><input type="number" className="form-control" value={section.paddingBottom ?? 120} onChange={e => handleSectionUpdate(section.id, 'paddingBottom', parseInt(e.target.value))} /></div>
+                       <div className="form-group"><label>상단 강조 문구</label><input className="form-control" value={heroForm?.aboveTitle || ""} onChange={e => setHeroForm({...heroForm, aboveTitle: e.target.value})} /></div>
+                       <div className="form-group"><label>메인 타이틀</label><textarea className="form-control" value={heroForm?.title} onChange={e => setHeroForm({...heroForm, title: e.target.value})} rows={3} /></div>
+                       <div className="form-group"><label>서브 타이틀</label><input className="form-control" value={heroForm?.subtitle} onChange={e => setHeroForm({...heroForm, subtitle: e.target.value})} /></div>
+                       <div className="form-group"><label>하단 상세 문구</label><input className="form-control" value={heroForm?.belowTitle || ""} onChange={e => setHeroForm({...heroForm, belowTitle: e.target.value})} /></div>
+                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                          <div className="form-group"><label>가로 정렬</label><select className="form-control" value={heroForm?.textPosition} onChange={e => setHeroForm({...heroForm, textPosition: e.target.value})}><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
+                          <div className="form-group"><label>세로 정렬</label><select className="form-control" value={heroForm?.verticalAlign || "middle"} onChange={e => setHeroForm({...heroForm, verticalAlign: e.target.value})}><option value="top">Top</option><option value="middle">Middle</option><option value="bottom">Bottom</option></select></div>
                        </div>
-                       {section.style === 'feature-cards' || section.style === 'process' ? (
-                          <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                               <label style={{ fontWeight: 800 }}>항목 리스트 (Cards/Steps)</label>
-                               <button className="luxury-btn outline" onClick={() => handleAddItem(section.id)}><Plus size={14} /> 추가</button>
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                               {(section.items || []).map((item, i) => (
-                                 <div key={i} style={{ display: 'flex', gap: '12px', background: 'var(--bg-sub)', padding: '16px', borderRadius: '12px' }}>
-                                    <input className="form-control" style={{ width: '120px' }} value={item.title} onChange={e => handleUpdateItem(section.id, i, 'title', e.target.value)} />
-                                    <input className="form-control" value={item.content} onChange={e => handleUpdateItem(section.id, i, 'content', e.target.value)} />
-                                    <button onClick={() => handleRemoveItem(section.id, i)} style={{ color: '#ef4444', border: 'none', background: 'none' }}><X size={18} /></button>
-                                 </div>
-                               ))}
-                            </div>
-                          </div>
-                       ) : null}
+                       <div className="form-group" style={{ borderTop: '1px solid var(--border-light)', paddingTop: '20px' }}>
+                          <label>좌우 여백 (px) - {heroForm?.paddingX ?? 80}px</label>
+                          <input type="range" min="0" max="250" step="10" className="form-control" value={heroForm?.paddingX ?? 80} onChange={e => setHeroForm({...heroForm, paddingX: parseInt(e.target.value)})} />
+                       </div>
                     </div>
-                  )}
+                 )}
 
-                  {editTab === 'visual' && (
+                 {heroTab === 'visual' && (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                       <MediaInput label="메인 이미지 (본문 옆)" value={section.image} onChange={v => handleSectionUpdate(section.id, 'image', v)} />
-                       <MultiMediaInput label="멀티 이미지/갤러리 (슬라이드/그리드)" values={section.images} onChange={v => handleSectionUpdate(section.id, 'images', v)} />
-                       
-                       <div style={{ gridColumn: 'span 2', height: '1px', background: 'var(--border-light)', margin: '16px 0' }}></div>
-                       
-                       <div className="form-group">
-                          <label>배경 타입</label>
-                          <select className="form-control" value={section.bgType || 'color'} onChange={e => handleSectionUpdate(section.id, 'bgType', e.target.value)}>
-                             <option value="color">단색 (Solid Color)</option>
-                             <option value="image">이미지 (Image)</option>
-                             <option value="video">동영상 (Video)</option>
-                          </select>
-                       </div>
-                       
-                       {section.bgType === 'color' ? (
-                         <div className="form-group">
-                            <label>배경 색상</label>
-                            <input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={section.bgColor || '#ffffff'} onChange={e => handleSectionUpdate(section.id, 'bgColor', e.target.value)} />
-                         </div>
-                       ) : (
-                         <MediaInput 
-                           label={section.bgType === 'video' ? "배경 동영상 URL/파일" : "배경 이미지 URL/파일"} 
-                           value={section.bgUrl} 
-                           onChange={v => handleSectionUpdate(section.id, 'bgUrl', v)} 
-                         />
-                       )}
-
+                       <MediaInput label="배경 미디어" value={heroForm?.bgUrl} onChange={v => setHeroForm({...heroForm, bgUrl: v})} />
+                       <div className="form-group"><label>배경 타입</label><select className="form-control" value={heroForm?.bgType} onChange={e => setHeroForm({...heroForm, bgType: e.target.value})}><option value="image">Image</option><option value="video">Video</option></select></div>
                        <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                          <label>배경 투명도 / 이미지 밝기 ({section.bgOpacity ?? 1})</label>
-                          <input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity ?? 1} onChange={e => handleSectionUpdate(section.id, 'bgOpacity', parseFloat(e.target.value))} />
+                          <label>배경 밝기 ({heroForm?.bgOpacity ?? 1}) (0:어둡게, 1:보통, 2:밝게)</label>
+                          <input type="range" min="0" max="2" step="0.1" className="form-control" value={heroForm?.bgOpacity ?? 1} onChange={e => setHeroForm({...heroForm, bgOpacity: parseFloat(e.target.value)})} />
                        </div>
                     </div>
-                  )}
+                 )}
 
-                  {editTab === 'typography' && (
+                 {heroTab === 'typography' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                       <div><label style={{ fontWeight: 800 }}>타이틀 폰트</label><TypographyTool data={section} target="title" onUpdate={(t,f,v) => handleTypographyUpdate(section.id, t,f,v)} /></div>
-                       <div><label style={{ fontWeight: 800 }}>본문 폰트</label><TypographyTool data={section} target="content" onUpdate={(t,f,v) => handleTypographyUpdate(section.id, t,f,v)} /></div>
+                       <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>메인 타이틀 폰트</label><TypographyTool data={heroForm} target="title" onUpdate={handleHeroTypoUpdate} /></div>
+                       <div><label style={{ fontWeight: 800, marginBottom: '12px', display: 'block' }}>서브 타이틀 폰트</label><TypographyTool data={heroForm} target="subtitle" onUpdate={handleHeroTypoUpdate} /></div>
                     </div>
-                  )}
+                 )}
 
-                  {editTab === 'button' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                       <div className="form-group">
-                          <label>버튼 노출 여부</label>
-                          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                             <button className={`luxury-btn ${section.showButton ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, 'showButton', true)} style={{ flex:1 }}>ON</button>
-                             <button className={`luxury-btn ${!section.showButton ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, 'showButton', false)} style={{ flex:1 }}>OFF</button>
-                          </div>
+                 {heroTab === 'buttons' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <label style={{ fontWeight: 800 }}>히어로 버튼 구성 (최대 2개)</label>
+                          <button className="luxury-btn outline" onClick={() => {
+                            const btns = heroForm.buttons || [];
+                            if (btns.length >= 2) return;
+                            const newBtn = { id: Date.now().toString(), text: "지금 시작하기", link: "/", show: true, style: { size: "medium", bgColor: "#2563EB", textColor: "#ffffff", borderColor: "#2563EB" } };
+                            setHeroForm({ ...heroForm, buttons: [...btns, newBtn] });
+                          }}><Plus size={14} /> 버튼 추가</button>
                        </div>
-                       {section.showButton && (
-                         <>
-                           <div className="form-group"><label>버튼 문구</label><input className="form-control" value={section.buttonText || "자세히 보기"} onChange={e => handleSectionUpdate(section.id, 'buttonText', e.target.value)} /></div>
-                           <div className="form-group"><label>링크 URL</label><input className="form-control" value={section.buttonLink || ""} onChange={e => handleSectionUpdate(section.id, 'buttonLink', e.target.value)} /></div>
-                           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                              <div className="form-group"><label>배경색</label><input type="color" className="form-control" style={{height:38, padding:4}} value={section.buttonStyles?.bgColor || "#2563EB"} onChange={e => handleButtonUpdate(section.id, 'bgColor', e.target.value)} /></div>
-                              <div className="form-group"><label>테두리색</label><input type="color" className="form-control" style={{height:38, padding:4}} value={section.buttonStyles?.borderColor || "#2563EB"} onChange={e => handleButtonUpdate(section.id, 'borderColor', e.target.value)} /></div>
-                              <div className="form-group"><label>글자색</label><input type="color" className="form-control" style={{height:38, padding:4}} value={section.buttonStyles?.textColor || "#ffffff"} onChange={e => handleButtonUpdate(section.id, 'textColor', e.target.value)} /></div>
+                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                         {(heroForm.buttons || []).map((btn, idx) => (
+                           <div key={btn.id} style={{ background: '#fff', padding: '24px', borderRadius: '20px', border: '1px solid var(--border-light)' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                                 <span style={{ fontWeight: 800, fontSize: '13px' }}>버튼 #{idx+1}</span>
+                                 <button style={{ color: '#ef4444', border: 'none', background: 'none' }} onClick={() => setHeroForm({...heroForm, buttons: heroForm.buttons.filter((_,i) => i !== idx)})}><Trash2 size={16}/></button>
+                              </div>
+                              <div className="form-group"><label style={{fontSize:'11px'}}>문구</label><input className="form-control" value={btn.text} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], text:e.target.value}; setHeroForm({...heroForm, buttons:b})}} /></div>
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px' }}>
+                                 <div className="form-group"><label style={{fontSize:'11px'}}>배경색</label><input type="color" className="form-control" value={btn.style?.bgColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, bgColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} /></div>
+                                 <div className="form-group"><label style={{fontSize:'11px'}}>글자색</label><input type="color" className="form-control" value={btn.style?.textColor} onChange={e => { const b=[...heroForm.buttons]; b[idx]={...b[idx], style:{...b[idx].style, textColor:e.target.value}}; setHeroForm({...heroForm, buttons:b})}} /></div>
+                              </div>
                            </div>
-                         </>
-                       )}
+                         ))}
+                       </div>
                     </div>
-                  )}
-                </div>
-              )}
+                 )}
+              </div>
+            </section>
+          )}
+
+          {activeCategory === 'sections' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h2 style={{ fontSize: '20px', fontWeight: '800' }}>홍보 섹션 관리</h2>
+                  <button className="luxury-btn" onClick={handleAddNewSection}><Plus size={16} /> 신규 섹션 추가</button>
+               </div>
+               {config.sections.map((section, idx) => (
+                 <div key={section.id} className="admin-card" style={{ padding: '0', overflow: 'hidden' }}>
+                    <div 
+                      onClick={() => setActiveSectionId(activeSectionId === section.id ? null : section.id)}
+                      style={{ padding: '20px 32px', background: 'var(--bg-sub)', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                    >
+                       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <span style={{ fontWeight: '900', color: 'var(--primary)', opacity: 0.3 }}>{idx + 1}</span>
+                          <h3 style={{ fontSize: '16px', fontWeight: '800' }}>{section.title}</h3>
+                          <span style={{ fontSize: '11px', background: 'var(--primary)', color: '#fff', padding: '2px 8px', borderRadius: '4px' }}>{section.style?.toUpperCase()}</span>
+                       </div>
+                       <div style={{ display: 'flex', gap: '12px' }}>
+                          <button onClick={e => { e.stopPropagation(); handleMoveSection(section.id, 'up'); }} style={{ border: 'none', background: 'none' }}><ChevronUp size={18} /></button>
+                          <button onClick={e => { e.stopPropagation(); handleMoveSection(section.id, 'down'); }} style={{ border: 'none', background: 'none' }}><ChevronDown size={18} /></button>
+                          <button onClick={e => { e.stopPropagation(); handleRemoveSection(section.id); }} style={{ color: '#ef4444', border: 'none', background: 'none' }}><Trash2 size={18} /></button>
+                       </div>
+                    </div>
+
+                    {activeSectionId === section.id && (
+                       <div style={{ padding: '32px' }}>
+                          <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
+                            {['style', 'content', 'visual', 'typography', 'button'].map(t => (
+                              <button key={t} onClick={() => setEditTab(t)} className={`luxury-btn ${editTab === t ? '' : 'outline'}`} style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '11px' }}>{t.toUpperCase()}</button>
+                            ))}
+                          </div>
+                          
+                          {editTab === 'style' && (
+                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                                {['classic', 'split-card', 'minimal-centered', 'gallery', 'feature-cards', 'process'].map(s => (
+                                  <div key={s} onClick={() => handleSectionUpdate(section.id, 'style', s)} style={{ padding: '20px', borderRadius: '16px', border: section.style === s ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}><p style={{ fontSize: '11px', fontWeight: '700' }}>{s.toUpperCase()}</p></div>
+                                ))}
+                             </div>
+                          )}
+
+                          {editTab === 'content' && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                               <div className="form-group"><label>타이틀</label><input className="form-control" value={section.title} onChange={e => handleSectionUpdate(section.id, 'title', e.target.value)} /></div>
+                               <div className="form-group"><label>본문 내용</label><textarea className="form-control" value={section.content} onChange={e => handleSectionUpdate(section.id, 'content', e.target.value)} rows={4} /></div>
+                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                  <div className="form-group"><label>상단 여백</label><input type="number" className="form-control" value={section.paddingTop} onChange={e => handleSectionUpdate(section.id, 'paddingTop', parseInt(e.target.value))} /></div>
+                                  <div className="form-group"><label>하단 여백</label><input type="number" className="form-control" value={section.paddingBottom} onChange={e => handleSectionUpdate(section.id, 'paddingBottom', parseInt(e.target.value))} /></div>
+                               </div>
+                            </div>
+                          )}
+
+                          {editTab === 'visual' && (
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                               <MediaInput label="메인 이미지" value={section.image} onChange={v => handleSectionUpdate(section.id, 'image', v)} />
+                               <div className="form-group"><label>배경 타입</label><select className="form-control" value={section.bgType} onChange={e => handleSectionUpdate(section.id, 'bgType', e.target.value)}><option value="color">단색</option><option value="image">이미지</option><option value="video">동영상</option></select></div>
+                               {section.bgType === 'color' ? (
+                                  <div className="form-group"><label>배경 색상</label><input type="color" className="form-control" value={section.bgColor} onChange={e => handleSectionUpdate(section.id, 'bgColor', e.target.value)} /></div>
+                               ) : (<MediaInput label="배경 URL" value={section.bgUrl} onChange={v => handleSectionUpdate(section.id, 'bgUrl', v)} />)}
+                               <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                                  <label>배경 투명도/밝기 ({section.bgOpacity})</label>
+                                  <input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity} onChange={e => handleSectionUpdate(section.id, 'bgOpacity', parseFloat(e.target.value))} />
+                               </div>
+                            </div>
+                          )}
+
+                          {editTab === 'typography' && (
+                             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                                <div><label style={{ fontWeight: 800 }}>타이틀 폰트</label><TypographyTool data={section} target="title" onUpdate={(t,f,v) => handleTypographyUpdate(section.id, t,f,v)} /></div>
+                                <div><label style={{ fontWeight: 800 }}>본문 폰트</label><TypographyTool data={section} target="content" onUpdate={(t,f,v) => handleTypographyUpdate(section.id, t,f,v)} /></div>
+                             </div>
+                          )}
+                       </div>
+                    )}
+                 </div>
+               ))}
             </div>
-          ))}
-        </div>
-      </div>
+          )}
+
+          {activeCategory === 'productList' && (
+            <section className="admin-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ padding: '10px', background: 'rgba(37, 99, 235, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}><Package size={24} /></div>
+                    <h2 style={{ fontSize: '20px', fontWeight: '800' }}>상품 리스트 구역 브랜딩</h2>
+                 </div>
+                 <button className="luxury-btn" onClick={() => updateProductBranding(productBrandingForm)}><Save size={18} /> 설정 저장</button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                 <div className="form-group">
+                    <label>섹션 메인 타이틀</label>
+                    <input className="form-control" value={productBrandingForm?.title || "추천 패키지"} onChange={e => setProductBrandingForm({...productBrandingForm, title: e.target.value})} />
+                 </div>
+                 
+                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                    <div className="form-group">
+                       <label>타이틀 글씨 색상 (하얀 배경이면 어두운 색 권장)</label>
+                       <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>
+                          <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={productBrandingForm?.titleColor || "#000000"} onChange={e => setProductBrandingForm({...productBrandingForm, titleColor: e.target.value})} />
+                          <input className="form-control" value={productBrandingForm?.titleColor || "#000000"} onChange={e => setProductBrandingForm({...productBrandingForm, titleColor: e.target.value})} />
+                       </div>
+                    </div>
+                    <div className="form-group">
+                       <label>섹션 전체 배경색</label>
+                       <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>
+                          <input type="color" className="form-control" style={{ width: '60px', height: '42px', padding: '4px' }} value={productBrandingForm?.bgColor || "#ffffff"} onChange={e => setProductBrandingForm({...productBrandingForm, bgColor: e.target.value})} />
+                          <input className="form-control" value={productBrandingForm?.bgColor || "#ffffff"} onChange={e => setProductBrandingForm({...productBrandingForm, bgColor: e.target.value})} />
+                       </div>
+                    </div>
+                 </div>
+
+                 <div style={{ padding: '24px', background: 'var(--bg-sub)', borderRadius: '20px', border: '1px solid var(--border-light)', display: 'flex', gap: '16px' }}>
+                    <Activity size={20} color="var(--primary)" />
+                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.6' }}>
+                       <strong>디자인 팁:</strong> 다크 테마(Midnight 등)를 사용 중인데 추천 패키지 글씨가 안 보인다면, 
+                       여기서 <strong>타이틀 글씨 색상</strong>을 수동으로 검정색(#000000) 또는 테마에 맞는 색상으로 지정해 주세요.
+                    </p>
+                 </div>
+              </div>
+            </section>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };

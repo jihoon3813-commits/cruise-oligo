@@ -176,47 +176,18 @@ const ProductDetail = () => {
               boxShadow: isDark ? '0 30px 60px rgba(0,0,0,0.5)' : '0 30px 60px rgba(0,0,0,0.08)' 
             }}>
                <div style={{ marginBottom: isMobile ? '32px' : '40px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                     <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: mutedColor }}>
-                       {product.paymentType === 'split' ? '상품 결제 정보' : '총 패키지 금액'}
-                     </span>
-                     {product.paymentType === 'full' && product.originalPrice && product.originalPrice > product.price && (
-                       <span style={{ fontSize: '13px', fontWeight: '900', color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
-                         {Math.round((1 - product.price / product.originalPrice) * 100)}% 할인 적용
-                       </span>
-                     )}
-                     {product.paymentType === 'split' && (
-                       <span style={{ fontSize: '11px', fontWeight: '900', color: 'var(--primary)', background: 'var(--bg-sub)', padding: '4px 10px', borderRadius: '6px' }}>분할납부 패키지</span>
-                     )}
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', marginTop: '12px', gap: '8px' }}>
-                     {product.paymentType === 'split' ? (
-                       <>
-                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px dashed var(--border-light)', pb: '8px', marginBottom: '8px' }}>
-                            <span style={{ fontSize: '14px', color: mutedColor }}>패키지 정가</span>
-                            <span style={{ fontSize: '16px', fontWeight: '700', color: mutedColor, textDecoration: 'line-through' }}>{product.originalPrice?.toLocaleString() || product.price?.toLocaleString()}원</span>
-                         </div>
-                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                            <span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-main)' }}>예약금</span>
-                            <div style={{ ...getStyle('price', '32px', 1.2) }}>{product.downPayment?.toLocaleString()}원</div>
-                         </div>
-                         {product.balancePaymentText && (
-                           <div style={{ marginTop: '8px', padding: '16px', background: 'var(--bg-sub)', borderRadius: '12px', fontSize: '14px', fontWeight: '800', color: 'var(--primary)', lineHeight: '1.5', borderLeft: '4px solid var(--primary)' }}>
-                             {product.balancePaymentText}
-                           </div>
-                         )}
-                       </>
-                     ) : (
-                       <>
-                         {product.originalPrice && product.originalPrice > product.price && (
-                           <span style={{ fontSize: '16px', color: mutedColor, textDecoration: 'line-through', marginBottom: '2px' }}>{product.originalPrice.toLocaleString()}원</span>
-                         )}
-                         <div style={{ ...getStyle('price', '36px', 1.2) }}>
-                            {product.price.toLocaleString()}원
-                         </div>
-                       </>
-                     )}
-                  </div>
+                  <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: mutedColor }}>총 패키지 금액</span>
+                   <div style={{ marginTop: '8px' }}>
+                      {product.originalPrice > 0 && product.originalPrice > product.price && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                           <span style={{ fontSize: '15px', color: mutedColor, textDecoration: 'line-through', fontWeight: '500' }}>{product.originalPrice.toLocaleString()}원</span>
+                           <span style={{ fontSize: '16px', color: '#ef4444', fontWeight: '900' }}>{Math.round((1 - product.price / product.originalPrice) * 100)}% 할인</span>
+                        </div>
+                      )}
+                      <div style={{ ...getStyle('price', '36px', 1.2) }}>
+                         {product.price.toLocaleString()}원
+                      </div>
+                   </div>
                </div>
 
                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: isMobile ? '32px' : '40px' }}>

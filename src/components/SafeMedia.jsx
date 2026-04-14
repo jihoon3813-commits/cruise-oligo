@@ -47,7 +47,7 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "" }) => {
     return <div ref={ref} style={{ ...style, background: '#f1f5f9' }} className={className} />;
   }
 
-  const isVideo = type === 'video' || (finalSrc && (finalSrc.toLowerCase().endsWith('.mp4') || finalSrc.toLowerCase().endsWith('.webm') || finalSrc.toLowerCase().endsWith('.mov') || finalSrc.toLowerCase().includes('video')));
+  const isVideo = type === 'video' || (finalSrc && (finalSrc.endsWith('.mp4') || finalSrc.endsWith('.webm') || finalSrc.endsWith('.mov')));
   
   // YouTube detection
   const isYouTube = finalSrc?.includes('youtube.com') || finalSrc?.includes('youtu.be');
@@ -59,7 +59,7 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "" }) => {
   };
 
   return (
-    <div ref={ref} style={{ width: '100%', height: '100%', ...style, position: 'relative', overflow: 'hidden' }} className={className}>
+    <div ref={ref} style={{ ...style, position: 'relative', overflow: 'hidden' }} className={className}>
       <AnimatePresence>
         {!loaded && !isYouTube && (
            <motion.div 
@@ -71,44 +71,31 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "" }) => {
       </AnimatePresence>
 
       {isYouTube ? (
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'hidden' }}>
-          <iframe
-            src={`https://www.youtube.com/embed/${getYouTubeId(finalSrc)}?autoplay=1&mute=1&controls=0&loop=1&playlist=${getYouTubeId(finalSrc)}&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&disablekb=1&background=1`}
-            style={{ 
-              width: '100%', 
-              height: '100%',
-              minWidth: '100%',
-              minHeight: '100%',
-              objectFit: 'cover',
-              position: 'absolute', 
-              top: '50%', 
-              left: '50%', 
-              transform: 'translate(-50%, -50%) scale(1.5)', // Slightly upscale to ensure cover
-              border: 'none'
-            }}
-            allow="autoplay; encrypted-media"
-            onLoad={() => setLoaded(true)}
-          />
-        </div>
+        <iframe
+          src={`https://www.youtube.com/embed/${getYouTubeId(finalSrc)}?autoplay=1&mute=1&controls=0&loop=1&playlist=${getYouTubeId(finalSrc)}&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&disablekb=1`}
+          style={{ 
+            width: '300%', // Over-scale to hide black bars/branding
+            height: '100%', 
+            position: 'absolute', 
+            top: '50%', 
+            left: '50%', 
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none' 
+          }}
+          frameBorder="0"
+          allow="autoplay; encrypted-media"
+          onLoad={() => setLoaded(true)}
+        />
       ) : isVideo ? (
         <video 
-          key={finalSrc}
           src={finalSrc} 
           autoPlay 
           loop 
           muted 
           playsInline 
-          preload="auto" 
+          preload="metadata" 
           onLoadedData={() => setLoaded(true)}
-          style={{ 
-            width: '100%', 
-            height: '100%', 
-            objectFit: 'cover', 
-            display: 'block',
-            position: 'absolute',
-            top: 0,
-            left: 0
-          }} 
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} 
         />
       ) : (
         <motion.img 

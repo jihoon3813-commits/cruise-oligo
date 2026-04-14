@@ -149,7 +149,6 @@ export default defineSchema({
     paddingBottom: v.optional(v.number()), // px
     order: v.optional(v.number()),
     menuName: v.optional(v.string()), // For dynamic navigation
-    type: v.optional(v.string()), // "custom", "products", "reviews"
   }),
   products: defineTable({
     title: v.string(),
@@ -160,7 +159,6 @@ export default defineSchema({
     paymentType: v.string(),
     downPayment: v.optional(v.number()),
     installments: v.optional(v.number()),
-    balancePaymentText: v.optional(v.string()), // New: custom text for remaining payment
     schedule: v.optional(v.array(v.object({ day: v.number(), title: v.string(), content: v.string() }))),
     scheduleImage: v.optional(v.string()),
     typography: v.optional(v.any()),

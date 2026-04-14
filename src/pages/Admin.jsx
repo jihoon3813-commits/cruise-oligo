@@ -156,9 +156,9 @@ const Admin = () => {
         </nav>
 
         <div style={{ marginTop: 'auto', borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
-          <Link to="/" className="flex items-center gap-3 text-sm font-semibold color-text-muted hover:color-primary transition-all">
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', color: 'var(--text-muted)', textDecoration: 'none', transition: '0.3s' }} onMouseEnter={e => e.currentTarget.style.color='var(--primary)'} onMouseLeave={e => e.currentTarget.style.color='var(--text-muted)'}>
             <LogOut size={18} />
-            <span>프론트 사이트</span>
+            <span style={{ fontSize: '14px', fontWeight: '600' }}>프론트 사이트</span>
           </Link>
         </div>
       </aside>

@@ -65,7 +65,7 @@ const MediaInput = ({ label, value, onChange, uploadFile, accept }) => {
   const renderPreview = () => {
     if (!value) return null;
     const isStorageId = value.startsWith('storage:');
-    const convexSiteUrl = import.meta.env.VITE_CONVEX_SITE_URL || import.meta.env.VITE_CONVEX_URL.replace('.cloud', '.site');
+    const convexSiteUrl = import.meta.env.VITE_CONVEX_SITE_URL || (import.meta.env.VITE_CONVEX_URL ? import.meta.env.VITE_CONVEX_URL.replace('.cloud', '.site') : '');
     const finalUrl = isStorageId ? `${convexSiteUrl}/api/storage?id=${value.split(':')[1]}` : value;
     
     const isYouTube = finalUrl?.includes('youtube.com') || finalUrl?.includes('youtu.be');

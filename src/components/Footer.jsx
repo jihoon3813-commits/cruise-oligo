@@ -63,7 +63,7 @@ const Footer = () => {
         <div style={{ borderTop: `1px solid ${hasLogo ? 'var(--border-light)' : 'rgba(255,255,255,0.05)'}`, paddingTop: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: hasLogo ? '#94a3b8' : '#555', fontSize: '12px' }}>
           <p>© 2026 올리고크루즈 멤버십. All rights reserved.</p>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-            <Link to="/admin" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none', opacity: 0.3, fontSize: '10px' }}>Admin</Link>
+            <Link to="/admin" style={{ color: 'inherit', textDecoration: 'none', opacity: 0.5, fontSize: '11px' }}>Admin Console</Link>
           </div>
         </div>
       </div>

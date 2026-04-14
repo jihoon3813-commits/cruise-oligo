@@ -24,6 +24,16 @@ const AdminHomeEditor = () => {
     alert('홈페이지 히어로 설정이 저장되었습니다.');
   };
 
+  const handleProductBrandingSave = async () => {
+    await updateProductBranding(productBrandingForm);
+    alert('상품 리스트 브랜딩 설정이 저장되었습니다.');
+  };
+
+  const handleReviewBrandingSave = async () => {
+    await updateReviewBranding(reviewBrandingForm);
+    alert('여행후기 섹션 브랜딩 설정이 저장되었습니다.');
+  };
+
   const handleThemeChange = async (theme) => {
     await updateTheme(theme);
   };
@@ -427,7 +437,7 @@ const AdminHomeEditor = () => {
                     <div style={{ padding: '10px', background: 'rgba(37, 99, 235, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}><Package size={24} /></div>
                     <h2 style={{ fontSize: '20px', fontWeight: '800' }}>상품 리스트 구역 브랜딩</h2>
                  </div>
-                 <button className="luxury-btn" onClick={() => updateProductBranding(productBrandingForm)}><Save size={18} /> 설정 저장</button>
+                 <button className="luxury-btn" onClick={handleProductBrandingSave}><Save size={18} /> 설정 저장</button>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -471,7 +481,7 @@ const AdminHomeEditor = () => {
                     <div style={{ padding: '10px', background: 'rgba(37, 99, 235, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}><Activity size={24} /></div>
                     <h2 style={{ fontSize: '20px', fontWeight: '800' }}>메인 여행후기 섹션 브랜딩</h2>
                  </div>
-                 <button className="luxury-btn" onClick={() => updateReviewBranding(reviewBrandingForm)}><Save size={18} /> 설정 저장</button>
+                 <button className="luxury-btn" onClick={handleReviewBrandingSave}><Save size={18} /> 설정 저장</button>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>

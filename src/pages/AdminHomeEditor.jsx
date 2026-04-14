@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles, PlusCircle, XCircle, CreditCard, ListChecks } from 'lucide-react';
+import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles, PlusCircle, XCircle, CreditCard, ListChecks, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Improved Input Components with Local State to prevent cursor jumps ---
@@ -378,11 +378,56 @@ const AdminHomeEditor = () => {
 
               <div style={{ background: 'var(--bg-sub)', padding: '32px', borderRadius: '24px' }}>
                  {heroTab === 'style' && (
-                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                      {['classic', 'full-bg', 'split', 'card', 'minimal', 'video-focus'].map(s => (
-                        <div key={s} onClick={() => setHeroForm({...heroForm, style: s})} style={{ padding: '20px', borderRadius: '16px', background: '#fff', border: heroForm?.style === s ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}><p style={{ fontSize: '12px', fontWeight: '700' }}>{s.toUpperCase()}</p></div>
-                      ))}
-                   </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                      <div className="form-group">
+                        <label style={{ fontSize: '13px', fontWeight: '800', marginBottom: '16px', display: 'block' }}>히어로 레이아웃 스타일</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                          {['classic', 'full-bg', 'split', 'card', 'minimal', 'video-focus'].map(s => (
+                            <div key={s} onClick={() => setHeroForm({...heroForm, style: s})} style={{ padding: '20px', borderRadius: '16px', background: '#fff', border: heroForm?.style === s ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}><p style={{ fontSize: '12px', fontWeight: '700' }}>{s.toUpperCase()}</p></div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
+                        <label style={{ fontSize: '13px', fontWeight: '800', marginBottom: '16px', display: 'block' }}>텍스트 정렬 (가로)</label>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                          {[
+                            { id: 'left', label: '왼쪽', icon: <AlignLeft size={16}/> },
+                            { id: 'center', label: '가운데', icon: <AlignCenter size={16}/> },
+                            { id: 'right', label: '오른쪽', icon: <AlignRight size={16}/> }
+                          ].map(opt => (
+                            <button 
+                              key={opt.id} 
+                              onClick={() => setHeroForm({ ...heroForm, textPosition: opt.id })}
+                              className={`luxury-btn ${heroForm?.textPosition === opt.id ? '' : 'outline'}`}
+                              style={{ flex: 1, gap: '8px', padding: '12px', borderRadius: '12px' }}
+                            >
+                              {opt.icon} {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
+                        <label style={{ fontSize: '13px', fontWeight: '800', marginBottom: '16px', display: 'block' }}>수직 정렬 (세로)</label>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                          {[
+                            { id: 'top', label: '상단' },
+                            { id: 'center', label: '중앙' },
+                            { id: 'bottom', label: '하단' }
+                          ].map(v => (
+                            <button 
+                              key={v.id} 
+                              onClick={() => setHeroForm({ ...heroForm, verticalAlign: v.id })}
+                              className={`luxury-btn ${heroForm?.verticalAlign === v.id ? '' : 'outline'}`}
+                              style={{ flex: 1, padding: '12px', borderRadius: '12px' }}
+                            >
+                              {v.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                  )}
 
                  {heroTab === 'content' && (

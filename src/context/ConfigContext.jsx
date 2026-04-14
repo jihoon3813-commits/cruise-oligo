@@ -52,8 +52,8 @@ export const ConfigProvider = ({ children }) => {
     sections: sectionsData?.sort((a,b) => (a.order || 0) - (b.order || 0)).map(s => ({ ...s, id: s._id })) || [],
     products: productsData?.map(p => ({ ...p, id: p._id })) || [],
     reviews: reviewsData?.map(r => ({ ...r, id: r._id })) || [],
-    productListBranding: heroData?.hero?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" },
-    reviewSectionBranding: heroData?.hero?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" }
+    productListBranding: heroData?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" },
+    reviewSectionBranding: heroData?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" }
   }), [heroData, sectionsData, productsData, reviewsData]);
 
   const uploadFile = async (file) => {

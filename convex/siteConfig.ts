@@ -27,13 +27,7 @@ export const updateHero = mutation({
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("siteConfig").first();
     if (existing) {
-      // Preserve existing branding when patching hero
-      await ctx.db.patch(existing._id, { 
-        hero: { 
-          ...existing.hero, 
-          ...args 
-        } 
-      });
+      await ctx.db.patch(existing._id, { hero: args });
     } else {
       await ctx.db.insert("siteConfig", { hero: args });
     }
@@ -59,12 +53,7 @@ export const updateProductBranding = mutation({
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("siteConfig").first();
     if (existing) {
-      await ctx.db.patch(existing._id, { 
-        hero: { 
-          ...existing.hero, 
-          productListBranding: args 
-        } 
-      });
+      await ctx.db.patch(existing._id, { productListBranding: args });
     }
   },
 });
@@ -80,12 +69,7 @@ export const updateReviewBranding = mutation({
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("siteConfig").first();
     if (existing) {
-      await ctx.db.patch(existing._id, { 
-        hero: { 
-          ...existing.hero, 
-          reviewSectionBranding: args 
-        } 
-      });
+      await ctx.db.patch(existing._id, { reviewSectionBranding: args });
     }
   },
 });

@@ -51,32 +51,34 @@ export const ConfigProvider = ({ children }) => {
     }
   }, [heroData, seedMutation]);
 
-  const config = useMemo(() => ({
-    theme: heroData?.theme || "white",
-    hero: heroData?.hero || DEFAULT_CONFIG.hero,
-    sections: sectionsData?.sort((a,b) => (a.order || 0) - (b.order || 0)).map(s => ({ ...s, id: s._id })) || [],
-    products: productsData?.map(p => ({ ...p, id: p._id })) || [],
-    reviews: reviewsData?.map(r => ({ ...r, id: r._id })) || [],
-    productListBranding: heroData?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" },
-    reviewSectionBranding: heroData?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" },
-    productDetailBranding: heroData?.productDetailBranding || { layout: "luxury", theme: "light", titleColor: "#0F172A", priceColor: "var(--primary)", accentColor: "var(--primary)", buttonColor: "var(--primary)", buttonTextColor: "#ffffff" },
-    privacyPolicy: heroData?.privacyPolicy || "개인정보 수집 및 이용에 동의합니다.",
-    logo: heroData?.logo,
-    favicon: heroData?.favicon,
-    ogImage: heroData?.ogImage,
-    metaDescription: heroData?.metaDescription || "올리고 크루즈 - 프리미엄 크루즈 멤버십 서비스"
-  }), [heroData, sectionsData, productsData, reviewsData]);
+  const resolvedLogo = useQuery(api.files.getUrl, heroData?.logo?.startsWith('storage:') ? { storageId: heroData.logo.split('storage:')[1] } : "skip");
+  const resolvedFavicon = useQuery(api.files.getUrl, heroData?.favicon?.startsWith('storage:') ? { storageId: heroData.favicon.split('storage:')[1] } : "skip");
+  const resolvedOgImage = useQuery(api.files.getUrl, heroData?.ogImage?.startsWith('storage:') ? { storageId: heroData.ogImage.split('storage:')[1] } : "skip");
 
-  const resolvedLogo = useQuery(api.files.getUrl, config.logo?.startsWith('storage:') ? { storageId: config.logo.split('storage:')[1] } : "skip");
-  const resolvedFavicon = useQuery(api.files.getUrl, config.favicon?.startsWith('storage:') ? { storageId: config.favicon.split('storage:')[1] } : "skip");
-  const resolvedOgImage = useQuery(api.files.getUrl, config.ogImage?.startsWith('storage:') ? { storageId: config.ogImage.split('storage:')[1] } : "skip");
+  const config = useMemo(() => {
+    const raw = {
+      theme: heroData?.theme || "white",
+      hero: heroData?.hero || DEFAULT_CONFIG.hero,
+      sections: sectionsData?.sort((a,b) => (a.order || 0) - (b.order || 0)).map(s => ({ ...s, id: s._id })) || [],
+      products: productsData?.map(p => ({ ...p, id: p._id })) || [],
+      reviews: reviewsData?.map(r => ({ ...r, id: r._id })) || [],
+      productListBranding: heroData?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" },
+      reviewSectionBranding: heroData?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" },
+      productDetailBranding: heroData?.productDetailBranding || { layout: "luxury", theme: "light", titleColor: "#0F172A", priceColor: "var(--primary)", accentColor: "var(--primary)", buttonColor: "var(--primary)", buttonTextColor: "#ffffff" },
+      privacyPolicy: heroData?.privacyPolicy || "개인정보 수집 및 이용에 동의합니다.",
+      logo: heroData?.logo,
+      favicon: heroData?.favicon,
+      ogImage: heroData?.ogImage,
+      metaDescription: heroData?.metaDescription || "올리고 크루즈 - 프리미엄 크루즈 멤버십 서비스"
+    };
 
-  const finalConfig = useMemo(() => ({
-    ...config,
-    logoUrl: config.logo?.startsWith('storage:') ? resolvedLogo : config.logo,
-    faviconUrl: config.favicon?.startsWith('storage:') ? resolvedFavicon : config.favicon,
-    ogImageUrl: config.ogImage?.startsWith('storage:') ? resolvedOgImage : config.ogImage,
-  }), [config, resolvedLogo, resolvedFavicon, resolvedOgImage]);
+    return {
+       ...raw,
+       logoUrl: raw.logo?.startsWith('storage:') ? resolvedLogo : raw.logo,
+       faviconUrl: raw.favicon?.startsWith('storage:') ? resolvedFavicon : raw.favicon,
+       ogImageUrl: raw.ogImage?.startsWith('storage:') ? resolvedOgImage : raw.ogImage,
+    };
+  }, [heroData, sectionsData, productsData, reviewsData, resolvedLogo, resolvedFavicon, resolvedOgImage]);
 
   const uploadFile = async (file) => {
     const postUrl = await generateUploadUrl();

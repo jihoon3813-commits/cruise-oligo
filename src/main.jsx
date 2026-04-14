@@ -12,9 +12,8 @@ if (!convexUrl && import.meta.env.DEV) {
 }
 const convex = new ConvexReactClient(convexUrl || "https://dummy.convex.cloud");
 
-// Determine basename dynamically for GitHub Pages
-const isProd = import.meta.env.PROD;
-const basename = isProd ? '/cruise-oligo' : '/';
+// Determine basename dynamically.
+const basename = import.meta.env.BASE_URL || '/';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

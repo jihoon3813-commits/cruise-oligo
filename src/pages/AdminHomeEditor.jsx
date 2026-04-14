@@ -620,7 +620,21 @@ const AdminHomeEditor = () => {
                                      <label style={{ fontWeight: 800 }}>상세 아이템/투어 카드 리스트</label>
                                      <button className="luxury-btn outline" style={{ padding: '6px 12px', fontSize: '11px' }} onClick={() => {
                                         const items = section.items || [];
-                                        const newItem = { id: Date.now().toString(), title: "새로운 항목", content: "설명", aboveTitle: "", aboveTitle2: "", tag: "", number: (items.length + 1).toString().padStart(2, '0'), highlights: [], highlightStyle: "dot" };
+                                        const newItem = { 
+                                           id: Date.now().toString(), 
+                                           title: "새로운 항목", 
+                                           content: "설명", 
+                                           aboveTitle: "", 
+                                           aboveTitle2: "", 
+                                           tag: "", 
+                                           number: (items.length + 1).toString().padStart(2, '0'), 
+                                           highlights: [], 
+                                           highlightStyle: "dot",
+                                           showButton: false,
+                                           buttonText: "자세히 보기",
+                                           buttonLink: "/",
+                                           buttonStyles: { bgColor: "#2563EB", textColor: "#ffffff", borderColor: "#2563EB" }
+                                        };
                                         handleSectionUpdate(section.id, { ...section, items: [...items, newItem] });
                                      }}><Plus size={14} /> 추가</button>
                                   </div>
@@ -679,6 +693,30 @@ const AdminHomeEditor = () => {
                                                       <input type="color" className="form-control" value={item.typography?.content?.color || "#64748B"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], typography: { ...ni[i].typography, content: { ...ni[i].typography?.content, color: e.target.value } } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} />
                                                    </div>
                                                 </div>
+                                             </div>
+
+                                             <div style={{ gridColumn: 'span 2', background: 'rgba(37, 99, 235, 0.03)', padding: '20px', borderRadius: '16px', marginTop: '12px', border: '1px solid rgba(37, 99, 235, 0.1)' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                                   <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '6px' }}><MousePointerClick size={14}/> 아이템 개별 버튼 설정</label>
+                                                   <div className="form-check form-switch" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                      <input type="checkbox" checked={item.showButton || false} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], showButton: e.target.checked}; handleSectionUpdate(section.id, { ...section, items: ni }); }} style={{ width: '32px', height: '16px', cursor: 'pointer' }} />
+                                                      <span style={{ fontSize: '10px', fontWeight: '700' }}>버튼 활성화</span>
+                                                   </div>
+                                                </div>
+                                                
+                                                {item.showButton && (
+                                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '12px' }}>
+                                                        <div className="form-group"><label style={{fontSize:'10px'}}>버튼 문구</label><DebouncedInput className="form-control" style={{fontSize:'12px'}} value={item.buttonText || "자세히 보기"} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], buttonText:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                                        <div className="form-group"><label style={{fontSize:'10px'}}>이동 링크</label><DebouncedInput className="form-control" style={{fontSize:'12px'}} value={item.buttonLink || "/"} onChange={val => { const ni=[...section.items]; ni[i]={...ni[i], buttonLink:val}; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                                     </div>
+                                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                                                        <div className="form-group"><label style={{fontSize:'9px'}}>배경색</label><input type="color" className="form-control" style={{height:'32px', padding:'2px'}} value={item.buttonStyles?.bgColor || "#2563EB"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], buttonStyles: { ...ni[i].buttonStyles, bgColor: e.target.value } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                                        <div className="form-group"><label style={{fontSize:'9px'}}>글자색</label><input type="color" className="form-control" style={{height:'32px', padding:'2px'}} value={item.buttonStyles?.textColor || "#ffffff"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], buttonStyles: { ...ni[i].buttonStyles, textColor: e.target.value } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                                        <div className="form-group"><label style={{fontSize:'9px'}}>테두리색</label><input type="color" className="form-control" style={{height:'32px', padding:'2px'}} value={item.buttonStyles?.borderColor || "#2563EB"} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], buttonStyles: { ...ni[i].buttonStyles, borderColor: e.target.value } }; handleSectionUpdate(section.id, { ...section, items: ni }); }} /></div>
+                                                     </div>
+                                                  </div>
+                                                )}
                                              </div>
                                           </div>
                                        </div>
@@ -807,7 +845,7 @@ const AdminHomeEditor = () => {
                     <DebouncedInput className="form-control" value={productBrandingForm?.title || "추천 패키지"} onChange={val => setProductBrandingForm({...productBrandingForm, title: val})} />
                  </div>
                  
-                 <div style={{ display: 'grid', gridTemplateColumns: 'fr 1fr', gap: '24px' }}>
+                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
                     <div className="form-group">
                        <label>타이틀 글씨 색상</label>
                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>

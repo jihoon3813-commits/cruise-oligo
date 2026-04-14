@@ -91,6 +91,15 @@ export default defineSchema({
       icon: v.optional(v.string()),
       highlights: v.optional(v.array(v.string())), // Bullet points
       highlightStyle: v.optional(v.string()), // Bullet style
+      showButton: v.optional(v.boolean()),
+      buttonText: v.optional(v.string()),
+      buttonLink: v.optional(v.string()),
+      buttonStyles: v.optional(v.object({
+        bgColor: v.optional(v.string()),
+        borderColor: v.optional(v.string()),
+        textColor: v.optional(v.string()),
+        size: v.optional(v.string()), // "small", "medium", "large"
+      })),
       typography: v.optional(v.object({
         above: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
         title: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),

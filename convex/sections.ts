@@ -32,6 +32,10 @@ const itemsValidator = v.optional(v.array(v.object({
   icon: v.optional(v.string()),
   highlights: v.optional(v.array(v.string())),
   highlightStyle: v.optional(v.string()),
+  showButton: v.optional(v.boolean()),
+  buttonText: v.optional(v.string()),
+  buttonLink: v.optional(v.string()),
+  buttonStyles: buttonStylesValidator,
   typography: v.optional(v.object({
     above: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
     title: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),

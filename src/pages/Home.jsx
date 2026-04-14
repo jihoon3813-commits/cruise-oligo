@@ -267,7 +267,31 @@ const Home = () => {
                                      </ul>
                                   </div>
                                )}
-                               <div style={{ marginTop: '24px' }}><CustomButton section={{ ...section, buttonText: "상세 정보 보기 >", showButton: true }} isSmall={true} /></div>
+                               {item.showButton ? (
+                                  <div style={{ marginTop: '24px' }}>
+                                    <Link 
+                                      to={item.buttonLink || "/"} 
+                                      style={{ 
+                                        display: 'block',
+                                        textAlign: 'center',
+                                        padding: '12px 24px',
+                                        borderRadius: '100px',
+                                        background: item.buttonStyles?.bgColor || 'var(--primary)',
+                                        color: item.buttonStyles?.textColor || '#ffffff',
+                                        border: `2px solid ${item.buttonStyles?.borderColor || item.buttonStyles?.bgColor || 'var(--primary)'}`,
+                                        textDecoration: 'none',
+                                        fontWeight: '800',
+                                        fontSize: '14px',
+                                        transition: '0.3s',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                      }}
+                                    >
+                                      {item.buttonText || "자세히 보기"}
+                                    </Link>
+                                  </div>
+                                ) : (
+                                  <div style={{ marginTop: '24px' }}><CustomButton section={{ ...section, buttonText: "상세 정보 보기 >", showButton: true }} isSmall={true} /></div>
+                                )}
                             </div>
                          </motion.div>
                       ))

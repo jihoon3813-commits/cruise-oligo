@@ -4,10 +4,12 @@ import { useConfig } from '../context/ConfigContext';
 import { Calendar, CreditCard, Ship, MapPin, ArrowLeft, ChevronRight, Star, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SafeMedia from '../components/SafeMedia';
+import BookingModal from '../components/BookingModal';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { config } = useConfig();
+  const [isBookingOpen, setIsBookingOpen] = React.useState(false);
   const product = config.products.find(p => p.id === id);
   const branding = config.productDetailBranding || {};
 
@@ -187,6 +189,7 @@ const ProductDetail = () => {
 
                <button 
                   className="luxury-btn" 
+                  onClick={() => setIsBookingOpen(true)}
                   style={{ 
                     width: '100%', 
                     padding: '20px', 
@@ -197,13 +200,20 @@ const ProductDetail = () => {
                     color: branding.buttonTextColor || '#ffffff'
                   }}
                >
-                  지금 바로 예약하기
+                  전문 상담 신청하기
                </button>
                <p style={{ textAlign: 'center', fontSize: '12px', color: mutedColor, marginTop: '20px' }}>* 전문가 상담 후 최종 예약이 확정됩니다.</p>
             </div>
           </aside>
         </div>
       </div>
+      
+      <BookingModal 
+        isOpen={isBookingOpen} 
+        onClose={() => setIsBookingOpen(false)} 
+        productTitle={product.title}
+        accentColor={branding.buttonColor || 'var(--primary)'}
+      />
     </div>
   );
 };

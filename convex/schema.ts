@@ -153,4 +153,11 @@ export default defineSchema({
     content: v.string(),
     images: v.optional(v.array(v.string())),
   }),
+  reservations: defineTable({
+    name: v.string(),
+    phone: v.string(),
+    productTitle: v.string(),
+    notes: v.optional(v.string()),
+    status: v.string(), // "pending", "contacted", "completed"
+  }),
 });

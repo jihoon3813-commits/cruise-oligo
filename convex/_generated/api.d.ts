@@ -11,6 +11,7 @@
 import type * as files from "../files.js";
 import type * as init from "../init.js";
 import type * as products from "../products.js";
+import type * as reservations from "../reservations.js";
 import type * as reviews from "../reviews.js";
 import type * as sections from "../sections.js";
 import type * as siteConfig from "../siteConfig.js";
@@ -25,6 +26,7 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   init: typeof init;
   products: typeof products;
+  reservations: typeof reservations;
   reviews: typeof reviews;
   sections: typeof sections;
   siteConfig: typeof siteConfig;

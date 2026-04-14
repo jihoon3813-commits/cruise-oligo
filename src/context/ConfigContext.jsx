@@ -40,6 +40,8 @@ export const ConfigProvider = ({ children }) => {
   const updateProductBrandingMutation = useMutation(api.siteConfig.updateProductBranding);
   const updateReviewBrandingMutation = useMutation(api.siteConfig.updateReviewBranding);
   const updateProductDetailBrandingMutation = useMutation(api.siteConfig.updateProductDetailBranding);
+  const addReservationMutation = useMutation(api.reservations.add);
+  const reservationsData = useQuery(api.reservations.list);
 
   useEffect(() => {
     if (heroData === null) {
@@ -171,6 +173,13 @@ export const ConfigProvider = ({ children }) => {
     await updateProductDetailBrandingMutation(data);
   };
 
+  const addReservation = async (data) => {
+    await addReservationMutation({
+      ...data,
+      status: "pending"
+    });
+  };
+
   const deleteProduct = async (id) => {
     await deleteProductMutation({ id });
   };
@@ -201,7 +210,9 @@ export const ConfigProvider = ({ children }) => {
       deleteReview,
       updateProductBranding,
       updateReviewBranding,
-      updateProductDetailBranding
+      updateProductDetailBranding,
+      addReservation,
+      reservations: reservationsData || []
     }}>
       {children}
     </ConfigContext.Provider>

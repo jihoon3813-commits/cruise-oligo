@@ -34,19 +34,19 @@ export default defineSchema({
           size: v.optional(v.string()), // "small", "medium", "large"
         }))
       }))),
-      productListBranding: v.optional(v.object({
-        title: v.optional(v.string()),
-        titleColor: v.optional(v.string()),
-        bgColor: v.optional(v.string()),
-      })),
-      reviewSectionBranding: v.optional(v.object({
-        show: v.optional(v.boolean()),
-        title: v.optional(v.string()),
-        titleColor: v.optional(v.string()),
-        bgColor: v.optional(v.string()),
-        layout: v.optional(v.string()), // "slider", "grid"
-      })),
     }),
+    productListBranding: v.optional(v.object({
+      title: v.optional(v.string()),
+      titleColor: v.optional(v.string()),
+      bgColor: v.optional(v.string()),
+    })),
+    reviewSectionBranding: v.optional(v.object({
+      show: v.optional(v.boolean()),
+      title: v.optional(v.string()),
+      titleColor: v.optional(v.string()),
+      bgColor: v.optional(v.string()),
+      layout: v.optional(v.string()), // "slider", "grid"
+    })),
   }),
   sections: defineTable({
     title: v.string(),
@@ -109,8 +109,9 @@ export default defineSchema({
     typography: v.optional(v.any()),
   }),
   reviews: defineTable({
-    user: v.string(),
-    rating: v.number(),
+    author: v.optional(v.string()),
+    productTitle: v.optional(v.string()),
+    rating: v.optional(v.number()),
     content: v.string(),
     images: v.optional(v.array(v.string())),
   }),

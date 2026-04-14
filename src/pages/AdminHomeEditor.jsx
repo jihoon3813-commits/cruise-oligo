@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles, PlusCircle, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Sub-components moved outside to prevent remounting on every state update ---
@@ -30,6 +30,47 @@ const MediaInput = ({ label, value, onChange, uploadFile }) => {
   );
 };
 
+const MultiMediaInput = ({ label, values = [], onChange, uploadFile }) => {
+  const [loading, setLoading] = useState(false);
+  const fileRef = useRef();
+  
+  const onFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setLoading(true);
+    const storageId = await uploadFile(file);
+    onChange([...values, `storage:${storageId}`]);
+    setLoading(false);
+  };
+
+  const removeImage = (idx) => {
+    const newValues = values.filter((_, i) => i !== idx);
+    onChange(newValues);
+  };
+
+  return (
+    <div className="form-group" style={{ marginBottom: '16px', gridColumn: 'span 2' }}>
+      <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)' }}>{label} ({values.length})</label>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '12px', marginTop: '12px' }}>
+        {values.map((url, i) => (
+          <div key={i} style={{ position: 'relative', aspectRatio: '1', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-light)' }}>
+            <img src={url.startsWith('storage:') ? `https://rich-fox-61.convex.cloud/api/storage/${url.split(':')[1]}` : url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <button onClick={() => removeImage(i)} style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,0,0,0.8)', color: '#fff', border: 'none', borderRadius: '50%', padding: '4px', cursor: 'pointer', display: 'flex' }}><X size={12}/></button>
+          </div>
+        ))}
+        <div 
+          onClick={() => fileRef.current.click()}
+          style={{ aspectRatio: '1', borderRadius: '8px', border: '2px dashed var(--border-light)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: 'var(--bg-sub)' }}
+        >
+          {loading ? <Loader2 className="animate-spin" size={20} /> : <PlusCircle size={20} color="var(--text-muted)" />}
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>추가</span>
+        </div>
+        <input type="file" ref={fileRef} hidden onChange={onFileChange} />
+      </div>
+    </div>
+  );
+};
+
 const TypographyTool = ({ data, target, onUpdate, showStyle = false }) => {
   const typo = data.typography?.[target] || {};
   const update = (field, val) => onUpdate(target, field, val);
@@ -53,7 +94,6 @@ const TypographyTool = ({ data, target, onUpdate, showStyle = false }) => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
         <div className="form-group">
           <label style={{ fontSize: '11px', fontWeight: 700 }}>색상</label>
-          {/* stopPropagation prevents parent listeners (like accordion toggles) from firing */}
           <input 
             type="color" 
             className="form-control" 
@@ -433,7 +473,7 @@ const AdminHomeEditor = () => {
                           
                           {editTab === 'style' && (
                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                                {['classic', 'split-card', 'minimal-centered', 'gallery', 'feature-cards', 'process'].map(s => (
+                                {['classic', 'split-card', 'minimal-centered', 'gallery', 'feature-cards', 'process', 'luxury-row'].map(s => (
                                   <div key={s} onClick={() => handleSectionUpdate(section.id, 'style', s)} style={{ padding: '20px', borderRadius: '16px', border: section.style === s ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}><p style={{ fontSize: '11px', fontWeight: '700' }}>{s.toUpperCase()}</p></div>
                                 ))}
                              </div>
@@ -441,9 +481,36 @@ const AdminHomeEditor = () => {
 
                           {editTab === 'content' && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                               <div className="form-group"><label>타이틀</label><input className="form-control" value={section.title} onChange={e => handleSectionUpdate(section.id, 'title', e.target.value)} /></div>
-                               <div className="form-group"><label>본문 내용</label><textarea className="form-control" value={section.content} onChange={e => handleSectionUpdate(section.id, 'content', e.target.value)} rows={4} /></div>
-                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                               <div className="form-group"><label>섹션 타이틀</label><input className="form-control" value={section.title} onChange={e => handleSectionUpdate(section.id, 'title', e.target.value)} /></div>
+                               <div className="form-group"><label>서브 설명</label><textarea className="form-control" value={section.content} onChange={e => handleSectionUpdate(section.id, 'content', e.target.value)} rows={4} /></div>
+                               
+                               <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                                     <label style={{ fontWeight: 800 }}>상세 아이템/텍스트 박스 리스트</label>
+                                     <button className="luxury-btn outline" style={{ padding: '6px 12px', fontSize: '11px' }} onClick={() => {
+                                        const items = section.items || [];
+                                        handleSectionUpdate(section.id, 'items', [...items, { id: Date.now().toString(), title: "새로운 항목", content: "설명", aboveTitle: "", tag: "", number: (items.length + 1).toString().padStart(2, '0') }]);
+                                     }}><Plus size={14} /> 추가</button>
+                                  </div>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                     {(section.items || []).map((item, i) => (
+                                       <div key={i} style={{ background: 'var(--bg-sub)', padding: '20px', borderRadius: '16px', border: '1px solid var(--border-light)' }}>
+                                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                                             <div className="form-group" style={{ width: '60px' }}><label style={{fontSize:'10px'}}>번호</label><input className="form-control" value={item.number} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], number:e.target.value}; handleSectionUpdate(section.id, 'items', ni); }} /></div>
+                                             <button style={{ color: '#ef4444', border: 'none', background: 'none' }} onClick={() => { const ni=section.items.filter((_, idx)=>idx!==i); handleSectionUpdate(section.id, 'items', ni); }}><Trash2 size={16}/></button>
+                                          </div>
+                                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                             <div className="form-group"><label style={{fontSize:'10px'}}>상단 소제목 (예: 국가)</label><input className="form-control" value={item.aboveTitle} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], aboveTitle:e.target.value}; handleSectionUpdate(section.id, 'items', ni); }} /></div>
+                                             <div className="form-group"><label style={{fontSize:'10px'}}>우측 태그 (예: 도심 출발)</label><input className="form-control" value={item.tag} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], tag:e.target.value}; handleSectionUpdate(section.id, 'items', ni); }} /></div>
+                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 타이틀</label><input className="form-control" value={item.title} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], title:e.target.value}; handleSectionUpdate(section.id, 'items', ni); }} /></div>
+                                             <div className="form-group" style={{ gridColumn: 'span 2' }}><label style={{fontSize:'10px'}}>항목 설명</label><textarea className="form-control" value={item.content} onChange={e => { const ni=[...section.items]; ni[i]={...ni[i], content:e.target.value}; handleSectionUpdate(section.id, 'items', ni); }} rows={2} /></div>
+                                          </div>
+                                       </div>
+                                     ))}
+                                  </div>
+                               </div>
+
+                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', borderTop: '1px solid var(--border-light)', paddingTop: '24px' }}>
                                   <div className="form-group"><label>상단 여백</label><input type="number" className="form-control" value={section.paddingTop} onChange={e => handleSectionUpdate(section.id, 'paddingTop', parseInt(e.target.value))} /></div>
                                   <div className="form-group"><label>하단 여백</label><input type="number" className="form-control" value={section.paddingBottom} onChange={e => handleSectionUpdate(section.id, 'paddingBottom', parseInt(e.target.value))} /></div>
                                </div>
@@ -452,22 +519,34 @@ const AdminHomeEditor = () => {
 
                           {editTab === 'visual' && (
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                               <MediaInput label="메인 이미지" value={section.image} onChange={v => handleSectionUpdate(section.id, 'image', v)} uploadFile={uploadFile} />
-                               <div className="form-group"><label>배경 타입</label><select className="form-control" value={section.bgType} onChange={e => handleSectionUpdate(section.id, 'bgType', e.target.value)}><option value="color">단색</option><option value="image">이미지</option><option value="video">동영상</option></select></div>
+                               <MediaInput label="대표 메인 이미지 (상단/좌측)" value={section.image} onChange={v => handleSectionUpdate(section.id, 'image', v)} uploadFile={uploadFile} />
+                               <div className="form-group"><label>배경 타입</label><select className="form-control" value={section.bgType} onChange={e => handleSectionUpdate(section.id, 'bgType', e.target.value)}><option value="color">단색</option><option value="image">배경 이미지</option><option value="video">배경 동영상</option></select></div>
+                               
                                {section.bgType === 'color' ? (
-                                  <div className="form-group"><label>배경 색상</label><input type="color" className="form-control" value={section.bgColor} onChange={e => handleSectionUpdate(section.id, 'bgColor', e.target.value)} onClick={e => e.stopPropagation()} /></div>
-                               ) : (<MediaInput label="배경 URL" value={section.bgUrl} onChange={v => handleSectionUpdate(section.id, 'bgUrl', v)} uploadFile={uploadFile} />)}
-                               <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                                  <div className="form-group"><label>배경 색상</label><input type="color" className="form-control" style={{ height: 42, padding: 4 }} value={section.bgColor} onChange={e => handleSectionUpdate(section.id, 'bgColor', e.target.value)} onClick={e => e.stopPropagation()} /></div>
+                               ) : (<MediaInput label="배경 미디어 URL" value={section.bgUrl} onChange={v => handleSectionUpdate(section.id, 'bgUrl', v)} uploadFile={uploadFile} />)}
+                               
+                               <div className="form-group">
                                   <label>배경 투명도/밝기 ({section.bgOpacity})</label>
                                   <input type="range" min="0" max="1" step="0.1" className="form-control" value={section.bgOpacity} onChange={e => handleSectionUpdate(section.id, 'bgOpacity', parseFloat(e.target.value))} onClick={e => e.stopPropagation()} />
-                                </div>
+                               </div>
+
+                               <MultiMediaInput label="갤러리/추가 이미지 리스트" values={section.images || []} onChange={v => handleSectionUpdate(section.id, 'images', v)} uploadFile={uploadFile} />
+                               
+                               <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                                  <label>레이아웃 방향</label>
+                                  <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+                                     <button className={`luxury-btn ${section.layout === 'left' ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, 'layout', 'left')} style={{ flex: 1 }}>기본 (이미지 좌/우)</button>
+                                     <button className={`luxury-btn ${section.layout === 'right' ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, 'layout', 'right')} style={{ flex: 1 }}>반전 (방향 바꾸기)</button>
+                                  </div>
+                               </div>
                             </div>
                           )}
 
                           {editTab === 'typography' && (
                              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                                <div><label style={{ fontWeight: 800 }}>타이틀 폰트</label><TypographyTool data={section} target="title" onUpdate={(t,f,v) => handleTypographyUpdate(section.id, t,f,v)} /></div>
-                                <div><label style={{ fontWeight: 800 }}>본문 폰트</label><TypographyTool data={section} target="content" onUpdate={(t,f,v) => handleTypographyUpdate(section.id, t,f,v)} /></div>
+                                <div><label style={{ fontWeight: 800 }}>대제목(Title) 폰트</label><TypographyTool data={section} target="title" onUpdate={(t,f,v) => handleTypographyUpdate(section.id, t,f,v)} /></div>
+                                <div><label style={{ fontWeight: 800 }}>상세내용(Content) 폰트</label><TypographyTool data={section} target="content" onUpdate={(t,f,v) => handleTypographyUpdate(section.id, t,f,v)} /></div>
                              </div>
                           )}
                        </div>

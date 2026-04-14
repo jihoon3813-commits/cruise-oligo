@@ -335,8 +335,6 @@ const Home = () => {
           {renderSection(section)}
         </React.Fragment>
       ))}
-      {!sortedSections.some(s => s.type === 'products') && renderProductSection({ id: 'fallback-p', type: 'products', title: '추천 패키지' })}
-      {!sortedSections.some(s => s.type === 'reviews') && renderReviewSection({ id: 'fallback-r', type: 'reviews', title: '여행 후기' })}
     </div>
   );
 };

@@ -137,3 +137,17 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+export const updateOrders = mutation({
+  args: {
+    orders: v.array(v.object({
+      id: v.id("sections"),
+      order: v.number(),
+    })),
+  },
+  handler: async (ctx, args) => {
+    for (const item of args.orders) {
+      await ctx.db.patch(item.id, { order: item.order });
+    }
+  },
+});

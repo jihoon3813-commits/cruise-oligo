@@ -45,6 +45,7 @@ export const ConfigProvider = ({ children }) => {
   const updateGlobalSettingsMutation = useMutation(api.siteConfig.updateGlobalSettings);
   const updateAdminPasswordMutation = useMutation(api.siteConfig.updateAdminPassword);
   const addReservationMutation = useMutation(api.reservations.add);
+  const updateSectionOrdersMutation = useMutation(api.sections.updateOrders);
   const reservationsData = useQuery(api.reservations.list);
 
   useEffect(() => {
@@ -61,7 +62,12 @@ export const ConfigProvider = ({ children }) => {
     const raw = {
       theme: heroData?.theme || "white",
       hero: heroData?.hero || DEFAULT_CONFIG.hero,
-      sections: [...(sectionsData || [])].sort((a,b) => (a.order || 0) - (b.order || 0)).map(s => ({ ...s, id: s._id })),
+      sections: [...(sectionsData || [])].sort((a,b) => {
+        const orderA = a.order ?? 0;
+        const orderB = b.order ?? 0;
+        if (orderA !== orderB) return orderA - orderB;
+        return (a._id || "").localeCompare(b._id || "");
+      }).map(s => ({ ...s, id: s._id })),
       products: productsData?.map(p => ({ ...p, id: p._id })) || [],
       reviews: reviewsData?.map(r => ({ ...r, id: r._id })) || [],
       productListBranding: heroData?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" },
@@ -131,7 +137,7 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addSection = async (data) => {
-    const { title, content, aboveTitle, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, menuName } = data;
+    const { title, content, aboveTitle, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, menuName, type } = data;
     await addSectionMutation({ 
       title, content, aboveTitle, image, images, layout, 
       style: style || "classic", 
@@ -153,7 +159,8 @@ export const ConfigProvider = ({ children }) => {
       paddingTop: paddingTop ?? 120,
       paddingBottom: paddingBottom ?? 120,
       order: config.sections.length,
-      menuName
+      menuName,
+      type
     });
   };
 
@@ -174,18 +181,22 @@ export const ConfigProvider = ({ children }) => {
     });
   };
 
+  const updateSectionOrders = async (orders) => {
+    await updateSectionOrdersMutation({ orders });
+  };
+
   const deleteSection = async (id) => {
     await deleteSectionMutation({ id });
   };
 
   const addProduct = async (data) => {
-    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography } = data;
-    await addProductMutation({ title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography });
+    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography, originalPrice, balancePaymentText } = data;
+    await addProductMutation({ title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography, originalPrice, balancePaymentText });
   };
 
   const updateProduct = async (id, data) => {
-    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography } = data;
-    await updateProductMutation({ id, title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography });
+    const { title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography, originalPrice, balancePaymentText } = data;
+    await updateProductMutation({ id, title, description, price, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography, originalPrice, balancePaymentText });
   };
 
   const updateProductBranding = async (data) => {
@@ -247,6 +258,7 @@ export const ConfigProvider = ({ children }) => {
       updateTheme,
       addSection,
       updateSection,
+      updateSectionOrders,
       deleteSection,
       addProduct,
       updateProduct,

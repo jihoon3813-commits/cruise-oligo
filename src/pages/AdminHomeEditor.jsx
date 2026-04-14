@@ -209,15 +209,16 @@ const AdminHomeEditor = () => {
     let targetIdx = direction === 'up' ? idx - 1 : idx + 1;
     if (targetIdx < 0 || targetIdx >= sections.length) return;
 
-    const current = sections[idx];
-    const target = sections[targetIdx];
+    const newSections = [...sections];
+    const item = newSections.splice(idx, 1)[0];
+    newSections.splice(targetIdx, 0, item);
 
-    console.log(`Moving section ${id} from ${idx} to ${targetIdx}`);
+    const orders = newSections.map((s, i) => ({
+      id: s.id,
+      order: i
+    }));
 
-    // Update both sections with new explicit order
-    // We send the whole section object to ensure no data loss during patch
-    await updateSection(current.id, { ...current, order: targetIdx });
-    await updateSection(target.id, { ...target, order: idx });
+    await updateSectionOrders(orders);
   };
 
   const handleCreateSection = async (type = "custom") => {

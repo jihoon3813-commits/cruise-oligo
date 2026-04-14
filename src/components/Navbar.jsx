@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Ship, Menu, X, ArrowUpRight } from 'lucide-react';
+import { useConfig } from '../context/ConfigContext';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { config } = useConfig();
   const isAdmin = location.pathname.startsWith('/admin');
 
   useEffect(() => {
@@ -22,10 +25,41 @@ const Navbar = () => {
 
   if (isAdmin) return null;
 
+  const scrollTo = (id) => {
+    if (location.pathname !== '/') {
+      navigate(`/#${id}`);
+      return;
+    }
+    const el = document.getElementById(id);
+    if (el) {
+      const offset = 80;
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = el.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+    setMobileMenuOpen(false);
+  };
+
+  // Build dynamic menu items
+  const menuItems = [
+    { name: '홈', id: 'top', type: 'scroll' },
+    ...config.sections
+      .filter(s => s.menuName)
+      .map(s => ({ name: s.menuName, id: `section-${s.id}`, type: 'scroll' })),
+    { name: '상품', id: 'products', type: 'scroll' },
+    { name: '여행후기', id: 'home-reviews', type: 'scroll' },
+  ];
+
   return (
     <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0' }}>
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+        <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <div style={{ padding: '8px', background: 'var(--primary)', borderRadius: '10px', display: 'flex' }}>
             <Ship size={24} color="#fff" />
           </div>
@@ -33,25 +67,31 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Menu */}
-        <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }} className="nav-links">
-          {['홈', '상품', '여행후기'].map((text) => (
-            <Link 
-              key={text} 
-              to={text === '홈' ? '/' : text === '여행후기' ? '/reviews' : text === '상품' ? '/#products' : `/#${text}`} 
+        <div style={{ display: 'flex', gap: '28px', alignItems: 'center' }} className="nav-links">
+          {menuItems.map((item) => (
+            <button 
+              key={item.id} 
+              onClick={() => scrollTo(item.id)}
               className="nav-link"
-              style={{ display: window.innerWidth < 768 ? 'none' : 'block' }}
+              style={{ 
+                display: window.innerWidth < 1024 ? 'none' : 'block',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'inherit'
+              }}
             >
-              {text}
-            </Link>
+              {item.name}
+            </button>
           ))}
-          <div style={{ width: '1px', height: '20px', background: 'var(--border-light)', display: window.innerWidth < 768 ? 'none' : 'block' }}></div>
+          <div style={{ width: '1px', height: '20px', background: 'var(--border-light)', display: window.innerWidth < 1024 ? 'none' : 'block' }}></div>
           <Link to="/admin" className="luxury-btn" style={{ padding: '10px 24px', fontSize: '13px' }}>
             {window.innerWidth < 768 ? '관리' : '관리자'} <ArrowUpRight size={14} />
           </Link>
           
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{ display: window.innerWidth < 768 ? 'flex' : 'none', background: 'none', border: 'none', color: 'var(--text-main)', cursor: 'pointer' }}
+            style={{ display: window.innerWidth < 1024 ? 'flex' : 'none', background: 'none', border: 'none', color: 'var(--text-main)', cursor: 'pointer' }}
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -59,20 +99,34 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div style={{ position: 'fixed', top: '70px', left: 0, width: '100%', background: 'var(--bg-main)', borderBottom: '1px solid var(--border-light)', padding: '20px', zIndex: 1000, display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }}>
-          {['홈', '상품', '여행후기'].map((text) => (
-            <Link 
-              key={text} 
-              to={text === '홈' ? '/' : text === '여행후기' ? '/reviews' : text === '상품' ? '/#products' : `/#${text}`} 
-              className="nav-link"
-              style={{ padding: '10px 0', fontSize: '18px', borderBottom: '1px solid var(--bg-sub)' }}
-            >
-              {text}
-            </Link>
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            style={{ position: 'fixed', top: '70px', left: 0, width: '100%', background: 'var(--bg-main)', borderBottom: '1px solid var(--border-light)', padding: '24px', zIndex: 1000, display: 'flex', flexDirection: 'column', gap: '8px', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}
+          >
+            {menuItems.map((item) => (
+              <button 
+                key={item.id} 
+                onClick={() => scrollTo(item.id)}
+                className="nav-link"
+                style={{ 
+                  padding: '12px 16px', 
+                  fontSize: '18px', 
+                  textAlign: 'left',
+                  background: 'none',
+                  border: 'none',
+                  borderRadius: '12px'
+                }}
+              >
+                {item.name}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };

@@ -84,6 +84,7 @@ export const add = mutation({
     paddingTop: v.optional(v.number()),
     paddingBottom: v.optional(v.number()),
     order: v.number(),
+    menuName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("sections", args);
@@ -114,6 +115,7 @@ export const update = mutation({
     paddingTop: v.optional(v.number()),
     paddingBottom: v.optional(v.number()),
     order: v.optional(v.number()),
+    menuName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { id, ...data } = args;

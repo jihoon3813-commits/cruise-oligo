@@ -168,7 +168,7 @@ const Home = () => {
     };
 
     return (
-      <section key={section.id} style={wrapperStyle}>
+      <section key={section.id} id={`section-${section.id}`} style={wrapperStyle}>
         {bgType !== 'color' && bgUrl && <div style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: bgOpacity ?? 1 }}><SafeMedia src={bgUrl} type={bgType} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
         <div style={{ position: 'absolute', inset: 0, background: bgType === 'color' ? 'transparent' : `rgba(255,255,255,${1 - (bgOpacity ?? 1)})`, zIndex: 0 }}></div>
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
@@ -332,7 +332,7 @@ const Home = () => {
     if (!rb?.show || !config.reviews?.length) return null;
     const isMobile = window.innerWidth < 768;
     return (
-      <section style={{ padding: isMobile ? '40px 0' : '80px 0', background: rb.bgColor || 'var(--bg-sub)' }}>
+      <section id="home-reviews" style={{ padding: isMobile ? '40px 0' : '80px 0', background: rb.bgColor || 'var(--bg-sub)' }}>
          <div className="container" style={{ padding: isMobile ? '0 20px' : 'inherit' }}>
             <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '80px' }}><h2 style={{ fontSize: isMobile ? '28px' : '48px', fontWeight: '800', color: rb.titleColor || 'var(--text-main)' }}>{rb.title || "여행 후기"}</h2></div>
             {(rb.layout === 'grid' || isMobile) ? (

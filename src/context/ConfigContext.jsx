@@ -95,7 +95,7 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addSection = async (data) => {
-    const { title, content, aboveTitle, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom } = data;
+    const { title, content, aboveTitle, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, menuName } = data;
     await addSectionMutation({ 
       title, content, aboveTitle, image, images, layout, 
       style: style || "classic", 
@@ -116,12 +116,13 @@ export const ConfigProvider = ({ children }) => {
       bgOpacity: bgOpacity ?? 1,
       paddingTop: paddingTop ?? 120,
       paddingBottom: paddingBottom ?? 120,
-      order: config.sections.length 
+      order: config.sections.length,
+      menuName
     });
   };
 
   const updateSection = async (id, data) => {
-    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, aboveTitle } = data;
+    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, aboveTitle, menuName } = data;
     await updateSectionMutation({ 
       id, title, content, image, images, layout, style, 
       items: (items || []).map(item => ({
@@ -133,7 +134,7 @@ export const ConfigProvider = ({ children }) => {
       showButton: Boolean(showButton), 
       buttonText, buttonLink, buttonStyles, cardStyles,
       aboveTitle,
-      bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order 
+      bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, menuName
     });
   };
 

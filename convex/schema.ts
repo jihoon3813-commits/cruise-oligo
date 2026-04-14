@@ -118,6 +118,7 @@ export default defineSchema({
     paddingTop: v.optional(v.number()), // px
     paddingBottom: v.optional(v.number()), // px
     order: v.optional(v.number()),
+    menuName: v.optional(v.string()), // For dynamic navigation
   }),
   products: defineTable({
     title: v.string(),

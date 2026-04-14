@@ -499,10 +499,21 @@ const AdminHomeEditor = () => {
                           </div>
                           
                           {editTab === 'style' && (
-                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                                {['classic', 'split-card', 'minimal-centered', 'gallery', 'feature-cards', 'process', 'luxury-row'].map(s => (
-                                  <div key={s} onClick={() => handleSectionUpdate(section.id, { ...section, style: s })} style={{ padding: '20px', borderRadius: '16px', border: section.style === s ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}><p style={{ fontSize: '11px', fontWeight: '700' }}>{s.toUpperCase()}</p></div>
-                                ))}
+                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                <div className="form-group">
+                                   <label>상단 메뉴명 (입력 시 내비게이션 바에 표시)</label>
+                                   <DebouncedInput 
+                                      className="form-control" 
+                                      placeholder="예: 멤버십 혜택, 서비스 소개 등" 
+                                      value={section.menuName || ""} 
+                                      onChange={val => handleSectionUpdate(section.id, { ...section, menuName: val })} 
+                                   />
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                                   {['classic', 'split-card', 'minimal-centered', 'gallery', 'feature-cards', 'process', 'luxury-row'].map(s => (
+                                     <div key={s} onClick={() => handleSectionUpdate(section.id, { ...section, style: s })} style={{ padding: '20px', borderRadius: '16px', border: section.style === s ? '2px solid var(--primary)' : '1px solid var(--border-light)', cursor: 'pointer', textAlign: 'center' }}><p style={{ fontSize: '11px', fontWeight: '700' }}>{s.toUpperCase()}</p></div>
+                                   ))}
+                                </div>
                              </div>
                           )}
 

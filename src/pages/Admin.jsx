@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { LayoutDashboard, Image, Package, MessageSquare, Home as HomeIcon, LogOut, ChevronRight, Settings, Bell, Search, PhoneCall, ShieldCheck } from 'lucide-react';
 import AdminHomeEditor from './AdminHomeEditor';
 import AdminProductManager from './AdminProductManager';
@@ -27,28 +28,92 @@ const Admin = () => {
 
   if (!isAuthenticated) {
     return (
-      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-sub)' }}>
-        <form onSubmit={handleLogin} style={{ background: '#fff', padding: '40px', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
-          <div style={{ width: '64px', height: '64px', background: 'var(--primary)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-            <ShieldCheck size={32} color="#fff" />
+      <div style={{ 
+        height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+        background: '#050c18', position: 'relative', overflow: 'hidden' 
+      }}>
+        {/* Decorative elements */}
+        <div style={{ position: 'absolute', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%)', top: '-100px', right: '-100px' }} />
+        <div style={{ position: 'absolute', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(37,99,235,0.03) 0%, transparent 70%)', bottom: '-200px', left: '-200px' }} />
+
+        <motion.form 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          onSubmit={handleLogin} 
+          style={{ 
+            background: 'rgba(255, 255, 255, 0.03)', 
+            backdropFilter: 'blur(20px)',
+            padding: '60px 40px', 
+            borderRadius: '40px', 
+            border: '1px solid rgba(255,255,255,0.1)',
+            width: '100%', 
+            maxWidth: '440px', 
+            textAlign: 'center',
+            zIndex: 10
+          }}
+        >
+          <div style={{ 
+            width: '80px', height: '80px', 
+            background: 'linear-gradient(135deg, #D4AF37 0%, #F5E6AD 100%)', 
+            borderRadius: '24px', 
+            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+            margin: '0 auto 32px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+            transform: 'rotate(-5deg)'
+          }}>
+            <ShieldCheck size={40} color="#050c18" strokeWidth={1.5} />
           </div>
-          <h2 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '8px' }}>Admin Login</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '32px' }}>관리자 비밀번호를 입력하세요.</p>
+
+          <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#fff', marginBottom: '12px', letterSpacing: '0.1em' }}>ADMIN KEY</h2>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', marginBottom: '40px', letterSpacing: '0.05em' }}>접속을 위해 관리자 인증번호를 입력하세요.</p>
           
-          <input 
-            type="password" 
-            className="form-control" 
-            placeholder="비밀번호 입력" 
-            value={passwordInput}
-            onChange={(e) => setPasswordInput(e.target.value)}
-            style={{ marginBottom: '16px', textAlign: 'center', fontSize: '18px', letterSpacing: '0.2em' }}
-            autoFocus
-          />
+          <div style={{ position: 'relative', marginBottom: '24px' }}>
+            <input 
+              type="password" 
+              className="form-control" 
+              placeholder="••••" 
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              style={{ 
+                height: '64px',
+                background: 'rgba(255,255,255,0.05)', 
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '16px',
+                color: '#fff',
+                fontSize: '24px',
+                letterSpacing: '0.5em',
+                textAlign: 'center',
+                transition: '0.3s'
+              }}
+              autoFocus
+            />
+          </div>
           
-          <button type="submit" className="luxury-btn" style={{ width: '100%', justifyContent: 'center', padding: '14px' }}>접속하기</button>
+          <button 
+            type="submit" 
+            className="luxury-btn" 
+            style={{ 
+              width: '100%', 
+              justifyContent: 'center', 
+              height: '56px',
+              fontSize: '16px',
+              fontWeight: '800',
+              borderRadius: '16px',
+              background: 'linear-gradient(90deg, #D4AF37, #F5E6AD)',
+              color: '#050c18',
+              border: 'none',
+              boxShadow: '0 10px 20px rgba(212,175,55,0.2)'
+            }}
+          >
+            AUTHORIZE
+          </button>
           
-          <p style={{ marginTop: '24px', fontSize: '12px', color: 'var(--text-muted)' }}>초기 비밀번호는 1111 입니다.</p>
-        </form>
+          <div style={{ marginTop: '32px' }}>
+            <Link to="/" style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px', textDecoration: 'none', fontWeight: '600', transition: '0.3s' }}>
+              HOME SITE
+            </Link>
+          </div>
+        </motion.form>
       </div>
     );
   }

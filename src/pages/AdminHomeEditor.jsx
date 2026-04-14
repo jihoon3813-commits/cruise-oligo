@@ -20,18 +20,38 @@ const AdminHomeEditor = () => {
   }, [config]);
 
   const handleHeroSave = async () => {
-    await updateHero(heroForm);
-    alert('홈페이지 히어로 설정이 저장되었습니다.');
+    console.log("Saving hero...", heroForm);
+    try {
+      await updateHero(heroForm);
+      alert('홈페이지 히어로 설정이 저장되었습니다.');
+    } catch (e) {
+      console.error("Hero save failed:", e);
+      alert('저장 실패: ' + e.message);
+    }
   };
 
   const handleProductBrandingSave = async () => {
-    await updateProductBranding(productBrandingForm);
-    alert('상품 리스트 브랜딩 설정이 저장되었습니다.');
+    console.log("Saving product branding...", productBrandingForm);
+    try {
+      if (!productBrandingForm) throw new Error("브랜딩 데이터가 없습니다.");
+      await updateProductBranding(productBrandingForm);
+      alert('상품 리스트 브랜딩 설정이 저장되었습니다.');
+    } catch (e) {
+      console.error("Product branding save failed:", e);
+      alert('저장 실패: ' + e.message);
+    }
   };
 
   const handleReviewBrandingSave = async () => {
-    await updateReviewBranding(reviewBrandingForm);
-    alert('여행후기 섹션 브랜딩 설정이 저장되었습니다.');
+    console.log("Saving review branding...", reviewBrandingForm);
+    try {
+      if (!reviewBrandingForm) throw new Error("리뷰 브랜딩 데이터가 없습니다.");
+      await updateReviewBranding(reviewBrandingForm);
+      alert('여행후기 섹션 브랜딩 설정이 저장되었습니다.');
+    } catch (e) {
+      console.error("Review branding save failed:", e);
+      alert('저장 실패: ' + e.message);
+    }
   };
 
   const handleThemeChange = async (theme) => {

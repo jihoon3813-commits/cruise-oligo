@@ -140,11 +140,13 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const updateProductBranding = async (data) => {
+    if (!data) return;
     const { title, titleColor, bgColor } = data;
     await updateProductBrandingMutation({ title, titleColor, bgColor });
   };
 
   const updateReviewBranding = async (data) => {
+    if (!data) return;
     const { show, title, titleColor, bgColor, layout } = data;
     await updateReviewBrandingMutation({ show, title, titleColor, bgColor, layout });
   };

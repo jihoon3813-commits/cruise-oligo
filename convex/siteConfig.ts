@@ -40,6 +40,8 @@ export const updateTheme = mutation({
     const existing = await ctx.db.query("siteConfig").first();
     if (existing) {
       await ctx.db.patch(existing._id, { theme: args.theme });
+    } else {
+      await ctx.db.insert("siteConfig", { theme: args.theme });
     }
   },
 });
@@ -54,6 +56,8 @@ export const updateProductBranding = mutation({
     const existing = await ctx.db.query("siteConfig").first();
     if (existing) {
       await ctx.db.patch(existing._id, { productListBranding: args });
+    } else {
+      await ctx.db.insert("siteConfig", { productListBranding: args });
     }
   },
 });
@@ -70,6 +74,8 @@ export const updateReviewBranding = mutation({
     const existing = await ctx.db.query("siteConfig").first();
     if (existing) {
       await ctx.db.patch(existing._id, { reviewSectionBranding: args });
+    } else {
+      await ctx.db.insert("siteConfig", { reviewSectionBranding: args });
     }
   },
 });
@@ -92,6 +98,8 @@ export const updateProductDetailBranding = mutation({
     const existing = await ctx.db.query("siteConfig").first();
     if (existing) {
       await ctx.db.patch(existing._id, { productDetailBranding: args });
+    } else {
+      await ctx.db.insert("siteConfig", { productDetailBranding: args });
     }
   },
 });
@@ -102,6 +110,8 @@ export const updatePrivacyPolicy = mutation({
     const existing = await ctx.db.query("siteConfig").first();
     if (existing) {
       await ctx.db.patch(existing._id, { privacyPolicy: args.content });
+    } else {
+      await ctx.db.insert("siteConfig", { privacyPolicy: args.content });
     }
   },
 });
@@ -116,6 +126,8 @@ export const updateGlobalSettings = mutation({
     const existing = await ctx.db.query("siteConfig").first();
     if (existing) {
       await ctx.db.patch(existing._id, args);
+    } else {
+      await ctx.db.insert("siteConfig", args);
     }
   },
 });

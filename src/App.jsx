@@ -42,7 +42,25 @@ const SplashScreen = () => (
 );
 
 function App() {
-  const { loading } = useConfig();
+  const { loading, config } = useConfig();
+
+  React.useEffect(() => {
+    if (config.favicon) {
+      const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
+      link.type = 'image/x-icon';
+      link.rel = 'icon';
+      link.href = config.favicon.startsWith('storage:') ? `https://whimsical-jackal-408.convex.cloud/api/storage/${config.favicon.split(':')[1]}` : config.favicon;
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+    if (config.description) {
+      document.querySelector('meta[name="description"]')?.setAttribute("content", config.description);
+      document.querySelector('meta[property="og:description"]')?.setAttribute("content", config.description);
+    }
+    if (config.ogImage) {
+      const ogImg = config.ogImage.startsWith('storage:') ? `https://whimsical-jackal-408.convex.cloud/api/storage/${config.ogImage.split(':')[1]}` : config.ogImage;
+      document.querySelector('meta[property="og:image"]')?.setAttribute("content", ogImg);
+    }
+  }, [config]);
 
   return (
     <>

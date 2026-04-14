@@ -105,3 +105,18 @@ export const updatePrivacyPolicy = mutation({
     }
   },
 });
+
+export const updateGlobalSettings = mutation({
+  args: {
+    logo: v.optional(v.string()),
+    favicon: v.optional(v.string()),
+    ogImage: v.optional(v.string()),
+    description: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.query("siteConfig").first();
+    if (existing) {
+      await ctx.db.patch(existing._id, args);
+    }
+  },
+});

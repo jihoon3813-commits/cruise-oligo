@@ -179,7 +179,12 @@ const Home = () => {
 
     return (
       <section key={section.id} id={`section-${section.id}`} style={wrapperStyle}>
-        {bgType !== 'color' && bgUrl && <div style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: bgOpacity ?? 1, overflow: 'hidden' }}><SafeMedia src={bgUrl} type={bgType} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
+        {bgType !== 'color' && bgUrl && (
+          <div style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}>
+            <SafeMedia src={bgUrl} type={bgType} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div style={{ position: 'absolute', inset: 0, background: `rgba(0,0,0,${section.shading || 0})`, zIndex: 1 }}></div>
+          </div>
+        )}
         <div style={{ position: 'absolute', inset: 0, background: bgType === 'color' ? 'transparent' : `rgba(255,255,255,${1 - (bgOpacity ?? 1)})`, zIndex: 0 }}></div>
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           
@@ -193,9 +198,18 @@ const Home = () => {
                       </div>
                    </div>
                 </div>
-                <div style={{ order: layout === 'right' ? 1 : 2, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ 
+                   order: layout === 'right' ? 1 : 2, 
+                   display: isMobile && section.mobileLayout === 'slider' ? 'flex' : (isMobile && section.mobileLayout === '2col' ? 'grid' : 'flex'), 
+                   flexDirection: isMobile && (section.mobileLayout === '2col' || section.mobileLayout === 'slider') ? 'row' : 'column',
+                   gridTemplateColumns: isMobile && section.mobileLayout === '2col' ? 'repeat(2, 1fr)' : 'none',
+                   gap: isMobile ? '16px' : '24px',
+                   overflowX: isMobile && section.mobileLayout === 'slider' ? 'auto' : 'visible',
+                   paddingBottom: isMobile && section.mobileLayout === 'slider' ? '20px' : '0',
+                   scrollSnapType: isMobile && section.mobileLayout === 'slider' ? 'x mandatory' : 'none'
+                }} className="hide-scrollbar">
                    {(items || []).map((item, i) => (
-                     <motion.div key={i} initial={{ opacity:0, x: 20 }} whileInView={{ opacity:1, x: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ ...getCardStyle(), display: 'flex', gap: isMobile ? '16px' : '24px', alignItems: 'start' }}>
+                     <motion.div key={i} initial={{ opacity:0, x: 20 }} whileInView={{ opacity:1, x: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ ...getCardStyle(), display: 'flex', flexDirection: isMobile && section.mobileLayout === '2col' ? 'column' : 'row', gap: isMobile ? '16px' : '24px', alignItems: 'start', minWidth: isMobile && section.mobileLayout === 'slider' ? '280px' : 'auto', scrollSnapAlign: 'start' }}>
                         <div style={{ width: isMobile ? '40px' : '56px', height: isMobile ? '40px' : '56px', flexShrink: 0, border: '2px solid var(--primary)', color: 'var(--primary)', opacity: 0.8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: isMobile ? '13px' : '16px', fontWeight: '900', borderRadius: '12px' }}>{item.number}</div>
                         <div style={{ flex: 1 }}>
                            {item.aboveTitle && <div style={{ marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em', ...getItemTextStyle(item, 'above', 12) }}>{item.aboveTitle}</div>}
@@ -228,10 +242,18 @@ const Home = () => {
           {style === 'gallery' && (
              <div>
                 {header}
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '24px', marginTop: '48px' }}>
+                <div style={{ 
+                  display: isMobile && section.mobileLayout === 'slider' ? 'flex' : 'grid', 
+                  gridTemplateColumns: isMobile ? (section.mobileLayout === '2col' ? 'repeat(2, 1fr)' : '1fr') : 'repeat(3, 1fr)', 
+                  gap: isMobile ? '16px' : '24px', 
+                  marginTop: '48px',
+                  overflowX: isMobile && section.mobileLayout === 'slider' ? 'auto' : 'visible',
+                  paddingBottom: isMobile && section.mobileLayout === 'slider' ? '20px' : '0',
+                  scrollSnapType: isMobile && section.mobileLayout === 'slider' ? 'x mandatory' : 'none'
+                }} className="hide-scrollbar">
                    {items && items.length > 0 ? (
                       items.map((item, i) => (
-                         <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ ...getCardStyle({ padding: 0 }), display: 'flex', flexDirection: 'column' }}>
+                         <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ ...getCardStyle({ padding: 0 }), display: 'flex', flexDirection: 'column', minWidth: isMobile && section.mobileLayout === 'slider' ? '280px' : 'auto', scrollSnapAlign: 'start' }}>
                             <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden' }}>
                                {item.image ? <SafeMedia src={item.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', background: 'var(--bg-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>이미지 없음</div>}
                                {item.number && (
@@ -301,11 +323,18 @@ const Home = () => {
           )}
 
           {style === 'feature-cards' && (
-              <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: hasMedia ? '1fr 1fr' : '1fr', gap: isMobile ? '32px' : '80px' }}>
+              <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: hasMedia && !isMobile ? '1fr 1fr' : '1fr', gap: isMobile ? '32px' : '80px' }}>
                  <div style={{ marginBottom: isMobile ? '32px' : 0 }}>{header}<div style={{marginTop:'32px'}}><MediaGallery images={images} singleImage={image} duration={section.slideDuration} /></div></div>
-                 <div style={{ display: 'grid', gridTemplateColumns: (items || []).length > 2 && !isMobile ? '1fr 1fr' : '1fr', gap: '20px' }}>
+                 <div style={{ 
+                    display: isMobile && section.mobileLayout === 'slider' ? 'flex' : 'grid', 
+                    gridTemplateColumns: isMobile ? (section.mobileLayout === '2col' ? 'repeat(2, 1fr)' : '1fr') : ((items || []).length > 2 ? '1fr 1fr' : '1fr'),
+                    gap: isMobile ? '16px' : '20px' ,
+                    overflowX: isMobile && section.mobileLayout === 'slider' ? 'auto' : 'visible',
+                    paddingBottom: isMobile && section.mobileLayout === 'slider' ? '20px' : '0',
+                    scrollSnapType: isMobile && section.mobileLayout === 'slider' ? 'x mandatory' : 'none'
+                 }} className="hide-scrollbar">
                     {(items || []).map((item, i) => (
-                       <motion.div key={i} whileHover={{ y: -5 }} style={{ ...getCardStyle(), display: 'flex', gap: isMobile ? '16px' : '24px', alignItems: 'start' }}>
+                       <motion.div key={i} whileHover={{ y: -5 }} style={{ ...getCardStyle(), display: 'flex', flexDirection: isMobile && section.mobileLayout === '2col' ? 'column' : 'row', gap: isMobile ? '16px' : '24px', alignItems: 'start', minWidth: isMobile && section.mobileLayout === 'slider' ? '280px' : 'auto', scrollSnapAlign: 'start' }}>
                           <div style={{ width: '40px', height: '40px', background: 'var(--primary)', color: '#fff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', flexShrink: 0 }}>{item.number || i + 1}</div>
                           <div>
                             <h4 style={{ ...getItemTextStyle(item, 'title', 18), marginBottom: '8px' }}>{item.title}</h4>
@@ -320,9 +349,17 @@ const Home = () => {
           {style === 'process' && (
             <div style={{ textAlign: 'center' }}>
                {header}
-               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : `repeat(${(items || []).length || 1}, 1fr)`, gap: '40px', marginTop: '64px' }}>
+               <div style={{ 
+                 display: isMobile && section.mobileLayout === 'slider' ? 'flex' : 'grid', 
+                 gridTemplateColumns: isMobile ? (section.mobileLayout === '2col' ? 'repeat(2, 1fr)' : '1fr') : `repeat(${(items || []).length || 1}, 1fr)`, 
+                 gap: isMobile ? '24px' : '40px', 
+                 marginTop: '64px',
+                 overflowX: isMobile && section.mobileLayout === 'slider' ? 'auto' : 'visible',
+                 paddingBottom: isMobile && section.mobileLayout === 'slider' ? '20px' : '0',
+                 scrollSnapType: isMobile && section.mobileLayout === 'slider' ? 'x mandatory' : 'none'
+               }} className="hide-scrollbar">
                   {(items || []).map((item, i) => (
-                    <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ position: 'relative' }}>
+                    <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ position: 'relative', minWidth: isMobile && section.mobileLayout === 'slider' ? '240px' : 'auto', scrollSnapAlign: 'start' }}>
                        <div style={{ width: '64px', height: '64px', background: 'var(--primary)', color: '#fff', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: '20px', fontWeight: '900', boxShadow: '0 10px 20px var(--primary)30' }}>{item.number || i + 1}</div>
                        <h4 style={{ ...getItemTextStyle(item, 'title', 18), marginBottom: '12px' }}>{item.title}</h4>
                        <p style={{ ...getItemTextStyle(item, 'content', 14), lineHeight: '1.6' }}>{item.content}</p>
@@ -347,16 +384,139 @@ const Home = () => {
 
   const renderHero = () => {
     if (!hero) return null;
-    const { style, bgType, bgUrl, bgOpacity, textPosition, verticalAlign, paddingX } = hero;
+    const { style, bgType, bgUrl, bgOpacity, textPosition, verticalAlign, shading, gradientShading, gradientRange } = hero;
     const isMobile = window.innerWidth <= 768;
-    const wrapperStyle = { position: 'relative', height: isMobile ? 'auto' : '100vh', minHeight: isMobile ? '550px' : '800px', overflow: 'hidden', display: 'flex', alignItems: verticalAlign === 'top' ? 'flex-start' : (verticalAlign === 'bottom' ? 'flex-end' : 'center'), padding: isMobile ? '100px 0 60px' : '120px 0' };
-    const containerStyle = { position: 'relative', zIndex: 1, width: '100%', maxWidth: '1400px', margin: '0 auto', padding: `0 var(--container-padding, 80px)` };
-    const BgMedia = () => (<SafeMedia src={bgUrl} type={bgType} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: `brightness(${bgOpacity ?? 1})`, transition: '0.3s' }} />);
+    
+    const wrapperStyle = { 
+      position: 'relative', 
+      height: isMobile ? 'auto' : '100vh', 
+      minHeight: isMobile ? '600px' : '800px', 
+      overflow: 'hidden', 
+      display: 'flex', 
+      alignItems: verticalAlign === 'top' ? 'flex-start' : (verticalAlign === 'bottom' ? 'flex-end' : 'center'), 
+      padding: isMobile ? '120px 0 80px' : '120px 0' 
+    };
+    
+    const containerStyle = { 
+      position: 'relative', 
+      zIndex: 10, 
+      width: '100%', 
+      maxWidth: '1400px', 
+      margin: '0 auto', 
+      padding: `0 var(--container-padding, 80px)` 
+    };
 
-    if (style === 'classic') return (<section style={wrapperStyle}><div style={{ position: 'absolute', right: 0, top: 0, width: isMobile ? '100%' : '50%', height: '100%', zIndex: 0, opacity: isMobile ? 0.3 : 1 }}><BgMedia /><div style={{ position: 'absolute', inset: 0, background: isMobile ? 'var(--bg-main)' : 'linear-gradient(to right, var(--bg-main) 0%, rgba(255,255,255,0.8) 20%, transparent 100%)', opacity: isMobile ? 0.7 : 1 }}></div></div><div style={containerStyle}><div style={{ maxWidth: '650px' }}><HeroText hero={hero} /></div></div></section>);
-    if (style === 'split') return (<section style={{ ...wrapperStyle, display: isMobile ? 'block' : 'grid', gridTemplateColumns: '1fr 1fr', padding: isMobile ? '100px 0 0' : 0 }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: `0 var(--container-padding, 80px)`, marginBottom: isMobile ? '40px' : 0 }}><HeroText hero={hero} /></div><div style={{ position: 'relative', height: isMobile ? '350px' : 'auto' }}><BgMedia /></div></section>);
-    if (style === 'card') return (<section style={wrapperStyle}><div style={{ position: 'absolute', inset: 0, zIndex: 0 }}><BgMedia /></div><div style={{ ...containerStyle, display: 'flex', justifyContent: (isMobile || textPosition === 'center') ? 'center' : (textPosition === 'right' ? 'flex-end' : 'flex-start') }}><motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ background: 'var(--glass-white)', backdropFilter: 'blur(20px)', padding: isMobile ? '32px 20px' : '80px', borderRadius: isMobile ? '20px' : '40px', maxWidth: '750px', boxShadow: '0 30px 60px rgba(0,0,0,0.1)' }}><HeroText hero={hero} /></motion.div></div></section>);
-    return (<section style={wrapperStyle}><div style={{ position: 'absolute', inset: 0, zIndex: 0 }}><BgMedia /></div><div style={{ ...containerStyle, display: 'flex', justifyContent: (isMobile || textPosition === 'center') ? 'center' : (textPosition === 'right' ? 'flex-end' : 'flex-start') }}><div style={{ maxWidth: '900px', textAlign: isMobile ? 'center' : 'inherit' }}><HeroText hero={hero} /></div></div></section>);
+    const BgMedia = () => (
+      <SafeMedia 
+        src={bgUrl} 
+        type={bgType} 
+        brightness={bgOpacity ?? 1}
+        shading={shading ?? 0}
+        style={{ 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'cover', 
+          filter: `brightness(${bgOpacity ?? 1})`, 
+          transition: '0.6s ease' 
+        }} 
+      />
+    );
+
+    // Overlays logic
+    const Overlays = () => {
+      const gOpacity = gradientShading ?? 0;
+      const gRange = gradientRange ?? 50;
+      let gradientStyle = '';
+      
+      const gStart = `rgba(0,0,0,${gOpacity})`;
+      const gEnd = 'rgba(0,0,0,0)';
+      
+      if (textPosition === 'right') {
+        gradientStyle = `linear-gradient(to left, ${gStart} 0%, ${gEnd} ${gRange}%)`;
+      } else if (textPosition === 'center') {
+        gradientStyle = `radial-gradient(circle at center, ${gStart} 0%, ${gEnd} ${gRange}%)`;
+      } else {
+        // Default: left
+        gradientStyle = `linear-gradient(to right, ${gStart} 0%, ${gEnd} ${gRange}%)`;
+      }
+      
+      const bOpacity = bgOpacity ?? 1;
+      
+      return (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 5, pointerEvents: 'none' }}>
+          {/* 1. Global Brightness Overlay (when brightness is < 1) */}
+          {bOpacity < 1 && (
+            <div style={{ position: 'absolute', inset: 0, background: 'black', opacity: 1 - bOpacity, zIndex: 1 }}></div>
+          )}
+          
+          {/* 2. Base darkening (shading) overlay */}
+          {(shading ?? 0) > 0 && (
+            <div style={{ position: 'absolute', inset: 0, background: `rgba(0,0,0,${shading})`, zIndex: 2 }}></div>
+          )}
+          
+          {/* 3. Gradient overlay for text readability */}
+          {gOpacity > 0 && (
+            <div style={{ 
+              position: 'absolute', 
+              inset: 0, 
+              background: gradientStyle, 
+              zIndex: 3 
+            }}></div>
+          )}
+        </div>
+      );
+    };
+
+    if (style === 'classic') return (
+      <section style={wrapperStyle}>
+        <div style={{ position: 'absolute', right: 0, top: 0, width: isMobile ? '100%' : '50%', height: '100%', zIndex: 0 }}>
+          <BgMedia />
+          {isMobile ? <Overlays /> : (
+            <>
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, var(--bg-main) 0%, rgba(255,255,255,0.8) 20%, transparent 100%)', zIndex: 1 }}></div>
+              <Overlays />
+            </>
+          )}
+        </div>
+        <div style={containerStyle}><div style={{ maxWidth: '650px' }}><HeroText hero={hero} /></div></div>
+      </section>
+    );
+
+    if (style === 'split') return (
+      <section style={{ ...wrapperStyle, display: isMobile ? 'block' : 'grid', gridTemplateColumns: '1fr 1fr', padding: isMobile ? '100px 0 0' : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: `0 var(--container-padding, 80px)`, marginBottom: isMobile ? '40px' : 0 }}>
+          <HeroText hero={hero} />
+        </div>
+        <div style={{ position: 'relative', height: isMobile ? '400px' : 'auto' }}>
+          <BgMedia />
+          <Overlays />
+        </div>
+      </section>
+    );
+
+    if (style === 'card') return (
+      <section style={wrapperStyle}>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+          <BgMedia />
+          <Overlays />
+        </div>
+        <div style={{ ...containerStyle, display: 'flex', justifyContent: (isMobile || textPosition === 'center') ? 'center' : (textPosition === 'right' ? 'flex-end' : 'flex-start') }}>
+          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ background: 'var(--glass-white)', backdropFilter: 'blur(24px)', padding: isMobile ? '40px 24px' : '80px', borderRadius: isMobile ? '24px' : '48px', maxWidth: '750px', boxShadow: '0 40px 80px rgba(0,0,0,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}><HeroText hero={hero} /></motion.div>
+        </div>
+      </section>
+    );
+
+    return (
+      <section style={wrapperStyle}>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+          <BgMedia />
+          <Overlays />
+        </div>
+        <div style={{ ...containerStyle, display: 'flex', justifyContent: (isMobile || textPosition === 'center') ? 'center' : (textPosition === 'right' ? 'flex-end' : 'flex-start') }}>
+          <div style={{ maxWidth: '900px', textAlign: isMobile ? 'center' : 'inherit' }}><HeroText hero={hero} /></div>
+        </div>
+      </section>
+    );
   };
 
   const [selectedReview, setSelectedReview] = useState(null);
@@ -394,15 +554,19 @@ const Home = () => {
                   </p>
                )}
             </div>
-            {(rb.layout === 'grid' || isMobile) ? (
-               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '32px' }}>
+            {((rb.layout === 'grid' && !isMobile) || (!isMobile && rb.layout !== 'slider') || (isMobile && rb.mobileLayout === 'grid') || (isMobile && rb.mobileLayout === '2col')) ? (
+               <div style={{ 
+                 display: 'grid', 
+                 gridTemplateColumns: isMobile && rb.mobileLayout === '2col' ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(360px, 1fr))', 
+                 gap: isMobile ? '16px' : '32px' 
+               }}>
                   {config.reviews.map((rev, i) => (
-                    <div key={i} onClick={() => { setReviewIdx(0); setSelectedReview(rev); }} className="admin-card review-card-hover" style={{ padding: '0', background: '#fff', borderRadius: '32px', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease' }}>
+                    <div key={i} onClick={() => { setReviewIdx(0); setSelectedReview(rev); }} className="admin-card review-card-hover" style={{ padding: '0', background: '#fff', borderRadius: isMobile ? '16px' : '32px', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease' }}>
                         {rev.images && rev.images.length > 0 && (
                            <div style={{ position: 'relative' }}>
                               <div style={{ display: 'flex', gap: '2px', overflowX: 'auto', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="hide-scrollbar">
                                  {rev.images.map((img, idx) => (
-                                    <div key={idx} style={{ minWidth: '100%', height: isMobile ? '280px' : '360px', scrollSnapAlign: 'start' }}>
+                                    <div key={idx} style={{ minWidth: '100%', height: isMobile ? '180px' : '360px', scrollSnapAlign: 'start' }}>
                                        <SafeMedia src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     </div>
                                  ))}
@@ -416,43 +580,49 @@ const Home = () => {
                               )}
                            </div>
                         )}
-                        <div style={{ padding: '32px' }}>
-                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '24px' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '16px', boxShadow: '0 4px 12px var(--primary)30' }}>{(rev.author || rev.user)?.[0]}</div>
+                        <div style={{ padding: isMobile ? '20px' : '32px' }}>
+                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: isMobile ? '12px' : '24px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '14px' }}>
+                                 <div style={{ width: isMobile ? '32px' : '48px', height: isMobile ? '32px' : '48px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: isMobile ? '12px' : '16px', boxShadow: '0 4px 12px var(--primary)30' }}>{(rev.author || rev.user)?.[0]}</div>
                                  <div style={{ textAlign: 'left' }}>
-                                    <div style={{ fontWeight: '800', fontSize: '16px', color: '#0F172A' }}>{rev.author || rev.user}</div>
-                                    <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>{rev.productTitle || "프리미엄 회원"}</div>
+                                    <div style={{ fontWeight: '800', fontSize: isMobile ? '13px' : '16px', color: '#0F172A' }}>{rev.author || rev.user}</div>
+                                    {!isMobile && <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>{rev.productTitle || "프리미엄 회원"}</div>}
                                  </div>
                               </div>
                               <div style={{ display: 'flex', gap: '2px', color: '#fbbf24' }}>
-                                 {[...Array(5)].map((_, j) => <Star key={j} size={14} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
+                                 {[...Array(5)].map((_, j) => <Star key={j} size={isMobile ? 10 : 14} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
                               </div>
                            </div>
-                           <p style={{ fontSize: '16px', lineHeight: '1.8', color: '#334155', fontWeight: '500', fontStyle: 'italic', margin: 0, textAlign: 'left', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>"{rev.content}"</p>
-                           <div style={{ marginTop: '20px', color: 'var(--primary)', fontWeight: '700', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}>자세히 보기 <ArrowUpRight size={14} /></div>
+                           <p style={{ fontSize: isMobile ? '13px' : '16px', lineHeight: '1.8', color: '#334155', fontWeight: '500', fontStyle: 'italic', margin: 0, textAlign: 'left', display: '-webkit-box', WebkitLineClamp: isMobile ? 2 : 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>"{rev.content}"</p>
+                           {!isMobile && <div style={{ marginTop: '20px', color: 'var(--primary)', fontWeight: '700', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}>자세히 보기 <ArrowUpRight size={14} /></div>}
                         </div>
                     </div>
                   ))}
                </div>
             ) : (
-              <div style={{ position: 'relative', overflow: 'hidden', padding: '16px 0' }}>
-                <div className="hide-scrollbar" style={{ display: 'flex', gap: '24px', overflowX: 'auto', paddingBottom: '32px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
+               <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', scrollSnapType: 'x mandatory', paddingBottom: '24px' }} className="hide-scrollbar">
                   {config.reviews.map((rev, i) => (
-                    <div key={i} onClick={() => { setReviewIdx(0); setSelectedReview(rev); }} style={{ minWidth: isMobile ? '320px' : '450px', background: '#fff', borderRadius: '32px', overflow: 'hidden', scrollSnapAlign: 'start', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: 'none', cursor: 'pointer' }}>
-                      {rev.images?.[0] && <div style={{ height: '240px' }}><SafeMedia src={rev.images[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>}
-                      <div style={{ padding: '32px' }}>
-                        <div style={{ display: 'flex', gap: '4px', color: '#fbbf24', marginBottom: '16px' }}>{[...Array(5)].map((_, j) => <Star key={j} size={16} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}</div>
-                        <p style={{ fontSize: '16px', lineHeight: '1.7', color: '#334155', marginBottom: '24px', fontStyle: 'italic', textAlign: 'left', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>"{rev.content}"</p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800' }}>{(rev.author || rev.user)?.[0]}</div>
-                          <div style={{textAlign:'left'}}><div style={{ fontWeight: '800', color: '#0F172A' }}>{rev.author || rev.user}</div><div style={{ fontSize: '12px', color: '#64748B' }}>{rev.productTitle}</div></div>
+                    <div key={i} onClick={() => { setReviewIdx(0); setSelectedReview(rev); }} style={{ minWidth: '300px', scrollSnapAlign: 'start', background: '#fff', borderRadius: '24px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', cursor: 'pointer' }}>
+                        {rev.images && rev.images.length > 0 && (
+                           <div style={{ height: '180px', width: '100%' }}>
+                              <SafeMedia src={rev.images[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                           </div>
+                        )}
+                        <div style={{ padding: '20px' }}>
+                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                 <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), #60a5fa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '800' }}>{(rev.author || rev.user)?.[0]}</div>
+                                 <div style={{ fontWeight: '800', fontSize: '14px' }}>{rev.author || rev.user}</div>
+                              </div>
+                              <div style={{ display: 'flex', gap: '2px', color: '#fbbf24' }}>
+                                 {[...Array(5)].map((_, j) => <Star key={j} size={10} fill={j < (rev.rating || 5) ? "#fbbf24" : "none"} />)}
+                              </div>
+                           </div>
+                           <p style={{ fontSize: '13px', lineHeight: '1.6', color: '#334155', margin: 0, textAlign: 'left', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>"{rev.content}"</p>
                         </div>
-                      </div>
                     </div>
                   ))}
-                </div>
-              </div>
+               </div>
             )}
          </div>
 
@@ -570,63 +740,68 @@ const Home = () => {
                 </p>
              )}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '32px' }}>
+          <div style={{ 
+            display: isMobile && config.productListBranding?.mobileLayout === 'slider' ? 'flex' : 'grid', 
+            gridTemplateColumns: isMobile ? (config.productListBranding?.mobileLayout === '2col' ? 'repeat(2, 1fr)' : '1fr') : 'repeat(auto-fill, minmax(340px, 1fr))', 
+            gap: isMobile ? '16px' : '32px' ,
+            overflowX: isMobile && config.productListBranding?.mobileLayout === 'slider' ? 'auto' : 'visible',
+            paddingBottom: isMobile && config.productListBranding?.mobileLayout === 'slider' ? '24px' : '0',
+            scrollSnapType: isMobile && config.productListBranding?.mobileLayout === 'slider' ? 'x mandatory' : 'none'
+          }} className="hide-scrollbar">
             {products.map((product, idx) => {
               const typo = product.typography || {};
               const getStyle = (t) => { const base = typo[t]?.fontSize || (t === 'title' ? 22 : 15); const min = Math.max(12, Math.floor(base * 0.6)); return { fontSize: `clamp(${min}px, 3.8vw, ${base}px)`, color: typo[t]?.color, fontWeight: t === 'title' || t === 'price' ? '900' : '400' }; };
               return (
-                <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} viewport={{ once: true }}>
+                <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} viewport={{ once: true }} style={{ minWidth: isMobile && config.productListBranding?.mobileLayout === 'slider' ? '280px' : 'auto', scrollSnapAlign: 'start' }}>
                    <Link to={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                      <div className="product-card-luxury">
-                        <div className="product-card-image-wrap">
+                      <div className="product-card-luxury" style={{ borderRadius: isMobile ? '20px' : '32px' }}>
+                        <div className="product-card-image-wrap" style={{ height: isMobile ? '200px' : '280px' }}>
                            <SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: '0.6s' }} />
                            <div className="product-card-overlay"></div>
-                           <div style={{ position: 'absolute', top: '20px', left: '20px', background: 'rgba(15, 23, 42, 0.8)', color: '#fff', padding: '6px 16px', borderRadius: '100px', fontSize: '11px', fontWeight: '800', backdropFilter: 'blur(4px)' }}>PREMIUM</div>
-                           <div className="product-card-badge"><MapPin size={12} /> {product.schedule?.length ? `${product.schedule.length}일 코스` : '프리미엄 여정'}</div>
+                           <div style={{ position: 'absolute', top: isMobile ? '12px' : '20px', left: isMobile ? '12px' : '20px', background: 'rgba(15, 23, 42, 0.8)', color: '#fff', padding: '4px 12px', borderRadius: '100px', fontSize: '10px', fontWeight: '800', backdropFilter: 'blur(4px)' }}>PREMIUM</div>
+                           <div className="product-card-badge" style={{ bottom: isMobile ? '12px' : '20px', right: isMobile ? '12px' : '20px', padding: '4px 10px', fontSize: '10px' }}><MapPin size={10} /> {product.schedule?.length ? `${product.schedule.length}일 코스` : '프리미엄 여정'}</div>
                         </div>
-                        <div style={{ padding: '30px', background: '#fff' }}>
-                           <h3 style={{ ...getStyle('title'), marginBottom: '10px', lineHeight: '1.3' }}>{product.title}</h3>
-                           <p style={{ ...getStyle('description'), marginBottom: '24px', opacity: 0.7, height: '44px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{product.description}</p>
+                        <div style={{ padding: isMobile ? '20px' : '30px', background: '#fff' }}>
+                           <h3 style={{ ...getStyle('title'), marginBottom: isMobile ? '8px' : '10px', lineHeight: '1.3', fontSize: isMobile ? '16px' : undefined }}>{product.title}</h3>
+                           {!isMobile && <p style={{ ...getStyle('description'), marginBottom: '24px', opacity: 0.7, height: '44px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{product.description}</p>}
                            
-                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid var(--border-light)', paddingTop: '20px' }}>
+                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid var(--border-light)', paddingTop: isMobile ? '12px' : '20px' }}>
                               <div style={{ flex: 1 }}>
                                  {product.paymentType === 'split' ? (
-                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minHeight: '84px', justifyContent: 'center' }}>
+                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', minHeight: isMobile ? '60px' : '84px', justifyContent: 'center' }}>
                                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                                         <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600' }}>총 {product.originalPrice?.toLocaleString() || product.price?.toLocaleString()}원</span>
-                                         <span style={{ fontSize: '10px', padding: '2px 6px', background: '#f1f5f9', color: '#64748B', borderRadius: '4px', fontWeight: '800' }}>분할납부</span>
+                                         <span style={{ fontSize: isMobile ? '10px' : '12px', color: '#94a3b8', fontWeight: '600' }}>총 {product.originalPrice?.toLocaleString() || product.price?.toLocaleString()}원</span>
                                       </div>
                                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                         <span style={{ fontSize: '13px', fontWeight: '800', color: typo.price?.color || 'var(--primary)' }}>예약금</span>
-                                         <span style={{ ...getStyle('price'), fontSize: '24px', letterSpacing: '-1px', color: typo.price?.color || 'var(--primary)' }}>{(product.downPayment || 0).toLocaleString()}</span>
-                                         <span style={{ fontSize: '14px', fontWeight: '800', color: typo.price?.color || 'var(--primary)' }}>원</span>
+                                         {isMobile ? null : <span style={{ fontSize: '13px', fontWeight: '800', color: typo.price?.color || 'var(--primary)' }}>예약금</span>}
+                                         <span style={{ ...getStyle('price'), fontSize: isMobile ? '18px' : '24px', letterSpacing: '-1px', color: typo.price?.color || 'var(--primary)' }}>{(product.downPayment || 0).toLocaleString()}</span>
+                                         <span style={{ fontSize: isMobile ? '12px' : '14px', fontWeight: '800', color: typo.price?.color || 'var(--primary)' }}>원</span>
                                       </div>
-                                      <p style={{ fontSize: '11px', color: typo.price?.color || '#3b82f6', fontWeight: '700', margin: '4px 0 0 0' }}>* 잔금은 여행을 다녀오신 후 납부</p>
+                                      {!isMobile && <p style={{ fontSize: '11px', color: typo.price?.color || '#3b82f6', fontWeight: '700', margin: '4px 0 0 0' }}>* 잔금은 여행을 다녀오신 후 납부</p>}
                                    </div>
                                  ) : (
-                                   <div style={{ display: 'flex', flexDirection: 'column', minHeight: '84px', justifyContent: 'center' }}>
+                                   <div style={{ display: 'flex', flexDirection: 'column', minHeight: isMobile ? '60px' : '84px', justifyContent: 'center' }}>
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minHeight: '20px' }}>
                                          {product.originalPrice > 0 && (
-                                           <span style={{ fontSize: '14px', color: '#94a3b8', textDecoration: 'line-through', fontWeight: '500' }}>{product.originalPrice.toLocaleString()}원</span>
-                                         )}
-                                         {product.originalPrice > product.price && (
-                                           <span style={{ fontSize: '13px', color: '#ef4444', fontWeight: '900' }}>{Math.round((1 - product.price / product.originalPrice) * 100)}% OFF</span>
+                                           <span style={{ fontSize: isMobile ? '11px' : '14px', color: '#94a3b8', textDecoration: 'line-through', fontWeight: '500' }}>{product.originalPrice.toLocaleString()}원</span>
                                          )}
                                       </div>
                                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px', marginTop: '2px' }}>
-                                         <span style={{ ...getStyle('price'), fontSize: '28px', letterSpacing: '-1px', color: typo.price?.color || '#0F172A' }}>{product.price?.toLocaleString()}</span>
-                                         <span style={{ fontSize: '16px', fontWeight: '800', color: typo.price?.color || '#0F172A' }}>원</span>
+                                         <span style={{ ...getStyle('price'), fontSize: isMobile ? '20px' : '28px', letterSpacing: '-1px', color: typo.price?.color || '#0F172A' }}>{product.price?.toLocaleString()}</span>
+                                         <span style={{ fontSize: isMobile ? '13px' : '16px', fontWeight: '800', color: typo.price?.color || '#0F172A' }}>원</span>
                                       </div>
-                                      {product.originalPrice > product.price ? (
-                                        <p style={{ fontSize: '11px', color: '#ef4444', fontWeight: '700', margin: '4px 0 0 0' }}>* 총 {(product.originalPrice - product.price).toLocaleString()}원 즉시 할인됨</p>
-                                      ) : (
-                                        <p style={{ fontSize: '11px', color: '#64748B', fontWeight: '700', margin: '4px 0 0 0' }}>* 프리미엄 특별가 적용</p>
+                                      {!isMobile && (
+                                        product.originalPrice > product.price ? (
+                                          <p style={{ fontSize: '11px', color: '#ef4444', fontWeight: '700', margin: '4px 0 0 0' }}>* 총 {(product.originalPrice - product.price).toLocaleString()}원 즉시 할인됨</p>
+                                        ) : (
+                                          <p style={{ fontSize: '11px', color: '#64748B', fontWeight: '700', margin: '4px 0 0 0' }}>* 프리미엄 특별가 적용</p>
+                                        )
                                       )}
                                    </div>
                                  )}
                               </div>
-                              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--bg-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', transition: '0.3s' }} className="product-go-icon">
-                                 <ArrowRight size={20} />
+                              <div style={{ width: isMobile ? '32px' : '40px', height: isMobile ? '32px' : '40px', borderRadius: '50%', background: 'var(--bg-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', transition: '0.3s' }} className="product-go-icon">
+                                 <ArrowRight size={isMobile ? 16 : 20} />
                               </div>
                            </div>
                         </div>

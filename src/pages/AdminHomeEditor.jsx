@@ -510,6 +510,18 @@ const AdminHomeEditor = () => {
                           <label>배경 밝기 ({heroForm?.bgOpacity ?? 1}) (0:어둡게, 1:보통, 2:밝게)</label>
                           <input type="range" min="0" max="2" step="0.1" className="form-control" value={heroForm?.bgOpacity ?? 1} onChange={e => setHeroForm({...heroForm, bgOpacity: parseFloat(e.target.value)})} />
                        </div>
+                       <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                          <label>전체 음영 농도 ({heroForm?.shading ?? 0}) (0:없음, 1:어둡게)</label>
+                          <input type="range" min="0" max="1" step="0.05" className="form-control" value={heroForm?.shading ?? 0} onChange={e => setHeroForm({...heroForm, shading: parseFloat(e.target.value)})} />
+                       </div>
+                       <div className="form-group">
+                          <label>그라데이션 음영 ({heroForm?.gradientShading ?? 0})</label>
+                          <input type="range" min="0" max="1" step="0.05" className="form-control" value={heroForm?.gradientShading ?? 0} onChange={e => setHeroForm({...heroForm, gradientShading: parseFloat(e.target.value)})} />
+                       </div>
+                       <div className="form-group">
+                          <label>그라데이션 범위 ({heroForm?.gradientRange ?? 50}%)</label>
+                          <input type="range" min="10" max="100" step="5" className="form-control" value={heroForm?.gradientRange ?? 50} onChange={e => setHeroForm({...heroForm, gradientRange: parseInt(e.target.value)})} />
+                       </div>
                     </div>
                  )}
 
@@ -830,10 +842,18 @@ const AdminHomeEditor = () => {
                                  </div>
                                )}
                                <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                                  <label>레이아웃 방향</label>
+                                  <label>레이아웃 방향 (Desktop)</label>
                                   <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                                      <button className={`luxury-btn ${section.layout === 'left' ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, { ...section, layout: 'left' })} style={{ flex: 1 }}>기본 (L)</button>
                                      <button className={`luxury-btn ${section.layout === 'right' ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, { ...section, layout: 'right' })} style={{ flex: 1 }}>반전 (R)</button>
+                                  </div>
+                               </div>
+                               <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                                  <label>모바일 레이아웃 (Mobile Layout)</label>
+                                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                                     <button className={`luxury-btn ${(!section.mobileLayout || section.mobileLayout === 'grid') ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, { ...section, mobileLayout: 'grid' })} style={{ flex: 1, fontSize: '11px' }}>기본</button>
+                                     <button className={`luxury-btn ${section.mobileLayout === '2col' ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, { ...section, mobileLayout: '2col' })} style={{ flex: 1, fontSize: '11px' }}>2열</button>
+                                     <button className={`luxury-btn ${section.mobileLayout === 'slider' ? '' : 'outline'}`} onClick={() => handleSectionUpdate(section.id, { ...section, mobileLayout: 'slider' })} style={{ flex: 1, fontSize: '11px' }}>슬라이드</button>
                                   </div>
                                </div>
                             </div>
@@ -903,9 +923,14 @@ const AdminHomeEditor = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ padding: '10px', background: 'rgba(37, 99, 235, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}><Package size={24} /></div>
-                    <h2 style={{ fontSize: '20px', fontWeight: '800' }}>상품 리스트 구역 브랜딩</h2>
+                    <h2 style={{ fontSize: '20px', fontWeight: '800' }}>상품 리스트 브랜딩 (모바일 2열/슬라이드 지원)</h2>
                  </div>
-                 <button className="luxury-btn" onClick={handleProductBrandingSave}><Save size={18} /> 설정 저장</button>
+                 <div style={{ display: 'flex', gap: '8px' }}>
+                    <button className={`luxury-btn ${(!productBrandingForm?.mobileLayout || productBrandingForm?.mobileLayout === 'grid') ? '' : 'outline'}`} onClick={() => setProductBrandingForm({...productBrandingForm, mobileLayout: 'grid'})} style={{ padding: '6px 12px', fontSize: '11px' }}>1열</button>
+                    <button className={`luxury-btn ${productBrandingForm?.mobileLayout === '2col' ? '' : 'outline'}`} onClick={() => setProductBrandingForm({...productBrandingForm, mobileLayout: '2col'})} style={{ padding: '6px 12px', fontSize: '11px' }}>2열</button>
+                    <button className={`luxury-btn ${productBrandingForm?.mobileLayout === 'slider' ? '' : 'outline'}`} onClick={() => setProductBrandingForm({...productBrandingForm, mobileLayout: 'slider'})} style={{ padding: '6px 12px', fontSize: '11px' }}>슬라이드</button>
+                    <button className="luxury-btn" style={{ marginLeft: '12px' }} onClick={handleProductBrandingSave}><Save size={18} /> 저장</button>
+                 </div>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -956,9 +981,14 @@ const AdminHomeEditor = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ padding: '10px', background: 'rgba(37, 99, 235, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}><Activity size={24} /></div>
-                    <h2 style={{ fontSize: '20px', fontWeight: '800' }}>메인 여행후기 섹션 브랜딩</h2>
+                    <h2 style={{ fontSize: '20px', fontWeight: '800' }}>여정 후기 브랜딩 (모바일 2열/슬라이드 지원)</h2>
                  </div>
-                 <button className="luxury-btn" onClick={handleReviewBrandingSave}><Save size={18} /> 설정 저장</button>
+                 <div style={{ display: 'flex', gap: '8px' }}>
+                    <button className={`luxury-btn ${(!reviewBrandingForm?.mobileLayout || reviewBrandingForm?.mobileLayout === 'grid') ? '' : 'outline'}`} onClick={() => setReviewBrandingForm({...reviewBrandingForm, mobileLayout: 'grid'})} style={{ padding: '6px 12px', fontSize: '11px' }}>1열</button>
+                    <button className={`luxury-btn ${reviewBrandingForm?.mobileLayout === '2col' ? '' : 'outline'}`} onClick={() => setReviewBrandingForm({...reviewBrandingForm, mobileLayout: '2col'})} style={{ padding: '6px 12px', fontSize: '11px' }}>2열</button>
+                    <button className={`luxury-btn ${reviewBrandingForm?.mobileLayout === 'slider' ? '' : 'outline'}`} onClick={() => setReviewBrandingForm({...reviewBrandingForm, mobileLayout: 'slider'})} style={{ padding: '6px 12px', fontSize: '11px' }}>슬라이드</button>
+                    <button className="luxury-btn" style={{ marginLeft: '12px' }} onClick={handleReviewBrandingSave}><Save size={18} /> 저장</button>
+                 </div>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>

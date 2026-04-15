@@ -132,9 +132,9 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addSection = async (data) => {
-    const { title, content, aboveTitle, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, menuName } = data;
+    const { title, content, aboveTitle, image, images, layout, mobileLayout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, menuName } = data;
     await addSectionMutation({ 
-      title, content, aboveTitle, image, images, layout, 
+      title, content, aboveTitle, image, images, layout, mobileLayout,
       style: style || "classic", 
       items: (items || []).map(item => ({
         ...item,
@@ -159,9 +159,9 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const updateSection = async (id, data) => {
-    const { title, content, image, images, layout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, aboveTitle, menuName } = data;
+    const { title, content, image, images, layout, mobileLayout, style, items, typography, showButton, buttonText, buttonLink, buttonStyles, cardStyles, bgColor, bgType, bgUrl, bgOpacity, paddingTop, paddingBottom, order, aboveTitle, menuName } = data;
     await updateSectionMutation({ 
-      id, title, content, image, images, layout, style, 
+      id, title, content, image, images, layout, mobileLayout, style, 
       items: (items || []).map(item => ({
         ...item,
         highlights: item.highlights || [],
@@ -191,14 +191,14 @@ export const ConfigProvider = ({ children }) => {
 
   const updateProductBranding = async (data) => {
     if (!data) return;
-    const { title, titleColor, bgColor, subTitleTop, subTitleTopStyle, subTitleBottom, subTitleBottomStyle } = data;
-    await updateProductBrandingMutation({ title, titleColor, bgColor, subTitleTop, subTitleTopStyle, subTitleBottom, subTitleBottomStyle });
+    const { title, titleColor, bgColor, subTitleTop, subTitleTopStyle, subTitleBottom, subTitleBottomStyle, mobileLayout } = data;
+    await updateProductBrandingMutation({ title, titleColor, bgColor, subTitleTop, subTitleTopStyle, subTitleBottom, subTitleBottomStyle, mobileLayout });
   };
 
   const updateReviewBranding = async (data) => {
     if (!data) return;
-    const { show, title, titleColor, bgColor, layout, subTitleTop, subTitleTopStyle, subTitleBottom, subTitleBottomStyle } = data;
-    await updateReviewBrandingMutation({ show, title, titleColor, bgColor, layout, subTitleTop, subTitleTopStyle, subTitleBottom, subTitleBottomStyle });
+    const { show, title, titleColor, bgColor, layout, subTitleTop, subTitleTopStyle, subTitleBottom, subTitleBottomStyle, mobileLayout } = data;
+    await updateReviewBrandingMutation({ show, title, titleColor, bgColor, layout, subTitleTop, subTitleTopStyle, subTitleBottom, subTitleBottomStyle, mobileLayout });
   };
 
   const updateProductDetailBranding = async (data) => {

@@ -46,6 +46,7 @@ export default defineSchema({
       subTitleTopStyle: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
       subTitleBottom: v.optional(v.string()),
       subTitleBottomStyle: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
+      mobileLayout: v.optional(v.string()), // "grid", "2col", "slider"
     })),
     reviewSectionBranding: v.optional(v.object({
       show: v.optional(v.boolean()),
@@ -53,6 +54,7 @@ export default defineSchema({
       titleColor: v.optional(v.string()),
       bgColor: v.optional(v.string()),
       layout: v.optional(v.string()), // "slider", "grid"
+      mobileLayout: v.optional(v.string()), // "slider", "grid"
       subTitleTop: v.optional(v.string()),
       subTitleTopStyle: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
       subTitleBottom: v.optional(v.string()),
@@ -85,6 +87,7 @@ export default defineSchema({
     images: v.optional(v.array(v.string())), // Multiple images support
     slideDuration: v.optional(v.number()), // New: auto-sliding speed in seconds
     layout: v.string(), // "left", "right"
+    mobileLayout: v.optional(v.string()), // "grid", "2col", "slider"
     style: v.optional(v.string()), 
     aboveTitle: v.optional(v.string()), 
     items: v.optional(v.array(v.object({

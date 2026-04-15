@@ -121,9 +121,14 @@ const ProductDetail = () => {
            </div>
         )}
 
-        <div style={{ display: (branding.layout === 'modern' || isMobile) ? 'block' : 'grid', gridTemplateColumns: branding.layout === 'modern' ? '1fr' : '1fr 420px', gap: '80px', alignItems: 'start' }}>
+        <div style={{ 
+          display: (branding.layout === 'modern' || isMobile) ? 'block' : 'grid', 
+          gridTemplateColumns: branding.layout === 'modern' ? '1fr' : (branding.layout === 'split' ? '1fr 1fr' : '2fr 1fr'), 
+          gap: (branding.layout === 'modern' || isMobile) ? '40px' : (branding.layout === 'split' ? '64px' : '24px'), 
+          alignItems: 'start' 
+        }}>
           {/* Main Content */}
-          <div style={{ maxWidth: branding.layout === 'modern' ? '800px' : 'none', margin: branding.layout === 'modern' ? '0 auto' : '0' }}>
+          <div style={{ maxWidth: (branding.layout === 'modern' && !isMobile) ? '800px' : 'none', margin: (branding.layout === 'modern' && !isMobile) ? '0 auto' : '0' }}>
             {branding.layout !== 'split' && <h1 style={{ ...getStyle('title', '56px', 1.2), lineHeight: '1.2', marginBottom: '20px' }}>{product.title}</h1>}
             
             <div style={{ display: 'flex', gap: '12px', marginBottom: isMobile ? '32px' : '48px', flexWrap: 'wrap' }}>
@@ -166,7 +171,13 @@ const ProductDetail = () => {
           </div>
 
           {/* Sticky Sidebar */}
-          <aside style={{ position: (branding.layout === 'modern' || isMobile) ? 'static' : 'sticky', top: '120px', marginTop: (branding.layout === 'modern' || isMobile) ? '40px' : '0' }}>
+          <aside style={{ 
+            position: (branding.layout === 'modern' || isMobile) ? 'static' : 'sticky', 
+            top: '120px', 
+            marginTop: (branding.layout === 'modern' || isMobile) ? '40px' : '0',
+            maxWidth: (branding.layout === 'modern' && !isMobile) ? '800px' : 'none',
+            margin: (branding.layout === 'modern' && !isMobile) ? '0 auto' : '0'
+          }}>
             <div style={{ 
               padding: isMobile ? '32px' : '48px', 
               borderRadius: isMobile ? '32px' : '40px', 

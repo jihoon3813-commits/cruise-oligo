@@ -65,4 +65,19 @@ http.route({
   }),
 });
 
+http.route({
+  path: "/api/site-config",
+  method: "GET",
+  handler: httpAction(async (ctx) => {
+    const config = await ctx.runQuery(api.siteConfig.get);
+    return new Response(JSON.stringify(config), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  }),
+});
+
 export default http;

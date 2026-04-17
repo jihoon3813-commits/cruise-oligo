@@ -32,4 +32,36 @@ http.route({
   }),
 });
 
+http.route({
+  path: "/api/og-image",
+  method: "GET",
+  handler: httpAction(async (ctx) => {
+    const config = await ctx.runQuery(api.siteConfig.get);
+    const ogImage = config?.ogImage;
+
+    if (!ogImage) {
+      return Response.redirect("https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80");
+    }
+
+    try {
+      const storageId = ogImage.startsWith('storage:') ? ogImage.split('storage:')[1] : ogImage;
+      const blob = await ctx.storage.get(storageId);
+      
+      if (!blob) {
+        return Response.redirect("https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80");
+      }
+
+      return new Response(blob, {
+        status: 200,
+        headers: {
+          "Content-Type": blob.type || "image/jpeg",
+          "Cache-Control": "public, max-age=3600",
+        },
+      });
+    } catch (e) {
+      return Response.redirect("https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80");
+    }
+  }),
+});
+
 export default http;

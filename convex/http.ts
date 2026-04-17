@@ -75,6 +75,7 @@ http.route({
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
       },
     });
   }),

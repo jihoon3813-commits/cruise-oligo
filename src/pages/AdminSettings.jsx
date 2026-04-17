@@ -49,10 +49,16 @@ const AdminSettings = () => {
   };
 
   const handleSave = async () => {
-    await updatePrivacyPolicy(privacyContent);
-    await updateGlobalSettings(settings);
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 3000);
+    try {
+      await updatePrivacyPolicy(privacyContent);
+      await updateGlobalSettings(settings);
+      
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      console.error(err);
+      alert('설정 저장 중 오류가 발생했습니다.');
+    }
   };
 
   return (

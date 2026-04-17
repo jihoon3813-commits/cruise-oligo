@@ -16,6 +16,7 @@ import type * as reservations from "../reservations.js";
 import type * as reviews from "../reviews.js";
 import type * as sections from "../sections.js";
 import type * as siteConfig from "../siteConfig.js";
+import type * as vercel from "../vercel.js";
 
 import type {
   ApiFromModules,
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   reviews: typeof reviews;
   sections: typeof sections;
   siteConfig: typeof siteConfig;
+  vercel: typeof vercel;
 }>;
 
 /**

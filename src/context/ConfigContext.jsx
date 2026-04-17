@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo, useEffect } from 'react';
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
 const ConfigContext = createContext();
@@ -47,6 +47,7 @@ export const ConfigProvider = ({ children }) => {
   const updateAdminPasswordMutation = useMutation(api.siteConfig.updateAdminPassword);
   const addReservationMutation = useMutation(api.reservations.add);
   const reservationsData = useQuery(api.reservations.list);
+  const triggerDeployAction = useAction(api.vercel.triggerDeploy);
 
   useEffect(() => {
     if (heroData === null) {
@@ -212,6 +213,12 @@ export const ConfigProvider = ({ children }) => {
 
   const updateGlobalSettings = async (data) => {
     await updateGlobalSettingsMutation(data);
+    // After saving global settings (which contains Meta Tags), trigger Vercel rebuild
+    try {
+      await triggerDeployAction();
+    } catch (e) {
+      console.error("Vercel deploy trigger failed:", e);
+    }
   };
 
   const addReservation = async (data) => {

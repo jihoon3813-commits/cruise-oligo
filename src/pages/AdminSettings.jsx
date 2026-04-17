@@ -5,15 +5,29 @@ import SafeMedia from '../components/SafeMedia';
 
 const AdminSettings = () => {
   const { config, updatePrivacyPolicy, updateGlobalSettings, uploadFile } = useConfig();
-  const [privacyContent, setPrivacyContent] = useState(config.privacyPolicy);
+  const [privacyContent, setPrivacyContent] = useState(config.privacyPolicy || '');
   const [settings, setSettings] = useState({
     logo: config.logo || '',
     favicon: config.favicon || '',
     ogImage: config.ogImage || '',
-    metaDescription: config.metaDescription || ''
+    metaDescription: config.metaDescription || '',
+    adminPassword: config.adminPassword || '1111'
   });
   const [success, setSuccess] = useState(false);
   const [uploading, setUploading] = useState(null);
+
+  useEffect(() => {
+    if (config) {
+      setPrivacyContent(config.privacyPolicy || '');
+      setSettings({
+        logo: config.logo || '',
+        favicon: config.favicon || '',
+        ogImage: config.ogImage || '',
+        metaDescription: config.metaDescription || '',
+        adminPassword: config.adminPassword || '1111'
+      });
+    }
+  }, [config]);
 
   const recommendedTags = [
     "당신의 인생에서 가장 빛나는 순간, 올리고 크루즈와 함께하세요.",

@@ -45,6 +45,7 @@ export const ConfigProvider = ({ children }) => {
   const updatePrivacyPolicyMutation = useMutation(api.siteConfig.updatePrivacyPolicy);
   const updateGlobalSettingsMutation = useMutation(api.siteConfig.updateGlobalSettings);
   const updateAdminPasswordMutation = useMutation(api.siteConfig.updateAdminPassword);
+  const updateFooterMutation = useMutation(api.siteConfig.updateFooter);
   const addReservationMutation = useMutation(api.reservations.add);
   const reservationsData = useQuery(api.reservations.list);
   const triggerDeployAction = useAction(api.vercel.triggerDeploy);
@@ -70,6 +71,15 @@ export const ConfigProvider = ({ children }) => {
       reviewSectionBranding: heroData?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" },
       productDetailBranding: heroData?.productDetailBranding || { layout: "luxury", theme: "light", titleColor: "#0F172A", priceColor: "var(--primary)", accentColor: "var(--primary)", buttonColor: "var(--primary)", buttonTextColor: "#ffffff" },
       privacyPolicy: heroData?.privacyPolicy || "개인정보 수집 및 이용에 동의합니다.",
+      footer: heroData?.footer || {
+        businessInfo: "회사명: 올리고 크루즈 | 대표자: 홍길동 | 주소: 서울특별시 강남구 테헤란로 123\n사업자등록번호: 123-45-67890 | TEL: 02-1234-5678",
+        copyright: "© 2024 OLIGO CRUISE. All rights reserved.",
+        menus: [
+          { id: "m1", label: "이용약관", url: "/terms" },
+          { id: "m2", label: "개인정보처리방침", url: "/privacy" }
+        ],
+        links: []
+      },
       logo: heroData?.logo,
       favicon: heroData?.favicon,
       ogImage: heroData?.ogImage,
@@ -221,6 +231,15 @@ export const ConfigProvider = ({ children }) => {
     }
   };
 
+  const updateFooter = async (data) => {
+    await updateFooterMutation(data);
+    try {
+      await triggerDeployAction();
+    } catch (e) {
+      console.error("Vercel deploy trigger failed:", e);
+    }
+  };
+
   const addReservation = async (data) => {
     await addReservationMutation({
       ...data,
@@ -271,6 +290,7 @@ export const ConfigProvider = ({ children }) => {
       updateProductDetailBranding,
       updatePrivacyPolicy,
       updateGlobalSettings,
+      updateFooter,
       updateAdminPassword,
       addReservation,
       reservations: reservationsData || []

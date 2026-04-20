@@ -153,3 +153,36 @@ export const updateAdminPassword = mutation({
     }
   },
 });
+
+export const updateFooter = mutation({
+  args: {
+    businessInfo: v.optional(v.string()),
+    copyright: v.optional(v.string()),
+    menus: v.optional(v.array(v.object({
+      id: v.string(),
+      label: v.string(),
+      url: v.string(),
+    }))),
+    links: v.optional(v.array(v.object({
+      id: v.string(),
+      label: v.string(),
+      url: v.string(),
+    }))),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.query("siteConfig").first();
+    if (existing) {
+      await ctx.db.patch(existing._id, { footer: args });
+    } else {
+      await ctx.db.insert("siteConfig", { 
+        footer: args,
+        hero: {
+          title: "Welcome",
+          bgType: "color",
+          bgUrl: "#000000",
+          textPosition: "center"
+        }
+      });
+    }
+  },
+});

@@ -79,6 +79,20 @@ export default defineSchema({
     ogImage: v.optional(v.string()),
     metaDescription: v.optional(v.string()),
     adminPassword: v.optional(v.string()),
+    footer: v.optional(v.object({
+      businessInfo: v.optional(v.string()),
+      copyright: v.optional(v.string()),
+      menus: v.optional(v.array(v.object({
+        id: v.string(),
+        label: v.string(),
+        url: v.string(),
+      }))),
+      links: v.optional(v.array(v.object({
+        id: v.string(),
+        label: v.string(),
+        url: v.string(),
+      }))),
+    })),
   }),
   sections: defineTable({
     title: v.string(),

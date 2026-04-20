@@ -13,7 +13,19 @@ export const seed = mutation({
           bgType: "image",
           bgUrl: "https://images.unsplash.com/photo-1548574505-5e239809ee19?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
           textPosition: "left",
-          adminPassword: "1111",
+        },
+        adminPassword: "1111",
+        footer: {
+          businessInfo: "회사명: 올리고 크루즈 | 대표자: 홍길동 | 주소: 서울특별시 강남구 테헤란로 123\n사업자등록번호: 123-45-67890 | TEL: 02-1234-5678",
+          copyright: "© 2024 OLIGO CRUISE. All rights reserved.",
+          menus: [
+            { id: "1", label: "이용약관", url: "/terms" },
+            { id: "2", label: "개인정보처리방침", url: "/privacy" },
+            { id: "3", label: "회사소개", url: "/about" }
+          ],
+          links: [
+            { id: "s1", label: "인스타그램", url: "https://instagram.com" }
+          ]
         }
       });
     }

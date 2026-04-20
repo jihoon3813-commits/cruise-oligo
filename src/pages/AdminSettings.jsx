@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Shield, Save, CheckCircle2, Image as ImageIcon, Globe, Share2, Upload, X, Info } from 'lucide-react';
+import { Shield, Save, CheckCircle2, Image as ImageIcon, Globe, Share2, Upload, X, Info, Plus, Trash2 } from 'lucide-react';
 import SafeMedia from '../components/SafeMedia';
 
 const AdminSettings = () => {
-  const { config, updatePrivacyPolicy, updateGlobalSettings, uploadFile } = useConfig();
+  const { config, updatePrivacyPolicy, updateGlobalSettings, updateFooter, uploadFile } = useConfig();
   const [privacyContent, setPrivacyContent] = useState(config.privacyPolicy || '');
+  const [footerInfo, setFooterInfo] = useState(config.footer || {
+    businessInfo: '',
+    copyright: '',
+    menus: [],
+    links: []
+  });
   const [settings, setSettings] = useState({
     logo: config.logo || '',
     favicon: config.favicon || '',
@@ -26,6 +32,9 @@ const AdminSettings = () => {
         metaDescription: config.metaDescription || '',
         adminPassword: config.adminPassword || '1111'
       });
+      if (config.footer) {
+        setFooterInfo(config.footer);
+      }
     }
   }, [config]);
 
@@ -52,6 +61,7 @@ const AdminSettings = () => {
     try {
       await updatePrivacyPolicy(privacyContent);
       await updateGlobalSettings(settings);
+      await updateFooter(footerInfo);
       
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -232,6 +242,145 @@ const AdminSettings = () => {
                <p style={{ marginTop: '12px', fontSize: '12px', color: 'var(--text-muted)' }}>
                   어드민 접속 시 사용할 비밀번호입니다. (초기값: 1111)
                </p>
+            </div>
+         </div>
+      </div>
+
+      {/* Footer Info & External Links */}
+      <div className="admin-card">
+         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+            <div style={{ padding: '8px', background: 'rgba(37, 99, 235, 0.1)', color: 'var(--primary)', borderRadius: '10px' }}><Globe size={20} /></div>
+            <h3 style={{ fontSize: '16px', fontWeight: '800' }}>푸터 정보 및 메뉴 관리</h3>
+         </div>
+
+         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            {/* Footer Menus */}
+            <div>
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-main)' }}>푸터 메뉴 (이용약관, 개인정보처리방침 등)</h4>
+                  <button 
+                     onClick={() => setFooterInfo({ ...footerInfo, menus: [...(footerInfo.menus || []), { id: Date.now().toString(), label: '', url: '' }] })}
+                     style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--primary)', background: 'transparent', color: 'var(--primary)', fontSize: '11px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                  >
+                     <Plus size={14} /> 메뉴 추가
+                  </button>
+               </div>
+               
+               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px' }}>
+                  {(footerInfo.menus || []).map((menu, index) => (
+                     <div key={menu.id} style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', background: 'var(--bg-sub)', padding: '12px', borderRadius: '12px' }}>
+                        <div style={{ flex: 1 }}>
+                           <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '4px', display: 'block' }}>메뉴명</label>
+                           <input 
+                              type="text" 
+                              className="form-control" 
+                              style={{ fontSize: '12px', height: '36px' }}
+                              value={menu.label} 
+                              onChange={e => {
+                                 const newMenus = [...footerInfo.menus];
+                                 newMenus[index].label = e.target.value;
+                                 setFooterInfo({ ...footerInfo, menus: newMenus });
+                              }}
+                           />
+                        </div>
+                        <div style={{ flex: 2 }}>
+                           <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '4px', display: 'block' }}>URL</label>
+                           <input 
+                              type="text" 
+                              className="form-control" 
+                              style={{ fontSize: '12px', height: '36px' }}
+                              value={menu.url} 
+                              onChange={e => {
+                                 const newMenus = [...footerInfo.menus];
+                                 newMenus[index].url = e.target.value;
+                                 setFooterInfo({ ...footerInfo, menus: newMenus });
+                              }}
+                           />
+                        </div>
+                        <button 
+                           onClick={() => setFooterInfo({ ...footerInfo, menus: footerInfo.menus.filter(m => m.id !== menu.id) })}
+                           style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                           <Trash2 size={16} />
+                        </button>
+                     </div>
+                  ))}
+               </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+               {/* Business Info */}
+               <div>
+                  <h4 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '16px', color: 'var(--text-main)' }}>회사 정보 (줄바꿈 포함)</h4>
+                  <div className="form-group">
+                     <textarea 
+                        className="form-control" 
+                        rows={6} 
+                        value={footerInfo.businessInfo} 
+                        onChange={e => setFooterInfo({...footerInfo, businessInfo: e.target.value})}
+                        placeholder="회사명, 대표자명, 주소 등을 자유롭게 입력하세요. 줄바꿈이 반영됩니다."
+                        style={{ fontSize: '13px', lineHeight: '1.6' }}
+                     />
+                  </div>
+                  <div className="form-group" style={{ marginTop: '16px' }}>
+                     <label style={{ fontSize: '12px', fontWeight: '700', marginBottom: '6px', display: 'block' }}>카피라이트</label>
+                     <input type="text" className="form-control" value={footerInfo.copyright} onChange={e => setFooterInfo({...footerInfo, copyright: e.target.value})} />
+                  </div>
+               </div>
+
+               {/* Social Links */}
+               <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                     <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-main)' }}>외부 링크 (SNS/기타)</h4>
+                     <button 
+                        onClick={() => setFooterInfo({ ...footerInfo, links: [...(footerInfo.links || []), { id: Date.now().toString(), label: '', url: '' }] })}
+                        style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--primary)', background: 'transparent', color: 'var(--primary)', fontSize: '11px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                     >
+                        <Plus size={14} /> 링크 추가
+                     </button>
+                  </div>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                     {(footerInfo.links || []).map((link, index) => (
+                        <div key={link.id} style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', background: 'var(--bg-sub)', padding: '12px', borderRadius: '12px' }}>
+                           <div style={{ flex: 1 }}>
+                              <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '4px', display: 'block' }}>라벨</label>
+                              <input 
+                                 type="text" 
+                                 className="form-control" 
+                                 style={{ fontSize: '12px', height: '36px' }}
+                                 value={link.label} 
+                                 onChange={e => {
+                                    const newLinks = [...footerInfo.links];
+                                    newLinks[index].label = e.target.value;
+                                    setFooterInfo({ ...footerInfo, links: newLinks });
+                                 }}
+                              />
+                           </div>
+                           <div style={{ flex: 2 }}>
+                              <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '4px', display: 'block' }}>URL</label>
+                              <input 
+                                 type="text" 
+                                 className="form-control" 
+                                 style={{ fontSize: '12px', height: '36px' }}
+                                 value={link.url} 
+                                 onChange={e => {
+                                    const newLinks = [...footerInfo.links];
+                                    newLinks[index].url = e.target.value;
+                                    setFooterInfo({ ...footerInfo, links: newLinks });
+                                 }}
+                              />
+                           </div>
+                           <button 
+                              onClick={() => setFooterInfo({ ...footerInfo, links: footerInfo.links.filter(l => l.id !== link.id) })}
+                              style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                           >
+                              <Trash2 size={16} />
+                           </button>
+                        </div>
+                     ))}
+                  </div>
+               </div>
             </div>
          </div>
       </div>

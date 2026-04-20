@@ -78,7 +78,13 @@ export const ConfigProvider = ({ children }) => {
           { id: "m1", label: "이용약관", url: "/terms" },
           { id: "m2", label: "개인정보처리방침", url: "/privacy" }
         ],
-        links: []
+        links: [],
+        csCenter: {
+          title: "CS CENTER",
+          phone: "1600-0000",
+          hours: "운영시간: 평일 09:00 ~ 18:00",
+          extra: "점심시간: 12:00 ~ 13:00 (토/일/공휴일 휴무)"
+        }
       },
       logo: heroData?.logo,
       favicon: heroData?.favicon,

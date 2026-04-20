@@ -71,11 +71,11 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 style={{ fontSize: '18px', marginBottom: '30px', color: hasLogo ? 'var(--text-main)' : '#fff', fontWeight:'700' }}>CS CENTER</h3>
+            <h3 style={{ fontSize: '18px', marginBottom: '30px', color: hasLogo ? 'var(--text-main)' : '#fff', fontWeight:'700' }}>{config.footer?.csCenter?.title || 'CS CENTER'}</h3>
             <div style={{ color: hasLogo ? '#64748b' : '#8c95a1', fontSize: '14px', lineHeight: '1.8' }}>
-               <p style={{ fontSize: '24px', fontWeight: '800', color: hasLogo ? 'var(--primary)' : '#fff', marginBottom: '10px' }}>{config.footer?.tel || '1600-0000'}</p>
-               <p>운영시간: 평일 09:00 ~ 18:00</p>
-               <p style={{ fontSize: '12px', marginTop: '4px' }}>점심시간: 12:00 ~ 13:00 (토/일/공휴일 휴무)</p>
+               <p style={{ fontSize: '24px', fontWeight: '800', color: hasLogo ? 'var(--primary)' : '#fff', marginBottom: '10px' }}>{config.footer?.csCenter?.phone || '1600-0000'}</p>
+               <p>{config.footer?.csCenter?.hours || '운영시간: 평일 09:00 ~ 18:00'}</p>
+               <p style={{ fontSize: '12px', marginTop: '4px' }}>{config.footer?.csCenter?.extra || '점심시간: 12:00 ~ 13:00 (토/일/공휴일 휴무)'}</p>
             </div>
           </div>
         </div>

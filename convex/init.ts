@@ -25,7 +25,13 @@ export const seed = mutation({
           ],
           links: [
             { id: "s1", label: "인스타그램", url: "https://instagram.com" }
-          ]
+          ],
+          csCenter: {
+            title: "CS CENTER",
+            phone: "1600-0000",
+            hours: "운영시간: 평일 09:00 ~ 18:00",
+            extra: "점심시간: 12:00 ~ 13:00 (토/일/공휴일 휴무)"
+          }
         }
       });
     }

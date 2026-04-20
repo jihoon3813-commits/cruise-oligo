@@ -92,6 +92,12 @@ export default defineSchema({
         label: v.string(),
         url: v.string(),
       }))),
+      csCenter: v.optional(v.object({
+        title: v.optional(v.string()),
+        phone: v.optional(v.string()),
+        hours: v.optional(v.string()),
+        extra: v.optional(v.string()),
+      })),
     })),
   }),
   sections: defineTable({

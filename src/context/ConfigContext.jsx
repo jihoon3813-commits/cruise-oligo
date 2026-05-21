@@ -56,10 +56,6 @@ export const ConfigProvider = ({ children }) => {
     }
   }, [heroData, seedMutation]);
 
-  const resolvedLogo = useQuery(api.files.getUrl, heroData?.logo?.startsWith('storage:') ? { storageId: heroData.logo.split('storage:')[1] } : "skip");
-  const resolvedFavicon = useQuery(api.files.getUrl, heroData?.favicon?.startsWith('storage:') ? { storageId: heroData.favicon.split('storage:')[1] } : "skip");
-  const resolvedOgImage = useQuery(api.files.getUrl, heroData?.ogImage?.startsWith('storage:') ? { storageId: heroData.ogImage.split('storage:')[1] } : "skip");
-
   const config = useMemo(() => {
     const raw = {
       theme: heroData?.theme || "white",
@@ -92,13 +88,22 @@ export const ConfigProvider = ({ children }) => {
       metaDescription: heroData?.metaDescription || "올리고 크루즈 - 프리미엄 크루즈 멤버십 서비스"
     };
 
+    const siteUrl = import.meta.env.VITE_CONVEX_SITE_URL || (import.meta.env.VITE_CONVEX_URL ? import.meta.env.VITE_CONVEX_URL.replace('.convex.cloud', '.convex.site') : "");
+    const getDirectUrl = (val) => {
+      if (!val) return "";
+      if (val.startsWith('storage:')) {
+        return `${siteUrl}/api/storage?id=${val.split('storage:')[1]}`;
+      }
+      return val;
+    };
+
     return {
        ...raw,
-       logoUrl: raw.logo?.startsWith('storage:') ? resolvedLogo : raw.logo,
-       faviconUrl: raw.favicon?.startsWith('storage:') ? resolvedFavicon : raw.favicon,
-       ogImageUrl: raw.ogImage?.startsWith('storage:') ? resolvedOgImage : raw.ogImage,
+       logoUrl: getDirectUrl(raw.logo),
+       faviconUrl: getDirectUrl(raw.favicon),
+       ogImageUrl: getDirectUrl(raw.ogImage),
     };
-  }, [heroData, sectionsData, productsData, reviewsData, resolvedLogo, resolvedFavicon, resolvedOgImage]);
+  }, [heroData, sectionsData, productsData, reviewsData]);
 
   const uploadFile = async (file) => {
     try {

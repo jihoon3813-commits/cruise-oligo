@@ -79,7 +79,7 @@ const HeroText = ({ hero }) => {
   );
 };
 
-const ImageSlider = ({ images = [], singleImage, duration = 3 }) => {
+const ImageSlider = ({ images = [], singleImage, duration = 3, priority = false }) => {
   const [current, setCurrent] = useState(0);
   const allImages = (images && images.length > 0) ? images : (singleImage ? [singleImage] : []);
 
@@ -92,10 +92,10 @@ const ImageSlider = ({ images = [], singleImage, duration = 3 }) => {
   }, [allImages.length, duration]);
 
   if (allImages.length === 0) return null;
-  if (allImages.length === 1) return <SafeMedia src={allImages[0]} style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)', display: 'block' }} />;
+  if (allImages.length === 1) return <SafeMedia src={allImages[0]} priority={priority} style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)', display: 'block' }} />;
   return (
     <div style={{ position: 'relative', width: '100%', aspectRatio: '16/10', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)' }}>
-      <AnimatePresence mode="wait"><motion.div key={current} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.5 }} style={{ width: '100%', height: '100%' }}><SafeMedia src={allImages[current]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></motion.div></AnimatePresence>
+      <AnimatePresence mode="wait"><motion.div key={current} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.5 }} style={{ width: '100%', height: '100%' }}><SafeMedia src={allImages[current]} priority={priority || current === 0} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></motion.div></AnimatePresence>
       <button onClick={() => setCurrent((current - 1 + allImages.length) % allImages.length)} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', padding: '12px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex' }}><ChevronLeft size={20} /></button>
       <button onClick={() => setCurrent((current + 1) % allImages.length)} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', padding: '12px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex' }}><ChevronRight size={20} /></button>
     </div>
@@ -116,7 +116,7 @@ const Home = () => {
     return <Link to={section.buttonLink || "/"} style={{ ...currentSize, backgroundColor: styles.bgColor || 'var(--primary)', color: styles.textColor || '#ffffff', border: `2px solid ${styles.borderColor || styles.bgColor || 'var(--primary)'}`, borderRadius: '100px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none', transition: '0.3s', boxShadow: '0 4px 14px rgba(0,0,0,0.1)' }}>{section.buttonText || "자세히 보기"} <ArrowRight size={16} /></Link>;
   };
 
-  const MediaGallery = ({ images = [], singleImage, style, duration }) => {
+  const MediaGallery = ({ images = [], singleImage, style, duration, priority = false }) => {
     const allImages = (images && images.length > 0) ? images : (singleImage ? [singleImage] : []);
     if (allImages.length === 0) return null;
     if (style === 'gallery') {
@@ -124,16 +124,16 @@ const Home = () => {
         <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
           {allImages.map((img, i) => (
             <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} style={{ borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-              <SafeMedia src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <SafeMedia src={img} priority={priority} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </motion.div>
           ))}
         </div>
       );
     }
-    return <ImageSlider images={allImages} singleImage={singleImage} duration={duration} />;
+    return <ImageSlider images={allImages} singleImage={singleImage} duration={duration} priority={priority} />;
   };
 
-  const renderSection = (section) => {
+  const renderSection = (section, priority = false) => {
     const { style, typography, items, layout, bgColor, bgType, bgUrl, image, images, bgOpacity, paddingTop, paddingBottom, cardStyles } = section;
     const isMobile = window.innerWidth < 768;
     const hasMedia = image || (images && images.length > 0);
@@ -181,7 +181,7 @@ const Home = () => {
       <section key={section.id} id={`section-${section.id}`} style={wrapperStyle}>
         {bgType !== 'color' && bgUrl && (
           <div style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}>
-            <SafeMedia src={bgUrl} type={bgType} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+            <SafeMedia src={bgUrl} type={bgType} priority={priority} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
             <div style={{ position: 'absolute', inset: 0, background: `rgba(0,0,0,${section.shading || 0})`, zIndex: 1 }}></div>
           </div>
         )}
@@ -194,7 +194,7 @@ const Home = () => {
                    <div style={{ marginBottom: '48px' }}>
                       {header}
                       <div style={{ marginTop: '32px' }}>
-                         <MediaGallery images={images} singleImage={image} duration={section.slideDuration} />
+                         <MediaGallery images={images} singleImage={image} duration={section.slideDuration} priority={priority} />
                       </div>
                    </div>
                 </div>
@@ -228,14 +228,14 @@ const Home = () => {
           {style === 'split-card' && (
              <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '32px' : '48px' }}>
                 <div style={{ ...getCardStyle(), padding: isMobile ? '32px 20px' : '80px', flexDirection: 'column', order: layout === 'right' ? 2 : 1 }}>{header}</div>
-                <div style={{ order: layout === 'right' ? 1 : 2 }}><MediaGallery images={images} singleImage={image} duration={section.slideDuration} /></div>
+                <div style={{ order: layout === 'right' ? 1 : 2 }}><MediaGallery images={images} singleImage={image} duration={section.slideDuration} priority={priority} /></div>
              </div>
           )}
 
           {style === 'minimal-centered' && (
              <div style={{ textAlign: 'center' }}>
                 {header}
-                {hasMedia && <div style={{ marginTop: '48px', maxWidth: '1000px', margin: '48px auto 0' }}><MediaGallery images={images} singleImage={image} duration={section.slideDuration} /></div>}
+                {hasMedia && <div style={{ marginTop: '48px', maxWidth: '1000px', margin: '48px auto 0' }}><MediaGallery images={images} singleImage={image} duration={section.slideDuration} priority={priority} /></div>}
              </div>
           )}
 
@@ -255,7 +255,7 @@ const Home = () => {
                       items.map((item, i) => (
                          <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} style={{ ...getCardStyle({ padding: 0 }), display: 'flex', flexDirection: 'column', minWidth: isMobile && section.mobileLayout === 'slider' ? '280px' : 'auto', scrollSnapAlign: 'start' }}>
                             <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden' }}>
-                               {item.image ? <SafeMedia src={item.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', background: 'var(--bg-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>이미지 없음</div>}
+                               {item.image ? <SafeMedia src={item.image} priority={priority} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', background: 'var(--bg-sub)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>이미지 없음</div>}
                                {item.number && (
                                  <div style={{ 
                                    position: 'absolute', top: '16px', left: '16px', 
@@ -311,12 +311,12 @@ const Home = () => {
                                       {item.buttonText || "자세히 보기"}
                                     </Link>
                                   </div>
-                                )}
+                                 )}
                             </div>
                          </motion.div>
                       ))
                    ) : (
-                      <div style={{ gridColumn: 'span 3' }}><MediaGallery images={images} singleImage={image} style="gallery" duration={section.slideDuration} /></div>
+                      <div style={{ gridColumn: 'span 3' }}><MediaGallery images={images} singleImage={image} style="gallery" duration={section.slideDuration} priority={priority} /></div>
                    )}
                 </div>
              </div>
@@ -324,7 +324,7 @@ const Home = () => {
 
           {style === 'feature-cards' && (
               <div style={{ display: isMobile ? 'block' : 'grid', gridTemplateColumns: hasMedia && !isMobile ? '1fr 1fr' : '1fr', gap: isMobile ? '32px' : '80px' }}>
-                 <div style={{ marginBottom: isMobile ? '32px' : 0 }}>{header}<div style={{marginTop:'32px'}}><MediaGallery images={images} singleImage={image} duration={section.slideDuration} /></div></div>
+                 <div style={{ marginBottom: isMobile ? '32px' : 0 }}>{header}<div style={{marginTop:'32px'}}><MediaGallery images={images} singleImage={image} duration={section.slideDuration} priority={priority} /></div></div>
                  <div style={{ 
                     display: isMobile && section.mobileLayout === 'slider' ? 'flex' : 'grid', 
                     gridTemplateColumns: isMobile ? (section.mobileLayout === '2col' ? 'repeat(2, 1fr)' : '1fr') : ((items || []).length > 2 ? '1fr 1fr' : '1fr'),
@@ -372,11 +372,10 @@ const Home = () => {
 
           {(style === 'classic' || !style) && (
              <div style={{ display: !hasMedia ? 'block' : (isMobile ? 'block' : 'flex'), textAlign: !hasMedia || isMobile ? 'center' : 'left', flexDirection: layout === 'right' ? 'row-reverse' : 'row', alignItems: 'center', gap: isMobile ? '32px' : '80px' }}>
-               <div style={{ flex: 1, marginBottom: isMobile && hasMedia ? '32px' : 0 }}>{header}</div>
-               {hasMedia && <div style={{ flex: 1 }}><MediaGallery images={images} singleImage={image} /></div>}
+                <div style={{ flex: 1, marginBottom: isMobile && hasMedia ? '32px' : 0 }}>{header}</div>
+                {hasMedia && <div style={{ flex: 1 }}><MediaGallery images={images} singleImage={image} priority={priority} /></div>}
              </div>
           )}
-
         </div>
       </section>
     );
@@ -412,6 +411,7 @@ const Home = () => {
         type={bgType} 
         brightness={bgOpacity ?? 1}
         shading={shading ?? 0}
+        priority={true}
         style={{ 
           width: '100%', 
           height: '100%', 
@@ -710,7 +710,7 @@ const Home = () => {
   return (
     <div className="home-clean">
       {renderHero()}
-      {sections.map(section => renderSection(section))}
+      {sections.map((section, idx) => renderSection(section, idx === 0))}
       <section id="products" style={{ padding: isMobile ? '60px 0' : '100px 0', background: config.productListBranding?.bgColor || 'var(--bg-main)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: isMobile ? '32px' : '64px' }}>

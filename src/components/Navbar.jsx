@@ -63,7 +63,7 @@ const Navbar = () => {
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0' }}>
         <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           {config.logo ? (
-             <SafeMedia src={config.logo} style={{ height: '32px', objectFit: 'contain' }} />
+             <SafeMedia src={config.logo} priority={true} style={{ height: '32px', objectFit: 'contain' }} />
           ) : (
              <>
                <div style={{ padding: '8px', background: 'var(--primary)', borderRadius: '100px', display: 'flex' }}>

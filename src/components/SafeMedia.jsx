@@ -1,24 +1,38 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Global cache of loaded URLs to prevent flashes
+const loadedUrls = new Set();
 
 /**
  * SafeMedia: Optimized media component for Oligo Cruise
- * - Automatically resolves storage IDs
- * - Implemented Lazy Loading (Intersection Observer)
+ * - Automatically resolves storage IDs synchronously using Convex Site URL
+ * - Implemented Lazy Loading (Intersection Observer) with wider margins
  * - Optimized Video Preloading (preload="metadata")
- * - Smooth Fade-in Reveal for better UX
+ * - Smooth Fade-in Reveal for better UX with cache awareness
  */
-const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness = 1, shading = 0 }) => {
+const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness = 1, shading = 0, priority = false }) => {
   const isStorageId = src?.startsWith('storage:');
   const storageId = isStorageId ? src.split('storage:')[1] : null;
-  const resolvedUrl = useQuery(api.files.getUrl, storageId ? { storageId } : "skip");
-  const [loaded, setLoaded] = useState(false);
-  const [inView, setInView] = useState(false);
+
+  // Resolve URL synchronously using the site URL to avoid useQuery latency
+  const siteUrl = import.meta.env.VITE_CONVEX_SITE_URL || (import.meta.env.VITE_CONVEX_URL ? import.meta.env.VITE_CONVEX_URL.replace('.convex.cloud', '.convex.site') : "");
+  const finalSrc = isStorageId ? (storageId ? `${siteUrl}/api/storage?id=${storageId}` : "") : src;
+
+  // Initialize loaded to true if it was already loaded in this session
+  const [loaded, setLoaded] = useState(() => {
+    if (!finalSrc) return false;
+    return loadedUrls.has(finalSrc);
+  });
+  
+  // For priority images (above-the-fold), load immediately without waiting for intersection observer
+  const [inView, setInView] = useState(priority);
   const ref = useRef();
+  const imgRef = useRef();
 
   useEffect(() => {
+    if (priority) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -26,16 +40,22 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness
           observer.disconnect();
         }
       },
-      { rootMargin: '200px' } 
+      { rootMargin: '400px' } // Increased rootMargin to load images earlier before they scroll into view
     );
 
     if (ref.current) {
         observer.observe(ref.current);
     }
     return () => observer.disconnect();
-  }, []);
+  }, [priority]);
 
-  const finalSrc = isStorageId ? resolvedUrl : src;
+  // Check if image is already cached/complete on mount
+  useEffect(() => {
+    if (inView && imgRef.current && imgRef.current.complete) {
+      if (finalSrc) loadedUrls.add(finalSrc);
+      setLoaded(true);
+    }
+  }, [inView, finalSrc]);
 
   const innerObjectFit = style?.objectFit || 'cover';
   const innerFilter = style?.filter || `brightness(${brightness})`;
@@ -55,15 +75,11 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness
     ...(style?.inset !== undefined ? { inset: style.inset } : {}),
     ...(style?.top !== undefined ? { top: style.top } : {}),
     ...(style?.left !== undefined ? { left: style.left } : {}),
-    background: '#1a1a1a' // Dark background for media loading
+    background: '#f1f5f9'
   };
 
   if (!inView) {
       return <div ref={ref} style={{ ...wrapperStyle, background: '#f1f5f9' }} className={className} />;
-  }
-
-  if (isStorageId && !resolvedUrl) {
-    return <div ref={ref} style={{ ...wrapperStyle, background: '#f1f5f9' }} className={className} />;
   }
 
   const isVideo = type === 'video' || (finalSrc && (finalSrc.endsWith('.mp4') || finalSrc.endsWith('.webm') || finalSrc.endsWith('.mov')));
@@ -74,6 +90,11 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const handleMediaLoad = () => {
+    if (finalSrc) loadedUrls.add(finalSrc);
+    setLoaded(true);
   };
 
   return (
@@ -106,7 +127,7 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness
           }}
           frameBorder="0"
           allow="autoplay; encrypted-media"
-          onLoad={() => setLoaded(true)}
+          onLoad={handleMediaLoad}
         />
       ) : isVideo ? (
         <video 
@@ -115,17 +136,19 @@ const SafeMedia = ({ src, className, style, type = 'image', alt = "", brightness
           loop 
           muted 
           playsInline 
+          preload="metadata"
           style={{ width: '100%', height: '100%', objectFit: innerObjectFit, display: 'block', filter: innerFilter, opacity: loaded ? 1 : 0, transition: 'opacity 0.6s ease', zIndex: 1 }} 
-          onLoadedData={() => setLoaded(true)}
+          onLoadedData={handleMediaLoad}
         />
       ) : (
         <motion.img 
+          ref={imgRef}
           initial={{ opacity: 0 }}
           animate={{ opacity: loaded ? 1 : 0 }}
           src={finalSrc} 
           alt={alt} 
-          loading="lazy"
-          onLoad={() => setLoaded(true)}
+          loading={priority ? "eager" : "lazy"}
+          onLoad={handleMediaLoad}
           style={{ width: '100%', height: '100%', objectFit: innerObjectFit, display: 'block', filter: innerFilter, zIndex: 1 }} 
         />
       )}

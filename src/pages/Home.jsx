@@ -95,7 +95,26 @@ const ImageSlider = ({ images = [], singleImage, duration = 3, priority = false 
   if (allImages.length === 1) return <SafeMedia src={allImages[0]} priority={priority} style={{ width: '100%', borderRadius: '24px', boxShadow: 'var(--shadow-lg)', display: 'block' }} />;
   return (
     <div style={{ position: 'relative', width: '100%', aspectRatio: '16/10', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)' }}>
-      <AnimatePresence mode="wait"><motion.div key={current} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.5 }} style={{ width: '100%', height: '100%' }}><SafeMedia src={allImages[current]} priority={priority || current === 0} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></motion.div></AnimatePresence>
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        {allImages.map((img, index) => (
+          <motion.div
+            key={img}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: index === current ? 1 : 0 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              zIndex: index === current ? 1 : 0,
+              pointerEvents: index === current ? 'auto' : 'none'
+            }}
+          >
+            <SafeMedia src={img} priority={priority || index === 0} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </motion.div>
+        ))}
+      </div>
       <button onClick={() => setCurrent((current - 1 + allImages.length) % allImages.length)} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', padding: '12px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex' }}><ChevronLeft size={20} /></button>
       <button onClick={() => setCurrent((current + 1) % allImages.length)} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', padding: '12px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex' }}><ChevronRight size={20} /></button>
     </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConfig } from '../context/ConfigContext';
-import { ArrowRight, ArrowUpRight, Star, ExternalLink, ChevronLeft, ChevronRight, User, X, CheckCircle2, MapPin, Calendar, CreditCard } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Star, ExternalLink, ChevronLeft, ChevronRight, User, X, CheckCircle2, MapPin, Calendar, CreditCard, Ship } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SafeMedia from '../components/SafeMedia';
 
@@ -782,7 +782,47 @@ const Home = () => {
                         </div>
                         <div style={{ padding: isMobile ? '20px' : '30px', background: '#fff' }}>
                            <h3 style={{ ...getStyle('title'), marginBottom: isMobile ? '8px' : '10px', lineHeight: '1.3', fontSize: isMobile ? '16px' : undefined }}>{product.title}</h3>
-                           {!isMobile && <p style={{ ...getStyle('description'), marginBottom: '24px', opacity: 0.7, height: '44px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{product.description}</p>}
+                           <p style={{ 
+                             ...getStyle('description'), 
+                             marginBottom: product.cruiseInfo && (product.cruiseInfo.line || product.cruiseInfo.shipName || product.cruiseInfo.embarkPort || product.cruiseInfo.disembarkPort) ? '12px' : (isMobile ? '12px' : '24px'), 
+                             opacity: 0.7, 
+                             height: isMobile ? '36px' : '44px', 
+                             fontSize: isMobile ? '12px' : undefined,
+                             lineHeight: isMobile ? '1.5' : '1.7',
+                             overflow: 'hidden', 
+                             display: '-webkit-box', 
+                             WebkitLineClamp: 2, 
+                             WebkitBoxOrient: 'vertical' 
+                           }}>
+                             {product.description}
+                           </p>
+
+                           {product.cruiseInfo && (product.cruiseInfo.line || product.cruiseInfo.shipName || product.cruiseInfo.embarkPort || product.cruiseInfo.disembarkPort) && (
+                              <div style={{ 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                gap: '6px', 
+                                marginBottom: isMobile ? '12px' : '20px', 
+                                padding: '10px 14px', 
+                                background: 'rgba(241, 245, 249, 0.6)', 
+                                borderRadius: '12px', 
+                                fontSize: '12px', 
+                                color: '#475569' 
+                              }}>
+                                {(product.cruiseInfo.line || product.cruiseInfo.shipName) && (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700' }}>
+                                    <Ship size={13} color="var(--primary)" />
+                                    <span>{product.cruiseInfo.line ? `[${product.cruiseInfo.line}] ` : ""}{product.cruiseInfo.shipName}</span>
+                                  </div>
+                                )}
+                                {(product.cruiseInfo.embarkPort || product.cruiseInfo.disembarkPort) && (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
+                                    <MapPin size={13} color="#ef4444" />
+                                    <span>{product.cruiseInfo.embarkPort || "-"} 승선 → {product.cruiseInfo.disembarkPort || "-"} 하선</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                            
                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid var(--border-light)', paddingTop: isMobile ? '12px' : '20px' }}>
                               <div style={{ flex: 1 }}>

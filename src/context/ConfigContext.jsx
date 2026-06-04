@@ -20,6 +20,78 @@ const DEFAULT_CONFIG = {
   reviews: []
 };
 
+const compressImage = (file, maxWidth = 1920, maxHeight = 1920, quality = 0.8) => {
+  return new Promise((resolve) => {
+    // Only compress standard image files, skip gif and svg
+    const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!supportedTypes.includes(file.type)) {
+      return resolve(file);
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate new dimensions while maintaining aspect ratio
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          return resolve(file);
+        }
+
+        // Draw image onto canvas
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const mimeType = file.type;
+        
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              return resolve(file);
+            }
+            
+            const compressedFile = new File([blob], file.name, {
+              type: mimeType,
+              lastModified: Date.now(),
+            });
+
+            // Return the compressed file only if it is actually smaller than original
+            if (compressedFile.size < file.size) {
+              console.log(`[Image Optimizer] Compressed "${file.name}" from ${(file.size / 1024 / 1024).toFixed(2)}MB to ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+              resolve(compressedFile);
+            } else {
+              console.log(`[Image Optimizer] Compressed file is not smaller, using original: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+              resolve(file);
+            }
+          },
+          mimeType,
+          mimeType === 'image/png' ? undefined : quality
+        );
+      };
+      img.onerror = () => resolve(file);
+      img.src = event.target.result;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
+};
+
 export const ConfigProvider = ({ children }) => {
   const heroData = useQuery(api.siteConfig.get);
   const sectionsData = useQuery(api.sections.list);
@@ -107,11 +179,12 @@ export const ConfigProvider = ({ children }) => {
 
   const uploadFile = async (file) => {
     try {
+      const optimizedFile = await compressImage(file);
       const postUrl = await generateUploadUrl();
       const result = await fetch(postUrl, {
         method: "POST",
-        headers: { "Content-Type": file.type },
-        body: file,
+        headers: { "Content-Type": optimizedFile.type },
+        body: optimizedFile,
       });
       
       if (!result.ok) {
@@ -202,13 +275,33 @@ export const ConfigProvider = ({ children }) => {
   };
 
   const addProduct = async (data) => {
-    const { title, description, price, originalPrice, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography } = data;
-    await addProductMutation({ title, description, price, originalPrice, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography });
+    const { 
+      title, description, price, originalPrice, thumbnails, paymentType, 
+      downPayment, installments, scheduleImage, schedule, typography,
+      subtitle, status, tags, heroImage, departure, cruiseInfo, 
+      itineraryDays, sections, flights, routeMapImage, routeCoordinates 
+    } = data;
+    await addProductMutation({ 
+      title, description, price, originalPrice, thumbnails, paymentType, 
+      downPayment, installments, scheduleImage, schedule, typography,
+      subtitle, status, tags, heroImage, departure, cruiseInfo, 
+      itineraryDays, sections, flights, routeMapImage, routeCoordinates 
+    });
   };
 
   const updateProduct = async (id, data) => {
-    const { title, description, price, originalPrice, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography } = data;
-    await updateProductMutation({ id, title, description, price, originalPrice, thumbnails, paymentType, downPayment, installments, scheduleImage, schedule, typography });
+    const { 
+      title, description, price, originalPrice, thumbnails, paymentType, 
+      downPayment, installments, scheduleImage, schedule, typography,
+      subtitle, status, tags, heroImage, departure, cruiseInfo, 
+      itineraryDays, sections, flights, routeMapImage, routeCoordinates 
+    } = data;
+    await updateProductMutation({ 
+      id, title, description, price, originalPrice, thumbnails, paymentType, 
+      downPayment, installments, scheduleImage, schedule, typography,
+      subtitle, status, tags, heroImage, departure, cruiseInfo, 
+      itineraryDays, sections, flights, routeMapImage, routeCoordinates 
+    });
   };
 
   const updateProductBranding = async (data) => {

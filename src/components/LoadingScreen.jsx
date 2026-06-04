@@ -64,19 +64,17 @@ const LoadingScreen = () => {
         </motion.div>
 
         <motion.h1
-          initial={{ opacity: 0, letterSpacing: '0.2em' }}
-          animate={{ opacity: 1, letterSpacing: '0.5em' }}
+          initial={{ opacity: 0, letterSpacing: '0.05em' }}
+          animate={{ opacity: 1, letterSpacing: '0.1em' }}
           transition={{ duration: 1.5, delay: 0.5 }}
           style={{
-            fontSize: '32px',
+            fontSize: '34px',
             fontWeight: '900',
             color: '#fff',
-            textTransform: 'uppercase',
-            margin: 0,
-            fontFamily: "'Outfit', sans-serif"
+            margin: 0
           }}
         >
-          OLIGO
+          수호천사 X 올리고멤버십
         </motion.h1>
         
         <motion.div

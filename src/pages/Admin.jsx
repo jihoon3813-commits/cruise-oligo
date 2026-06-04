@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { LayoutDashboard, Image, Package, MessageSquare, Home as HomeIcon, LogOut, ChevronRight, Settings, Bell, Search, PhoneCall, ShieldCheck } from 'lucide-react';
 import AdminHomeEditor from './AdminHomeEditor';
 import AdminProductManager from './AdminProductManager';
+import AdminProductEditor from './AdminProductEditor';
 import AdminReviewManager from './AdminReviewManager';
 import AdminProductDetailEditor from './AdminProductDetailEditor';
 import AdminReservationManager from './AdminReservationManager';
@@ -133,10 +134,10 @@ const Admin = () => {
       <aside className="admin-nav" style={{ boxShadow: 'inset -1px 0 0 var(--border-light)' }}>
         <div style={{ padding: '0 10px 40px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <div style={{ width: '32px', height: '32px', background: 'var(--primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '32px', height: '32px', background: 'var(--primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                <Package size={18} color="#fff" />
             </div>
-            <h2 style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '-0.02em', color: 'var(--text-main)' }}>OLIGO</h2>
+            <h2 style={{ fontSize: '17px', fontWeight: '800', letterSpacing: '-0.02em', color: 'var(--text-main)', whiteSpace: 'nowrap' }}>수호천사 X 올리고멤버십</h2>
           </div>
           <p style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Admin Console</p>
         </div>
@@ -197,6 +198,7 @@ const Admin = () => {
           <Routes>
             <Route path="/" element={<AdminHomeEditor />} />
             <Route path="/products" element={<AdminProductManager />} />
+            <Route path="/products/:id" element={<AdminProductEditor />} />
             <Route path="/product-detail" element={<AdminProductDetailEditor />} />
             <Route path="/reviews" element={<AdminReviewManager />} />
             <Route path="/reservations" element={<AdminReservationManager />} />

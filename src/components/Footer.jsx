@@ -22,7 +22,7 @@ const Footer = () => {
               {config.logo ? (
                 <SafeMedia src={config.logo} style={{ height: '36px', objectFit: 'contain' }} />
               ) : (
-                <><Ship className="gold-text" /> <span>OLIGO</span></>
+                <><Ship className="gold-text" /> <span style={{ fontSize: '23px' }}>수호천사 X 올리고멤버십</span></>
               )}
             </div>
             <p style={{ color: hasLogo ? '#64748b' : '#8c95a1', fontSize: '14px', lineHeight: '1.8', marginBottom: '24px' }}>

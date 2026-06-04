@@ -67,8 +67,8 @@ const LoadingScreen = () => {
           initial={{ opacity: 0, letterSpacing: '0.05em' }}
           animate={{ opacity: 1, letterSpacing: '0.1em' }}
           transition={{ duration: 1.5, delay: 0.5 }}
+          className="loading-logo-text"
           style={{
-            fontSize: '34px',
             fontWeight: '900',
             color: '#fff',
             margin: 0

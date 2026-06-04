@@ -284,4 +284,66 @@ h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spa
   scrollbar-width: none;
 }
 
+/* Logo & Menu responsiveness */
+.nav-logo-text {
+  font-weight: 900;
+  font-size: 23px;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+  white-space: nowrap;
+  transition: font-size 0.3s ease;
+}
+
+.footer-logo-text {
+  font-size: 23px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: font-size 0.3s ease;
+}
+
+.loading-logo-text {
+  font-size: 34px;
+  transition: font-size 0.3s ease;
+}
+
+.mobile-menu-toggle {
+  display: none !important;
+}
+
+@media (max-width: 1024px) {
+  .nav-links {
+    display: none !important;
+  }
+  .mobile-menu-toggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-logo-text {
+    font-size: 16px;
+  }
+  .nav-logo-icon-wrap {
+    padding: 6px !important;
+  }
+  .nav-logo-icon {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .footer-logo-text {
+    font-size: 18px;
+  }
+  .loading-logo-text {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-logo-text {
+    font-size: 13px;
+  }
+}
+
 

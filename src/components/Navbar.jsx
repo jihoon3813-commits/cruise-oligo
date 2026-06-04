@@ -66,10 +66,10 @@ const Navbar = () => {
              <SafeMedia src={config.logo} priority={true} style={{ height: '32px', objectFit: 'contain' }} />
           ) : (
              <>
-               <div style={{ padding: '8px', background: 'var(--primary)', borderRadius: '100px', display: 'flex' }}>
-                 <Ship size={24} color="#fff" />
+               <div className="nav-logo-icon-wrap" style={{ padding: '8px', background: 'var(--primary)', borderRadius: '100px', display: 'flex' }}>
+                 <Ship className="nav-logo-icon" size={24} color="#fff" />
                </div>
-               <span style={{ fontWeight: '900', fontSize: '23px', letterSpacing: '-0.02em', color: 'var(--text-main)' }}>수호천사 X 올리고멤버십</span>
+               <span className="nav-logo-text">수호천사 X 올리고멤버십</span>
              </>
           )}
         </Link>
@@ -82,7 +82,6 @@ const Navbar = () => {
               onClick={() => scrollTo(item.id)}
               className="nav-link"
               style={{ 
-                display: window.innerWidth < 1024 ? 'none' : 'block',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -92,14 +91,16 @@ const Navbar = () => {
               {item.name}
             </button>
           ))}
-          
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{ display: window.innerWidth < 1024 ? 'flex' : 'none', background: 'none', border: 'none', color: 'var(--text-main)', cursor: 'pointer' }}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
+
+        {/* Mobile Menu Toggle */}
+        <button 
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="mobile-menu-toggle"
+          style={{ background: 'none', border: 'none', color: 'var(--text-main)', cursor: 'pointer' }}
+        >
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
 
       {/* Mobile Menu Overlay */}

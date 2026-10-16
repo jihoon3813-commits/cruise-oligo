@@ -56,6 +56,7 @@ export const updateProductBranding = mutation({
     subTitleBottom: v.optional(v.string()),
     subTitleBottomStyle: v.optional(v.any()),
     mobileLayout: v.optional(v.string()),
+    sortBy: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("siteConfig").first();

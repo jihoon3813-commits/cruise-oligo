@@ -135,7 +135,13 @@ export const ConfigProvider = ({ children }) => {
       sections: [...(sectionsData || [])].sort((a,b) => (a.order || 0) - (b.order || 0)).map(s => ({ ...s, id: s._id })),
       products: productsData?.map(p => ({ ...p, id: p._id })) || [],
       reviews: reviewsData?.map(r => ({ ...r, id: r._id })) || [],
-      productListBranding: heroData?.productListBranding || { title: "추천 패키지", titleColor: "var(--text-main)", bgColor: "#ffffff" },
+      productListBranding: {
+        title: "추천 패키지",
+        titleColor: "var(--text-main)",
+        bgColor: "#ffffff",
+        sortBy: "departureAsc",
+        ...(heroData?.productListBranding || {})
+      },
       reviewSectionBranding: heroData?.reviewSectionBranding || { show: true, title: "여행 후기", titleColor: "var(--text-main)", bgColor: "var(--bg-sub)", layout: "slider" },
       productDetailBranding: heroData?.productDetailBranding || { layout: "luxury", theme: "light", titleColor: "#0F172A", priceColor: "var(--primary)", accentColor: "var(--primary)", buttonColor: "var(--primary)", buttonTextColor: "#ffffff" },
       privacyPolicy: heroData?.privacyPolicy || "개인정보 수집 및 이용에 동의합니다.",

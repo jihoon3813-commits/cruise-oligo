@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useConfig } from '../context/ConfigContext';
-import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles, PlusCircle, XCircle, CreditCard, ListChecks, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { Plus, Trash2, Save, Monitor, Layers, Image as ImageIcon, Palette, Type, Link as LinkIcon, Upload, Loader2, Play, ChevronUp, ChevronDown, Check, X, Settings2, Grid, List, Activity, MoveVertical, MousePointerClick, Sun, Moon, Coffee, Cloud, Target, Droplets, Package, Layout, Sparkles, PlusCircle, XCircle, CreditCard, ListChecks, AlignLeft, AlignCenter, AlignRight, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Improved Input Components with Local State to prevent cursor jumps ---
@@ -972,6 +972,54 @@ const AdminHomeEditor = () => {
                        </div>
                     </div>
                  </div>
+
+                  <div className="form-group" style={{ background: 'var(--bg-sub)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-light)' }}>
+                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '800', fontSize: '15px', color: 'var(--text-main)', marginBottom: '6px' }}>
+                        <Calendar size={18} color="var(--primary)" /> 상품 진열 정렬 기준 (일자 순서 설정)
+                     </label>
+                     <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '16px' }}>
+                        홈페이지 메인 추천 패키지 리스트에 표시될 상품들의 노출 순서를 설정합니다.
+                     </p>
+                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+                        {[
+                          { value: 'departureAsc', title: '📅 출발일자 빠른 순 (추천)', desc: '가장 가까운 크루즈 출발일자부터 순서대로' },
+                          { value: 'departureDesc', title: '📅 출발일자 늦은 순', desc: '먼 미래 출발일자부터 순서대로' },
+                          { value: 'latest', title: '🕒 최신 등록 순', desc: '최근에 신규 등록된 상품 먼저' },
+                          { value: 'oldest', title: '🕒 등록일자 순', desc: '처음 등록된 상품부터 순서대로' },
+                        ].map(opt => {
+                          const currentSort = productBrandingForm?.sortBy || 'departureAsc';
+                          const isSelected = currentSort === opt.value;
+                          return (
+                            <div
+                              key={opt.value}
+                              onClick={() => setProductBrandingForm({ ...productBrandingForm, sortBy: opt.value })}
+                              style={{
+                                padding: '16px',
+                                borderRadius: '12px',
+                                border: isSelected ? '2px solid var(--primary)' : '1px solid var(--border-light)',
+                                background: isSelected ? 'rgba(37, 99, 235, 0.06)' : '#ffffff',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '6px',
+                                boxShadow: isSelected ? '0 4px 12px rgba(37, 99, 235, 0.12)' : 'none'
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <span style={{ fontSize: '13px', fontWeight: '800', color: isSelected ? 'var(--primary)' : 'var(--text-main)' }}>
+                                  {opt.title}
+                                </span>
+                                {isSelected && <Check size={16} color="var(--primary)" />}
+                              </div>
+                              <span style={{ fontSize: '11px', color: '#64748b', lineHeight: '1.4' }}>
+                                {opt.desc}
+                              </span>
+                            </div>
+                          );
+                        })}
+                     </div>
+                  </div>
               </div>
             </section>
           )}

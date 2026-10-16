@@ -47,6 +47,7 @@ export default defineSchema({
       subTitleBottom: v.optional(v.string()),
       subTitleBottomStyle: v.optional(v.object({ color: v.optional(v.string()), fontSize: v.optional(v.number()) })),
       mobileLayout: v.optional(v.string()), // "grid", "2col", "slider"
+      sortBy: v.optional(v.string()), // "departureAsc" | "departureDesc" | "latest" | "oldest"
     })),
     reviewSectionBranding: v.optional(v.object({
       show: v.optional(v.boolean()),

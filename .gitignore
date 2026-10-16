@@ -15,3 +15,10 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+scratch/
+extracted_docx/
+*.docx
+*.zip
+prd_extracted.txt
+parse_xml.js
+read_docx.py

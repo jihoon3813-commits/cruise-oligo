@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConfig } from '../context/ConfigContext';
 import { ArrowRight, ArrowUpRight, Star, ExternalLink, ChevronLeft, ChevronRight, User, X, CheckCircle2, MapPin, Calendar, CreditCard, Ship } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SafeMedia from '../components/SafeMedia';
+import { sortProducts, formatDepartureDisplay } from '../utils/productUtils';
 
 const getTextStyle = (typo, type) => {
   if (!typo?.[type]) return {};
@@ -124,6 +125,11 @@ const ImageSlider = ({ images = [], singleImage, duration = 3, priority = false 
 const Home = () => {
   const { config } = useConfig();
   const { hero, sections, products, theme } = config;
+  
+  const sortedProducts = useMemo(() => {
+    return sortProducts(products, config.productListBranding?.sortBy || 'departureAsc');
+  }, [products, config.productListBranding?.sortBy]);
+
   useEffect(() => { document.body.className = `theme-${theme || 'white'}`; }, [theme]);
 
   const CustomButton = ({ section, isSmall = false }) => {
@@ -767,9 +773,11 @@ const Home = () => {
             paddingBottom: isMobile && config.productListBranding?.mobileLayout === 'slider' ? '24px' : '0',
             scrollSnapType: isMobile && config.productListBranding?.mobileLayout === 'slider' ? 'x mandatory' : 'none'
           }} className="hide-scrollbar">
-            {products.map((product, idx) => {
+            {sortedProducts.map((product, idx) => {
               const typo = product.typography || {};
               const getStyle = (t) => { const base = typo[t]?.fontSize || (t === 'title' ? 22 : 15); const min = Math.max(12, Math.floor(base * 0.6)); return { fontSize: `clamp(${min}px, 3.8vw, ${base}px)`, color: typo[t]?.color, fontWeight: t === 'title' || t === 'price' ? '900' : '400' }; };
+              const departureInfo = formatDepartureDisplay(product.departure, product.itineraryDays);
+
               return (
                 <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} viewport={{ once: true }} style={{ minWidth: isMobile && config.productListBranding?.mobileLayout === 'slider' ? '280px' : 'auto', scrollSnapAlign: 'start' }}>
                    <Link to={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -778,9 +786,40 @@ const Home = () => {
                            <SafeMedia src={product.thumbnails[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: '0.6s' }} />
                            <div className="product-card-overlay"></div>
                            <div style={{ position: 'absolute', top: isMobile ? '12px' : '20px', left: isMobile ? '12px' : '20px', background: 'rgba(15, 23, 42, 0.8)', color: '#fff', padding: '4px 12px', borderRadius: '100px', fontSize: '10px', fontWeight: '800', backdropFilter: 'blur(4px)' }}>PREMIUM</div>
-                           <div className="product-card-badge" style={{ bottom: isMobile ? '12px' : '20px', right: isMobile ? '12px' : '20px', padding: '4px 10px', fontSize: '10px' }}><MapPin size={10} /> {product.schedule?.length ? `${product.schedule.length}일 코스` : '프리미엄 여정'}</div>
+                           <div className="product-card-badge" style={{ bottom: isMobile ? '12px' : '20px', right: isMobile ? '12px' : '20px', padding: '4px 10px', fontSize: '10px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                             {departureInfo ? (
+                               <>
+                                 <Calendar size={11} color="#60a5fa" />
+                                 <span>{departureInfo.startDateFormatted}</span>
+                               </>
+                             ) : (
+                               <>
+                                 <MapPin size={10} /> {product.schedule?.length ? `${product.schedule.length}일 코스` : '프리미엄 여정'}
+                               </>
+                             )}
+                           </div>
                         </div>
                         <div style={{ padding: isMobile ? '20px' : '30px', background: '#fff' }}>
+                           {departureInfo && (
+                             <div style={{ 
+                               display: 'inline-flex', 
+                               alignItems: 'center', 
+                               gap: '6px', 
+                               fontSize: isMobile ? '11px' : '12px', 
+                               fontWeight: '700', 
+                               color: 'var(--primary)', 
+                               background: 'rgba(37, 99, 235, 0.08)',
+                               padding: '4px 10px',
+                               borderRadius: '8px',
+                               marginBottom: '10px'
+                             }}>
+                               <Calendar size={13} />
+                               <span>{departureInfo.dateRange}</span>
+                               {departureInfo.durationText && (
+                                 <span style={{ color: '#64748b', fontWeight: '600' }}>· {departureInfo.durationText}</span>
+                               )}
+                             </div>
+                           )}
                            <h3 style={{ ...getStyle('title'), marginBottom: isMobile ? '8px' : '10px', lineHeight: '1.3', fontSize: isMobile ? '16px' : undefined }}>{product.title}</h3>
                            <p style={{ 
                              ...getStyle('description'), 

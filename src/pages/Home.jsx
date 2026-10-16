@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConfig } from '../context/ConfigContext';
-import { ArrowRight, ArrowUpRight, Star, ExternalLink, ChevronLeft, ChevronRight, User, X, CheckCircle2, MapPin, Calendar, CreditCard, Ship } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Star, ExternalLink, ChevronLeft, ChevronRight, User, X, CheckCircle2, MapPin, Calendar, CreditCard, Ship, Clock, ArrowDownUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SafeMedia from '../components/SafeMedia';
 import { sortProducts, formatDepartureDisplay } from '../utils/productUtils';
@@ -126,9 +126,17 @@ const Home = () => {
   const { config } = useConfig();
   const { hero, sections, products, theme } = config;
   
+  const [userSortOrder, setUserSortOrder] = useState(config.productListBranding?.sortBy || 'departureAsc');
+
+  useEffect(() => {
+    if (config.productListBranding?.sortBy) {
+      setUserSortOrder(config.productListBranding.sortBy);
+    }
+  }, [config.productListBranding?.sortBy]);
+
   const sortedProducts = useMemo(() => {
-    return sortProducts(products, config.productListBranding?.sortBy || 'departureAsc');
-  }, [products, config.productListBranding?.sortBy]);
+    return sortProducts(products, userSortOrder);
+  }, [products, userSortOrder]);
 
   useEffect(() => { document.body.className = `theme-${theme || 'white'}`; }, [theme]);
 
@@ -765,6 +773,74 @@ const Home = () => {
                 </p>
              )}
           </div>
+
+          {/* 출발일 기준 빠른/늦은 정렬 탭 버튼 */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            marginBottom: isMobile ? '20px' : '28px',
+            flexWrap: 'wrap',
+            gap: '12px'
+          }}>
+            <div style={{ fontSize: isMobile ? '13px' : '14px', fontWeight: '700', color: '#64748b' }}>
+              총 <span style={{ color: 'var(--primary)', fontWeight: '900' }}>{sortedProducts.length}</span>개의 크루즈 여정
+            </div>
+
+            <div style={{ 
+              display: 'inline-flex', 
+              background: '#f1f5f9', 
+              padding: '4px', 
+              borderRadius: '100px', 
+              border: '1px solid rgba(0,0,0,0.06)'
+            }}>
+              <button
+                type="button"
+                onClick={() => setUserSortOrder('departureAsc')}
+                style={{
+                  padding: isMobile ? '6px 14px' : '8px 18px',
+                  borderRadius: '100px',
+                  border: 'none',
+                  background: userSortOrder === 'departureAsc' ? 'var(--primary)' : 'transparent',
+                  color: userSortOrder === 'departureAsc' ? '#ffffff' : '#64748b',
+                  fontWeight: '800',
+                  fontSize: isMobile ? '12px' : '13px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: userSortOrder === 'departureAsc' ? '0 4px 10px rgba(37, 99, 235, 0.25)' : 'none'
+                }}
+              >
+                <Calendar size={13} />
+                출발일 빠른순
+              </button>
+              <button
+                type="button"
+                onClick={() => setUserSortOrder('departureDesc')}
+                style={{
+                  padding: isMobile ? '6px 14px' : '8px 18px',
+                  borderRadius: '100px',
+                  border: 'none',
+                  background: userSortOrder === 'departureDesc' ? 'var(--primary)' : 'transparent',
+                  color: userSortOrder === 'departureDesc' ? '#ffffff' : '#64748b',
+                  fontWeight: '800',
+                  fontSize: isMobile ? '12px' : '13px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: userSortOrder === 'departureDesc' ? '0 4px 10px rgba(37, 99, 235, 0.25)' : 'none'
+                }}
+              >
+                <Clock size={13} />
+                출발일 늦은순
+              </button>
+            </div>
+          </div>
+
           <div style={{ 
             display: isMobile && config.productListBranding?.mobileLayout === 'slider' ? 'flex' : 'grid', 
             gridTemplateColumns: isMobile ? (config.productListBranding?.mobileLayout === '2col' ? 'repeat(2, 1fr)' : '1fr') : 'repeat(auto-fill, minmax(340px, 1fr))', 

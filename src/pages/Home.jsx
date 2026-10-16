@@ -852,7 +852,7 @@ const Home = () => {
             {sortedProducts.map((product, idx) => {
               const typo = product.typography || {};
               const getStyle = (t) => { const base = typo[t]?.fontSize || (t === 'title' ? 22 : 15); const min = Math.max(12, Math.floor(base * 0.6)); return { fontSize: `clamp(${min}px, 3.8vw, ${base}px)`, color: typo[t]?.color, fontWeight: t === 'title' || t === 'price' ? '900' : '400' }; };
-              const departureInfo = formatDepartureDisplay(product.departure, product.itineraryDays);
+              const departureInfo = formatDepartureDisplay(product);
 
               return (
                 <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} viewport={{ once: true }} style={{ minWidth: isMobile && config.productListBranding?.mobileLayout === 'slider' ? '280px' : 'auto', scrollSnapAlign: 'start' }}>
